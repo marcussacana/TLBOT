@@ -4,7 +4,8 @@
 This program translate all files of the game with the LEC PT 15 and save it.
 
 ####Compatible with:
--SiglusEngine - in my git
--AgeGameEngine - in my git
+- SiglusEngine - in my git
+
+- AgeGameEngine - in my git
 
 This program needs the LEC Power Transaltor 15 installed to work.
