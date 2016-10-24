@@ -1,10 +1,11 @@
-﻿#define Siglus
-
+﻿#define Age
+#define SJIS
 using System;
 using TLIB;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Text;
+using System.Collections.Generic;
 #if Age
 using VNX.EushullyEditor;
 #endif
@@ -26,8 +27,18 @@ namespace TLBOT {
                 "SiglusEngine"
 #endif
                 );
+            string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
+            if (System.IO.File.Exists(TLFilter)) {
+                VM = new DotNetVM(System.IO.File.ReadAllText(TLFilter));
+                BlackList = new List<string>(VM.Call("Main", "GetBlackList"));
+                string[] List = VM.Call("Main", "GetReplaces");
+                for (int i = 0; i < List.Length; i += 2)
+                    Replace.Add(List[i], List[i + 1]);
+            }
         }
-
+        Dictionary<string, string> Replace = new Dictionary<string, string>();
+        List<string> BlackList = new List<string>();
+        DotNetVM VM = null;
 #if Age
         string Filter = "ALL Eshully Files|*.bin";
         EushullyEditor EE;
@@ -113,15 +124,25 @@ namespace TLBOT {
                 if (!Checked)
                     continue;
                 string Input = StringList.Items[i].ToString();
+                if (BlackList.Contains(Input))
+                    continue;
+                if (Replace.ContainsKey(Input)) {
+                    StringList.Items[i] = Replace[Input];
+                    StringList.SelectedIndex = i;
+                    continue;
+                }
                 int tries = -1;
-            again:
-                ;
-                tries++;
-                string Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
-                if (Translation == null && Input.Length > 3 && tries < 5)
-                    goto again;
+                string Translation = null;
+                while (tries < 5 && Translation == null) {
+                    Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
+                }
+                if (Translation == null)
+                    continue;
+                if (VM != null)
+                    Translation = VM.Call("Main", "Filter", Translation);
                 StringList.Items[i] = Translation;
                 StringList.SelectedIndex = i;
+                Application.DoEvents();
             }
             if (!BM)
                 MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -145,13 +166,13 @@ namespace TLBOT {
                             Status = NumberLimiter(text, text.Length / 4);
                             break;
                         case 2:
-                            Status = text.Length >= 3 || EndsWithOr(text, ".,!,\",?");
+                            Status = text.Length >= 4 || EndsWithOr(text, ".,!,?");
                             break;
                         case 3:
                             if (Asian)
                                 Status = MinimiumFound(text, Properties.Resources.JapCommom, text.Length / 4);
                             else
-                                Status = text.Contains(((char)32).ToString()) || EndsWithOr(text, ".,!,\",?");
+                                Status = text.Contains(((char)32).ToString()) || EndsWithOr(text, ".\",!\",?\",.,!,?");
                             break;
                         case 4:
                             if (!Asian)
