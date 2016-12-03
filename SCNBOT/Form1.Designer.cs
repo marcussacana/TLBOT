@@ -39,6 +39,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.BntBathProc = new System.Windows.Forms.Button();
             this.LblInfo = new System.Windows.Forms.Label();
+            this.CkOffline = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // StringList
@@ -50,7 +51,7 @@
             this.StringList.Location = new System.Drawing.Point(16, 15);
             this.StringList.Margin = new System.Windows.Forms.Padding(4);
             this.StringList.Name = "StringList";
-            this.StringList.Size = new System.Drawing.Size(883, 480);
+            this.StringList.Size = new System.Drawing.Size(949, 480);
             this.StringList.TabIndex = 0;
             this.StringList.SelectedIndexChanged += new System.EventHandler(this.StringList_SelectedIndexChanged);
             // 
@@ -127,7 +128,7 @@
             // BntOpen
             // 
             this.BntOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntOpen.Location = new System.Drawing.Point(692, 538);
+            this.BntOpen.Location = new System.Drawing.Point(758, 538);
             this.BntOpen.Margin = new System.Windows.Forms.Padding(4);
             this.BntOpen.Name = "BntOpen";
             this.BntOpen.Size = new System.Drawing.Size(100, 28);
@@ -139,7 +140,7 @@
             // BntSave
             // 
             this.BntSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntSave.Location = new System.Drawing.Point(800, 538);
+            this.BntSave.Location = new System.Drawing.Point(866, 538);
             this.BntSave.Margin = new System.Windows.Forms.Padding(4);
             this.BntSave.Name = "BntSave";
             this.BntSave.Size = new System.Drawing.Size(100, 28);
@@ -219,7 +220,7 @@
             // LblInfo
             // 
             this.LblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LblInfo.Location = new System.Drawing.Point(469, 504);
+            this.LblInfo.Location = new System.Drawing.Point(535, 504);
             this.LblInfo.Name = "LblInfo";
             this.LblInfo.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LblInfo.Size = new System.Drawing.Size(431, 24);
@@ -227,11 +228,25 @@
             this.LblInfo.Text = "TLBOT by Marcussacana - {0} Build";
             this.LblInfo.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // CkOffline
+            // 
+            this.CkOffline.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.CkOffline.AutoSize = true;
+            this.CkOffline.Checked = true;
+            this.CkOffline.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CkOffline.Location = new System.Drawing.Point(439, 509);
+            this.CkOffline.Name = "CkOffline";
+            this.CkOffline.Size = new System.Drawing.Size(92, 21);
+            this.CkOffline.TabIndex = 15;
+            this.CkOffline.Text = "Offline TL";
+            this.CkOffline.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(916, 575);
+            this.ClientSize = new System.Drawing.Size(982, 575);
+            this.Controls.Add(this.CkOffline);
             this.Controls.Add(this.LblInfo);
             this.Controls.Add(this.BntBathProc);
             this.Controls.Add(this.button1);
@@ -247,7 +262,7 @@
             this.Controls.Add(this.InputLang);
             this.Controls.Add(this.StringList);
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.MinimumSize = new System.Drawing.Size(934, 622);
+            this.MinimumSize = new System.Drawing.Size(1000, 622);
             this.Name = "Form1";
             this.Text = "TLBOT - In Game Machine Transation";
             this.ResumeLayout(false);
@@ -273,6 +288,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button BntBathProc;
         private System.Windows.Forms.Label LblInfo;
+        private System.Windows.Forms.CheckBox CkOffline;
     }
 }
 

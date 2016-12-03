@@ -1,5 +1,5 @@
-﻿#define Age
-#define SJIS
+﻿#define KiriKiri
+//#define SJIS
 using System;
 using TLIB;
 using System.ComponentModel;
@@ -11,6 +11,9 @@ using VNX.EushullyEditor;
 #endif
 #if Siglus
 using SiglusSceneManager;
+#endif
+#if KiriKiri
+using KrKrSceneManager;
 #endif
 namespace TLBOT {
     public partial class Form1 : Form {
@@ -25,6 +28,9 @@ namespace TLBOT {
 #endif
 #if Siglus
                 "SiglusEngine"
+#endif
+#if KiriKiri
+                "KiriKiriZ"
 #endif
                 );
             string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
@@ -46,6 +52,10 @@ namespace TLBOT {
 #if Siglus
         string Filter = "All SiglusEngine Scene Files|*.ss";
         SSManager Script;
+#endif
+#if KiriKiri
+        string Filter = "All KiriKiri PSB Files|*.scn;*.psb";
+        PSBStringManager SM;
 #endif
         private void BntOpen_Click(object sender, EventArgs e) {
             OpenBinary.ShowDialog();
@@ -70,6 +80,11 @@ namespace TLBOT {
             Script.Import();
             string[] Strings = Script.Strings;
 #endif
+#if KiriKiri
+            SM = new PSBStringManager();
+            SM.Import(script);
+            string[] Strings = SM.Strings;
+#endif
 
             StringList.Items.Clear();
             foreach (string str in Strings) {
@@ -90,7 +105,10 @@ namespace TLBOT {
             for (int i = 0; i < Script.Strings.Length; i++)
                 Script.Strings[i] = StringList.Items[i].ToString(); 
 #endif
-
+#if KiriKiri
+            for (int i = 0; i < SM.Strings.Length; i++)
+                SM.Strings[i] = StringList.Items[i].ToString();
+#endif
         }
 
         bool BM = false;
@@ -106,6 +124,9 @@ namespace TLBOT {
 #endif
 #if Siglus
             Script.Export();
+#endif
+#if KiriKiri
+                SM.Export();
 #endif
             System.IO.File.WriteAllBytes(SaveBinary.FileName, script);
             if (!BM)
@@ -134,18 +155,54 @@ namespace TLBOT {
                 int tries = -1;
                 string Translation = null;
                 while (tries < 5 && Translation == null) {
-                    Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
+                    Translation = 
+                        CkOffline.Checked?
+                        LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text): 
+                        Google.Translate(Input, InputLang.Text, OutLang.Text);
                 }
                 if (Translation == null)
                     continue;
                 if (VM != null)
                     Translation = VM.Call("Main", "Filter", Translation);
+                FixTL(ref Translation, Input);
                 StringList.Items[i] = Translation;
                 StringList.SelectedIndex = i;
                 Application.DoEvents();
             }
+            Text = "TLBOT - ("+System.IO.Path.GetFileName(OpenBinary.FileName)+") - In Game Machine Translation";
             if (!BM)
                 MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void FixTL(ref string translation, string input) {
+            char[] Open = new char[] { '<', '"', '(', '\'', '「' , '『' , '«' };
+            char[] Close = new char[] { '>', '"', ')', '\'', '」', '』', '»' };
+            if (Open.Length != Close.Length)
+                throw new Exception("Wrong Devloper Configuration");
+            for (int i = 0; i < Open.Length; i++) {
+                char O = Open[i];
+                char C = Close[i];
+                if (!(input.StartsWith(O + "") && input.EndsWith(C + "")))
+                    continue;
+                if (translation.StartsWith(".")) {
+                    translation = translation.Substring(1, translation.Length - 1);
+                    if (translation.EndsWith(".."))
+                        translation = translation.Substring(0, translation.Length - 1);
+                }
+                if (!translation.StartsWith(O + ""))
+                    translation = O + translation;
+                if (translation.EndsWith(C + ".")) {
+                    translation = translation.Substring(0, translation.Length - 2) + "." + C;
+                }
+                if (translation.EndsWith(C + "!")) {
+                    translation = translation.Substring(0, translation.Length - 2) + "!" + C;
+                }
+                if (translation.EndsWith(C + "?")) {
+                    translation = translation.Substring(0, translation.Length - 2) + "?" + C;
+                }
+                if (!translation.EndsWith(C + ""))
+                    translation += C;
+            }
         }
 
         private void BotSelect_Click(object sender, EventArgs e) {
@@ -160,7 +217,10 @@ namespace TLBOT {
                         default:
                             goto ExitWhile;
                         case 0:
-                            Status = !ContainsOR(text, "@,§,$,\\,|,_,<,>,/");
+                            bool Alternate = false;
+                            if (text.StartsWith("<") && text.EndsWith(">"))
+                                Alternate = true;
+                            Status = !ContainsOR(text, Alternate ? "@,§,$,\\,|,_,/" : "@,§,$,\\,|,_,<,>,/");
                             break;
                         case 1:
                             Status = NumberLimiter(text, text.Length / 4);
@@ -238,7 +298,7 @@ namespace TLBOT {
 
         private void StringList_SelectedIndexChanged(object sender, EventArgs e) {
             try {
-                Text = string.Format("TLBOT - ({0}/{1})", StringList.SelectedIndex, StringList.Items.Count);
+                Text = string.Format("TLBOT - {2} ({0}/{1})", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(OpenBinary.FileName));
             } catch { }
         }
 
@@ -264,6 +324,11 @@ namespace TLBOT {
 #if Siglus
                     SSManager tmp = new SSManager(Script);
                     tmp.Import();
+                    string[] strs = tmp.Strings;
+#endif
+#if KiriKiri
+                    PSBStringManager tmp = new PSBStringManager();
+                    tmp.Import(Script);
                     string[] strs = tmp.Strings;
 #endif
                     foreach (string s in strs)
