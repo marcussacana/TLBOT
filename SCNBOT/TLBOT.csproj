@@ -84,21 +84,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EushullyEditor\EushullyEditor\EushullyEditor.csproj">
-      <Project>{fbcdf704-ddd5-43fe-bb18-4a058c6b4914}</Project>
-      <Name>EushullyEditor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\KrKrZSceneManager\KrKrSceneManager\KrKrSceneManager.csproj">
-      <Project>{77b183f4-656e-4fec-a424-891382b64fa9}</Project>
-      <Name>KrKrSceneManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SiglusSceneManager\SiglusSceneManager\SiglusSceneManager.csproj">
-      <Project>{b3d4dff2-530d-43a5-8a53-7cb3e60391a3}</Project>
-      <Name>SiglusSceneManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TLIB\TLIB.csproj">
+    <ProjectReference Include="..\..\TLIB\TLIB.csproj">
       <Project>{b7489af3-fad2-4d45-9746-cd72d9f22bff}</Project>
       <Name>TLIB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrKr2SQL\KrKr2SQL.csproj">
+      <Project>{bcf24758-7044-4780-b908-fd7c54a7b367}</Project>
+      <Name>KrKr2SQL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
