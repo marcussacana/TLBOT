@@ -276,7 +276,7 @@ namespace TLBOT {
 #endif
             System.IO.File.WriteAllBytes(SaveBinary.FileName, script);
 #else
-            Editor.ProgressChange = new Action(() => { Text = "Saving - "+ Editor.ExportProgress; });
+            Editor.ProgressChange = new Action(() => { Text = "Saving - " + Editor.ExportProgress; });
             Editor.Export(Strs);
 #endif
             if (!BM)
@@ -284,13 +284,28 @@ namespace TLBOT {
         }
 
         bool Error = false;
+        bool Abort = false;
+        bool CanAbort = false;
         private void BntProc_Click(object sender, EventArgs e) {
+            if (CanAbort) {
+                Abort = true;
+                return;
+            }
             if (!LEC.ServerIsOpen(Port.Text)) {
                 MessageBox.Show("Invalid Server Port", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Error = true;
                 return;
             }
+            CanAbort = true;
+            Abort = false;
+            BntProc.Text = "Abort!";
             for (int i = 0; i < StringList.Items.Count; i++) {
+                if (Abort) {
+                    MessageBox.Show("Operation Aborted!", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    BntProc.Text = "Translate!";
+                    CanAbort = false;
+                    return;
+                }
                 bool Checked = StringList.GetItemChecked(i);
                 if (!Checked)
                     continue;
@@ -302,18 +317,21 @@ namespace TLBOT {
                     StringList.SelectedIndex = i;
                     continue;
                 }
-                if (Input.Length > 3 && string.IsNullOrWhiteSpace(Input.Replace(Input[0]+"", "").Replace(Input[1]+"", "").Replace(".", "").Replace("!", "").Replace("?", ""))) {
+                if (Input.Length > 3 && string.IsNullOrWhiteSpace(Input.Replace(Input[0] + "", "").Replace(Input[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", ""))) {
                     continue;
                 }
                 int tries = -1;
                 string Translation = null;
                 while (tries < 5 && Translation == null) {
-                    Translation = 
-                        CkOffline.Checked?
-                        LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text): 
+                    Translation =
+                        CkOffline.Checked ?
+                        LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
                         Google.Translate(Input, InputLang.Text, OutLang.Text);
                 }
-                if (Translation == null)
+                if (Translation.ToLower().StartsWith("-benzóico")) {
+                    Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
+                }
+                if (Translation == null || Translation.ToLower().StartsWith("-benzóico"))
                     continue;
                 if (VM != null)
                     Translation = VM.Call("Main", "Filter", Translation);
@@ -323,9 +341,12 @@ namespace TLBOT {
                 StringList.SelectedIndex = i;
                 Application.DoEvents();
             }
-            Text = "TLBOT - ("+System.IO.Path.GetFileName(OpenBinary.FileName)+") - In Game Machine Translation";
+            Text = "TLBOT - (" + System.IO.Path.GetFileName(OpenBinary.FileName) + ") - In Game Machine Translation";
+            CanAbort = false;
+            BntProc.Text = "Translate!";
             if (!BM) {
                 if (Shutdown.Checked) {
+                    BM = true;
                     Save(System.IO.Path.GetDirectoryName(OpenBinary.FileName) + "\\" + System.IO.Path.GetFileNameWithoutExtension(OpenBinary.FileName) + "-autosave" + System.IO.Path.GetExtension(OpenBinary.FileName));
                     System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
                 }
@@ -334,7 +355,7 @@ namespace TLBOT {
         }
 
         private void FixTL(ref string translation, string input) {
-            char[] Open = new char[] { '<', '"', '(', '\'', '「' , '『' , '«' };
+            char[] Open = new char[] { '<', '"', '(', '\'', '「', '『', '«' };
             char[] Close = new char[] { '>', '"', ')', '\'', '」', '』', '»' };
             if (Open.Length != Close.Length)
                 throw new Exception("Wrong Devloper Configuration");
@@ -457,8 +478,9 @@ namespace TLBOT {
 
         private void StringList_SelectedIndexChanged(object sender, EventArgs e) {
             try {
-                Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(OpenBinary.FileName), (int)(((double)StringList.SelectedIndex/StringList.Items.Count)*100));
-            } catch { }
+                Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(OpenBinary.FileName), (int)(((double)StringList.SelectedIndex / StringList.Items.Count) * 100));
+            }
+            catch { }
         }
 
         private void button1_Click(object sender, EventArgs e) {
@@ -524,7 +546,8 @@ namespace TLBOT {
                     try {
                         tmp = new SQLOpen(FD.FileNames[i]);
                         strs = tmp.Import();
-                    } catch {
+                    }
+                    catch {
                         Founds += "Failed to Open: " + System.IO.Path.GetFileName(FD.FileNames[i]);
                         continue;
                     }
@@ -550,9 +573,15 @@ namespace TLBOT {
                 if (Word.Contains("-")) {
                     string[] Splited = Word.Split('-');
                     bool Repeat = true;
-                    for (int x = 0; x < Splited.Length - 1; x++) {
-                        if (Splited[Splited.Length - 1].Length <= Splited[x].Length)
-                            Repeat = false;
+                    try {
+                        string last = Splited[Splited.Length - 1].ToLower();
+                        for (int x = 0; x < Splited.Length - 1; x++) {
+                            if (last.Length <= Splited[x].Length || last.StartsWith("sama") || last.StartsWith("san") || last.StartsWith("chan") || last.StartsWith("kun") || last.StartsWith("chi") || Splited.Length > 3 || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3))
+                                Repeat = false;
+                        }
+                    }
+                    catch {
+                        continue;
                     }
                     if (!Repeat)
                         continue;
@@ -565,6 +594,8 @@ namespace TLBOT {
                     foreach (string pre in Splited)
                         Word += pre + "-";
                     Word = Word.Substring(0, Word.Length - 1);
+                    if (i == 0 || NewWords[i - 1].EndsWith("."))
+                        Word = Word.Substring(0, 1).ToUpper() + Word.Substring(1, Word.Length - 1);
                 }
                 NewWords[i] = Word;
             }
@@ -597,7 +628,8 @@ namespace TLBOT {
                         break;
                     try {
                         Save(File);
-                    }catch {
+                    }
+                    catch {
                         log += "\nError: " + System.IO.Path.GetFileName(File);
                     }
                 }
@@ -613,6 +645,25 @@ namespace TLBOT {
 #if KrKr2SQL
             Editor.Close();
 #endif
+        }
+
+        private void SearchKeyPress(object sender, KeyPressEventArgs e) {
+            if (e.KeyChar == '\n' || e.KeyChar == '\r') {
+                string bak = Text;
+                e.Handled = true;
+                string text = SearchTB.Text.ToLower();
+                for (int i = (int)Begin.Value; i < End.Value; i++) {
+                    Text = "Searching... " + i + "/" + (int)End.Value;
+                    string Str = StringList.Items[i].ToString().ToLower();
+                    if (Str.Contains(text)) {
+                        Text = bak;
+                        StringList.SelectedIndex = i;
+                        return;
+                    }
+                    Application.DoEvents();
+                }
+                Text = bak;
+            }
         }
     }
 #if SJIS

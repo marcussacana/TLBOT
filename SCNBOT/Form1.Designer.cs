@@ -45,6 +45,8 @@
             this.End = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.SearchTB = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
             this.SuspendLayout();
@@ -254,9 +256,9 @@
             this.Shutdown.AutoSize = true;
             this.Shutdown.Location = new System.Drawing.Point(468, 506);
             this.Shutdown.Name = "Shutdown";
-            this.Shutdown.Size = new System.Drawing.Size(275, 21);
+            this.Shutdown.Size = new System.Drawing.Size(161, 21);
             this.Shutdown.TabIndex = 16;
-            this.Shutdown.Text = "Shutdown the Computer after complete";
+            this.Shutdown.Text = "Shutdown after Ends";
             this.Shutdown.UseVisualStyleBackColor = true;
             // 
             // Begin
@@ -317,11 +319,32 @@
             this.label5.TabIndex = 20;
             this.label5.Text = "At";
             // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(673, 507);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(102, 17);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "Find in this file:";
+            // 
+            // SearchTB
+            // 
+            this.SearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchTB.Location = new System.Drawing.Point(781, 504);
+            this.SearchTB.Name = "SearchTB";
+            this.SearchTB.Size = new System.Drawing.Size(208, 22);
+            this.SearchTB.TabIndex = 22;
+            this.SearchTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SearchKeyPress);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1006, 575);
+            this.Controls.Add(this.SearchTB);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.End);
@@ -378,6 +401,8 @@
         private System.Windows.Forms.NumericUpDown End;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox SearchTB;
     }
 }
 
