@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrKr2CSV", "..\KrKr2CSV\KrK
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrKr2SQL", "KrKr2SQL\KrKr2SQL.csproj", "{BCF24758-7044-4780-B908-FD7C54A7B367}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSA", "..\SSA\SSA.csproj", "{6E341AAE-A89E-49E7-A1C1-4975D97A744B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{BCF24758-7044-4780-B908-FD7C54A7B367}.Eushully|Any CPU.Build.0 = Release|Any CPU
 		{BCF24758-7044-4780-B908-FD7C54A7B367}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCF24758-7044-4780-B908-FD7C54A7B367}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Eshully|Any CPU.ActiveCfg = Release|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Eshully|Any CPU.Build.0 = Release|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Eushully|Any CPU.ActiveCfg = Release|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Eushully|Any CPU.Build.0 = Release|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E341AAE-A89E-49E7-A1C1-4975D97A744B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

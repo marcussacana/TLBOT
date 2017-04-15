@@ -1,4 +1,4 @@
-﻿#define KrKr2SQL
+﻿#define SSA
 //#define SJIS
 using System;
 using TLIB;
@@ -30,6 +30,10 @@ using KrKr2CSV;
 #if KrKr2SQL
 using KrKr2SQL;
 #endif
+#if SSA
+using SSA;
+#endif
+
 namespace TLBOT {
     public partial class Form1 : Form {
         public Form1() {
@@ -64,6 +68,9 @@ namespace TLBOT {
 #endif
 #if KrKr2SQL
                 "KiriKiri 2 SQLite"
+#endif
+#if SSA
+                "Subtitle"
 #endif
                 );
             string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
@@ -120,6 +127,11 @@ namespace TLBOT {
         string[] Strs;
         string Filter = "All Sqlite Files|*.sdb;*.sqlite;*.db|All Files|*.*";
         SQLOpen Editor;
+#endif
+#if SSA
+        string[] Strs;
+        string Filter = "All SSA/ASS Files|*.ssa;*.ass|All Files|*.*";
+        Subtitle Editor;
 #endif
         private void BntOpen_Click(object sender, EventArgs e) {
             OpenBinary.ShowDialog();
@@ -188,6 +200,10 @@ namespace TLBOT {
             Strs = Editor.Import();
             string[] Strings = Strs;
 #endif
+#if SSA
+            Editor = new Subtitle(script);
+            string[] Strings = Strs = Editor.Import();
+#endif
             StringList.Items.Clear();
             foreach (string str in Strings) {
                 StringList.Items.Add(str, false);
@@ -222,7 +238,7 @@ namespace TLBOT {
             for (int i = 0; i < StringsClass.Length; i++)
                 StringsClass[i].String = StringList.Items[i].ToString().Replace("\n", "\\n");
 #endif
-#if Automata || KrKr2CSV || KrKr2SQL
+#if Automata || KrKr2CSV || KrKr2SQL || SSA
             for (int i = 0; i < Strs.Length; i++)
                 Strs[i] = StringList.Items[i].ToString();
 #endif
@@ -272,6 +288,9 @@ namespace TLBOT {
                 Editor.Export(strs);
 #endif
 #if KrKr2CSV
+                Editor.Export(Strs);
+#endif
+#if SSA
                 Editor.Export(Strs);
 #endif
             System.IO.File.WriteAllBytes(SaveBinary.FileName, script);
@@ -336,7 +355,7 @@ namespace TLBOT {
                 if (VM != null)
                     Translation = VM.Call("Main", "Filter", Translation);
                 FixTL(ref Translation, Input);
-                Translation = FixTLAlgo2(Translation);
+                Translation = FixTLAlgo2(Translation, Input);
                 StringList.Items[i] = Translation;
                 StringList.SelectedIndex = i;
                 Application.DoEvents();
@@ -552,6 +571,10 @@ namespace TLBOT {
                         continue;
                     }
 #endif
+#if SSA
+                    Subtitle tmp = new Subtitle(Script);
+                    string[] strs = tmp.Import();
+#endif
                     foreach (string s in strs)
                         if (s.Contains(content)) {
                             Founds += System.IO.Path.GetFileName(FD.FileNames[i]) + "\n";
@@ -566,7 +589,10 @@ namespace TLBOT {
             }
         }
 
-        public string FixTLAlgo2(string TL) {
+
+        //PTBR Prefix And Sufix to ignore when fix letter repeat
+        private List<string> BlackSplitList = new List<string>(new string[] { "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal"});
+        public string FixTLAlgo2(string TL, string Ori) {
             string[] NewWords = TL.Split(' ');
             for (int i = 0; i < NewWords.Length; i++) {
                 string Word = NewWords[i];
@@ -574,10 +600,20 @@ namespace TLBOT {
                     string[] Splited = Word.Split('-');
                     bool Repeat = true;
                     try {
-                        string last = Splited[Splited.Length - 1].ToLower();
                         for (int x = 0; x < Splited.Length - 1; x++) {
-                            if (last.Length <= Splited[x].Length || last.StartsWith("sama") || last.StartsWith("san") || last.StartsWith("chan") || last.StartsWith("kun") || last.StartsWith("chi") || Splited.Length > 3 || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3))
+                            if (Splited[x].ToLower() != Splited[0].ToLower())
                                 Repeat = false;
+                            if (string.IsNullOrEmpty(Splited[0]) || BlackSplitList.Contains(Splited[0].ToLower()) || Splited[x].Length == 0 || Splited[x+1].Length == 0) {
+                                Repeat = false;
+                                throw new Exception();
+                            }
+                        }
+                        if (!Repeat) {
+                            string last = Splited[Splited.Length - 1].ToLower();
+                            for (int x = 0; x < Splited.Length - 1; x++) {
+                                if (last.Length <= Splited[x].Length || last.StartsWith("sama") || last.StartsWith("san") || last.StartsWith("chan") || last.StartsWith("kun") || last.StartsWith("senpai")|| last.StartsWith("sensei")||last.StartsWith("chi") || (Splited.Length > 3 && !Ori.ToLower().Contains(Splited[0].ToLower() + "-") || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3)))
+                                    Repeat = false;
+                            }
                         }
                     }
                     catch {
@@ -663,6 +699,14 @@ namespace TLBOT {
                     Application.DoEvents();
                 }
                 Text = bak;
+            }
+        }
+
+        private void MassSelect_Click(object sender, EventArgs e) {
+            if (StringList.Items.Count > 1) {
+                bool Status = !StringList.GetItemChecked(0);
+                for (int i = 0; i < StringList.Items.Count; i++)
+                    StringList.SetItemChecked(i, Status);
             }
         }
     }

@@ -84,13 +84,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SSA\SSA.csproj">
+      <Project>{6e341aae-a89e-49e7-a1c1-4975d97a744b}</Project>
+      <Name>SSA</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\TLIB\TLIB.csproj">
       <Project>{b7489af3-fad2-4d45-9746-cd72d9f22bff}</Project>
       <Name>TLIB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\KrKr2SQL\KrKr2SQL.csproj">
-      <Project>{bcf24758-7044-4780-b908-fd7c54a7b367}</Project>
-      <Name>KrKr2SQL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
