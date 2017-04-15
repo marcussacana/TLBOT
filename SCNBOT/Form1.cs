@@ -598,20 +598,21 @@ namespace TLBOT {
                 string Word = NewWords[i];
                 if (Word.Contains("-")) {
                     string[] Splited = Word.Split('-');
-                    bool Repeat = true;
+                    bool Repeat = Splited.Length > 2;
                     try {
-                        for (int x = 0; x < Splited.Length - 1; x++) {
-                            if (Splited[x].ToLower() != Splited[0].ToLower())
-                                Repeat = false;
-                            if (string.IsNullOrEmpty(Splited[0]) || BlackSplitList.Contains(Splited[0].ToLower()) || Splited[x].Length == 0 || Splited[x+1].Length == 0) {
-                                Repeat = false;
-                                throw new Exception();
+                        if (Repeat) {
+                            for (int x = 0; x < Splited.Length - 1; x++) {
+                                if (Splited[x].ToLower() != Splited[0].ToLower())
+                                    Repeat = false;
+                                if (string.IsNullOrEmpty(Splited[0]) || BlackSplitList.Contains(Splited[0].ToLower()) || Splited[x].Length == 0 || Splited[x + 1].Length == 0) {
+                                    Repeat = false;
+                                    throw new Exception();
+                                }
                             }
-                        }
-                        if (!Repeat) {
+                        } else {
                             string last = Splited[Splited.Length - 1].ToLower();
                             for (int x = 0; x < Splited.Length - 1; x++) {
-                                if (last.Length <= Splited[x].Length || last.StartsWith("sama") || last.StartsWith("san") || last.StartsWith("chan") || last.StartsWith("kun") || last.StartsWith("senpai")|| last.StartsWith("sensei")||last.StartsWith("chi") || (Splited.Length > 3 && !Ori.ToLower().Contains(Splited[0].ToLower() + "-") || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3)))
+                                if (last.Length <= Splited[x].Length || RepeatCheck(last, "sama") || RepeatCheck(last, "san") || RepeatCheck(last, "chan") || RepeatCheck(last, "kun") || RepeatCheck(last, "senpai") || RepeatCheck(last, "sensei")  || RepeatCheck(last, "chi") || RepeatCheck(last, "tan") || (Splited.Length > 3 && !Ori.ToLower().Contains(Splited[0].ToLower() + "-") || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3)))
                                     Repeat = false;
                             }
                         }
@@ -637,9 +638,34 @@ namespace TLBOT {
             }
             string NewStr = "";
             for (int i = 0; i < NewWords.Length; i++) {
-                NewStr += NewWords[i] + (i + 1 < NewWords.Length && !NewWords[i + 1].StartsWith("...") ? " " : "");
+                NewStr += NewWords[i] + (i + 1 < NewWords.Length && !NewWords[i + 1].StartsWith(".") && !NewWords[i + 1].StartsWith("?") && !NewWords[i + 1].StartsWith("!") ? " " : "");
             }
             return NewStr;
+        }
+
+        private bool RepeatCheck(string Str, string Word, bool AllowMissMatch = true) {
+            bool Trigger = false;
+            Str = Str.ToLower();
+            for (int i = 0, x = 0; i < Word.Length; i++) {
+                while (x < Str.Length && Str[x] == '.' || Str[x] == '?' || Str[x] == '!') 
+                    x++;
+                if (x >= Str.Length)
+                    return false;
+                if (Str[x] != Word[i] && Trigger)
+                    return false;
+                else if (Str[x] != Word[i]) {
+                    Trigger = true;
+                    while (x < Str.Length && Str[x] != Word[i])
+                        x++;
+                    if (x >= Str.Length)
+                        return false;
+                }
+                while (x < Str.Length && Str[x] == Word[i])
+                    x++;
+                if (x >= Str.Length)
+                    return false;
+            }
+            return true;
         }
 
         private void BntBathProc_Click(object sender, EventArgs e) {
