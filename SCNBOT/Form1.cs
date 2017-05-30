@@ -1,260 +1,56 @@
-﻿#define SSA
-//#define SJIS
-using System;
+﻿using System;
 using TLIB;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Text;
 using System.Collections.Generic;
-#if Age
-using VNX.EushullyEditor;
-#endif
-#if Siglus
-using SiglusSceneManager;
-#endif
-#if KiriKiri
-using KrKrSceneManager;
-#endif
-#if WillPlus
-using WillPlusManager;
-#endif
-#if Automata
-using AutomataTranslator;
-#endif
-#if FairyFencer
-using BruteGDStringEditor;
-#endif
-#if KrKr2CSV
-using KrKr2CSV;
-#endif
-#if KrKr2SQL
-using KrKr2SQL;
-#endif
-#if SSA
-using SSA;
-#endif
+using System.IO;
+using AdvancedBinary;
+using SacanaWrapper;
 
 namespace TLBOT {
     public partial class Form1 : Form {
         public Form1() {
             InitializeComponent();
-            Port.Text = LEC.TryDiscoveryPort();
-            OpenBinary.Filter = Filter;
-            SaveBinary.Filter = Filter;
-            LblInfo.Text = string.Format(LblInfo.Text,
-#if Age
-               "AgeGameEngine"
-#endif
-#if Siglus
-                "SiglusEngine"
-#endif
-#if KiriKiri
-                "KiriKiriZ"
-#endif
-#if WillPlus
-                "WillPlus"
-#endif
-#if Automata
-                "NieR: Automata"
-#endif
-#if PlainText
-                "Plain Text"
-#endif
-#if FairyFencer
-                "Fairy Fencer F Advent - Dark Force"
-#endif
-#if KrKr2CSV
-                "KiriKiri 2 SQL CSV"
-#endif
-#if KrKr2SQL
-                "KiriKiri 2 SQLite"
-#endif
-#if SSA
-                "Subtitle"
-#endif
-                );
-            string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
-            if (System.IO.File.Exists(TLFilter)) {
-                VM = new DotNetVM(System.IO.File.ReadAllText(TLFilter));
-                BlackList = new List<string>(VM.Call("Main", "GetBlackList"));
-                string[] List = VM.Call("Main", "GetReplaces");
-                for (int i = 0; i < List.Length; i += 2)
-                    Replace.Add(List[i], List[i + 1]);
-            }
         }
         Dictionary<string, string> Replace = new Dictionary<string, string>();
-        List<string> BlackList = new List<string>();
+        List<string> BlackList = new List<string>() {
+            "ON", "On", "on", "OFF", "Off", "off"
+        };
         DotNetVM VM = null;
-#if Age
-        string Filter = "ALL Eshully Files|*.bin";
-        EushullyEditor EE;
-#endif
-#if Siglus
-        string Filter = "All SiglusEngine Scene Files|*.ss";
-        SSManager Script;
-#endif
-#if KiriKiri
-        string Filter = "All KiriKiri PSB Files|*.scn;*.psb";
-        PSBStringManager SM;
-#endif
-#if WillPlus
-        string Filter = "All WillPlus WS2 Files|*.ws2";
-        WS2 Script;
-        WS2String[] StringsClass;
-#endif
-#if Automata
-        string Filter = "All Nier Subtitle Files|*.smd";
-        SMDManager Script;
+
         string[] Strs;
-#endif
-#if PlainText
-        string[] Strs;
-        string Fully;
         string Filter = "All Files|*.*";
-        Encoding Encoding = Encoding.Unicode;
-#endif
-#if FairyFencer
-        string[] strs;
-        string Filter = "All dat files|*.dat";
-        GlobalDataStringEditor Editor;
-#endif
-#if KrKr2CSV
-        string[] Strs;
-        string Filter = "All TXT or CSV Files|*.txt;*.csv";
-        KrKrCSV Editor;
-#endif
-#if KrKr2SQL
-        string[] Strs;
-        string Filter = "All Sqlite Files|*.sdb;*.sqlite;*.db|All Files|*.*";
-        SQLOpen Editor;
-#endif
-#if SSA
-        string[] Strs;
-        string Filter = "All SSA/ASS Files|*.ssa;*.ass|All Files|*.*";
-        Subtitle Editor;
-#endif
+        Wrapper Editor;
         private void BntOpen_Click(object sender, EventArgs e) {
             OpenBinary.ShowDialog();
         }
         private void OpenBinary_FileOk(object sender, CancelEventArgs e) {
             Open(OpenBinary.FileName);
         }
-
-#if FairyFencer
-        bool failed = false;
-#endif
         private void Open(string file) {
-            byte[] script = System.IO.File.ReadAllBytes(file);
-#if Age
-            EE = new EushullyEditor(script, new FormatOptions());
-            EE.SJISBase = new SJExt();
-            EE.LoadScript();
-            string[] Strings = new string[EE.Strings.Length];
-            for (int i = 0; i < Strings.Length; i++)
-                Strings[i] = EE.Strings[i].getString();
-#endif
-#if Siglus
-            Script = new SSManager(script);
-            Script.Import();
-            string[] Strings = Script.Strings;
-#endif
-#if KiriKiri
-            SM = new PSBStringManager();
-            SM.Import(script);
-            string[] Strings = SM.Strings;
-#endif
-#if WillPlus
-            Script = new WS2(script, true, new SJExt());
-            StringsClass = Script.Import();
-            string[] Strings = new string[StringsClass.Length];
-            for (int i = 0; i < Strings.Length; i++)
-                Strings[i] = StringsClass[i].String.Replace("\\n", "\n");
-#endif
-#if Automata
-            Script = new SMDManager(script);
-            string[] Strings = Script.Import();
-            Strs = Strings;
-#endif
-#if PlainText
-            string[] Strings = Encoding.GetString(script).Replace("\r\n", "\n").Split('\n');
-            Strs = Strings;
-#endif
-#if FairyFencer
-            Editor = new GlobalDataStringEditor(script);
-            failed = false;
-            try {
-                strs = Editor.Import();
-            } catch {
-                failed = true;
-                return;
-            }
-            string[] Strings = strs;
-#endif
-#if KrKr2CSV
-            Editor = new KrKrCSV(script);
-            string[] Strings = Editor.Import();
-            Strs = Strings;
-#endif
-#if KrKr2SQL
-            Editor = new SQLOpen(file);
-            Strs = Editor.Import();
-            string[] Strings = Strs;
-#endif
-#if SSA
-            Editor = new Subtitle(script);
-            string[] Strings = Strs = Editor.Import();
-#endif
+            byte[] Script = File.ReadAllBytes(file);
+            Editor = new Wrapper();
+            Strs = Editor.Import(Script, Path.GetExtension(file));
+            LastScript = file;
+
             StringList.Items.Clear();
-            foreach (string str in Strings) {
+            foreach (string str in Strs) {
                 StringList.Items.Add(str, false);
             }
+
             Begin.Maximum = End.Maximum = StringList.Items.Count;
             Begin.Value = 0;
             End.Value = End.Maximum;
         }
 
         private void BntSave_Click(object sender, EventArgs e) {
-#if KrKr2SQL
-            SaveBinary_FileOk(null, null);
-#else
             SaveBinary.ShowDialog();
-#endif
         }
 
         private void ImportList() {
-#if Age
-            for (int i = 0; i < EE.Strings.Length; i++)
-                EE.Strings[i].setString(StringList.Items[i].ToString());
-#endif
-#if Siglus
-            for (int i = 0; i < Script.Strings.Length; i++)
-                Script.Strings[i] = StringList.Items[i].ToString(); 
-#endif
-#if KiriKiri
-            for (int i = 0; i < SM.Strings.Length; i++)
-                SM.Strings[i] = StringList.Items[i].ToString();
-#endif
-#if WillPlus
-            for (int i = 0; i < StringsClass.Length; i++)
-                StringsClass[i].String = StringList.Items[i].ToString().Replace("\n", "\\n");
-#endif
-#if Automata || KrKr2CSV || KrKr2SQL || SSA
             for (int i = 0; i < Strs.Length; i++)
                 Strs[i] = StringList.Items[i].ToString();
-#endif
-#if PlainText
-            for (int i = 0; i < Strs.Length; i++)
-                Strs[i] = StringList.Items[i].ToString();
-
-            Fully = string.Empty;
-            foreach (string str in Strs)
-                Fully += "\r\n" + str;
-#endif
-#if FairyFencer
-            for (int i = 0; i < strs.Length; i++)
-                strs[i] = Encoding.GetEncoding(932).GetString(Encoding.GetEncoding(932).GetBytes(StringList.Items[i].ToString()));//remove special chars
-#endif
-
         }
 
         bool BM = false;
@@ -264,44 +60,14 @@ namespace TLBOT {
         }
         private void SaveBinary_FileOk(object sender, CancelEventArgs e) {
             ImportList();
-#if !KrKr2SQL
-            byte[] script =
-#if Age
-            EE.Export();
-#endif
-#if Siglus
-            Script.Export();
-#endif
-#if KiriKiri
-                SM.Export();
-#endif
-#if WillPlus
-                Script.Export(StringsClass);
-#endif
-#if Automata
-                Script.Export(Strs);
-#endif
-#if PlainText
-            Encoding.GetBytes(Fully);
-#endif
-#if FairyFencer
-                Editor.Export(strs);
-#endif
-#if KrKr2CSV
-                Editor.Export(Strs);
-#endif
-#if SSA
-                Editor.Export(Strs);
-#endif
-            System.IO.File.WriteAllBytes(SaveBinary.FileName, script);
-#else
-            Editor.ProgressChange = new Action(() => { Text = "Saving - " + Editor.ExportProgress; });
-            Editor.Export(Strs);
-#endif
+            byte[] script = Editor.Export(Strs);
+            File.WriteAllBytes(SaveBinary.FileName, script);
+
             if (!BM)
                 MessageBox.Show("File Saved", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        Dictionary<string, string> Cache = new Dictionary<string, string>();
         bool Error = false;
         bool Abort = false;
         bool CanAbort = false;
@@ -336,26 +102,30 @@ namespace TLBOT {
                     StringList.SelectedIndex = i;
                     continue;
                 }
-                if (Input.Length > 3 && string.IsNullOrWhiteSpace(Input.Replace(Input[0] + "", "").Replace(Input[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", ""))) {
+                if (string.IsNullOrWhiteSpace(Input) || (Input.Length > 3 && string.IsNullOrWhiteSpace(Input.Replace(Input[0] + "", "").Replace(Input[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", "")))) {
                     continue;
                 }
-                int tries = -1;
-                string Translation = null;
-                while (tries < 5 && Translation == null) {
-                    Translation =
-                        CkOffline.Checked ?
-                        LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
-                        Google.Translate(Input, InputLang.Text, OutLang.Text);
-                }
-                if (Translation.ToLower().StartsWith("-benzóico")) {
-                    Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
-                }
-                if (Translation == null || Translation.ToLower().StartsWith("-benzóico"))
-                    continue;
-                if (VM != null)
-                    Translation = VM.Call("Main", "Filter", Translation);
-                FixTL(ref Translation, Input);
-                Translation = FixTLAlgo2(Translation, Input);
+                PrefixAndSufix(ref Input, false);
+                string Translation;
+                if (!Cache.ContainsKey(Input)) {
+                    if (InputLang.Text == OutLang.Text) {
+                        Translation = Input;
+                    } else {
+                        Translate(out Translation, Input);
+                        if (Translation.ToLower().StartsWith("-benzóico")) {
+                            Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
+                        }
+                        if (Translation == null || Translation.ToLower().StartsWith("-benzóico"))
+                            continue;
+                        if (VM != null)
+                            Translation = VM.Call("Main", "Filter", Translation);
+                        FixTL(ref Translation, Input);
+                        Translation = FixTLAlgo2(Translation, Input);
+                        Cache.Add(Input, Translation);
+                    }
+                } else
+                    Translation = Cache[Input];
+                PrefixAndSufix(ref Translation, true);
                 StringList.Items[i] = Translation;
                 StringList.SelectedIndex = i;
                 Application.DoEvents();
@@ -370,6 +140,47 @@ namespace TLBOT {
                     System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
                 }
                 MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        string Prefix;
+        string Sufix;
+        private void PrefixAndSufix(ref string Str, bool Mode) {
+            List<string> PrefixArr = new List<string>(new string[] { "\"", "[", "“", "［", "《", "«", "「", "『", "【", "～" });
+            List<string> SufixArr = new List<string>(new string[] { "\"", "]", "”", "］", "》", "»", "」", "』", "】", "～" });
+            if (Mode) {
+                Str = Prefix + Str + Sufix;
+            } else {
+                Prefix = string.Empty;
+                Sufix = string.Empty;
+                string Before = string.Empty;
+                while (Before != Str && Str.Length > 2) {
+                    Before = Str;
+                    char PrefixC = Str[0];
+                    char SufixC = Str[Str.Length - 1];
+                    if (PrefixArr.Contains(PrefixC.ToString())) {
+                        Prefix += PrefixC;
+                        Str = Str.Substring(1, Str.Length - 1);
+                    }
+                    if (SufixArr.Contains(SufixC.ToString())) {
+                        Sufix = SufixC + Sufix;
+                        Str = Str.Substring(0, Str.Length - 1);
+                    }
+                }
+            }
+        }
+
+        private void Translate(out string Translation, string Input) {
+            int tries = -1;
+            Translation = null;
+            while (tries++ < 5 && Translation == null) {
+                try {
+                    Translation =
+                        CkOffline.Checked ?
+                        LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
+                        Google.Translate(Input, InputLang.Text, OutLang.Text);
+                }
+                catch { }
             }
         }
 
@@ -441,7 +252,7 @@ namespace TLBOT {
                     }
                     Process++;
                 }
-            ExitWhile:
+                ExitWhile:
                 ;
                 if (Status)
                     count++;
@@ -497,7 +308,8 @@ namespace TLBOT {
 
         private void StringList_SelectedIndexChanged(object sender, EventArgs e) {
             try {
-                Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(OpenBinary.FileName), (int)(((double)StringList.SelectedIndex / StringList.Items.Count) * 100));
+                Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(LastScript), (int)(((double)StringList.SelectedIndex / StringList.Items.Count) * 100));
+                SearchTB.Text = StringList.SelectedItem.ToString();
             }
             catch { }
         }
@@ -510,74 +322,17 @@ namespace TLBOT {
             FD.Filter = Filter;
             FD.Title = "Select all files to find the string";
             string Founds = "Found At:\n";
+
             DialogResult dr = FD.ShowDialog();
             if (dr == DialogResult.OK) {
                 for (int i = 0; i < FD.FileNames.Length; i++) {
-                    byte[] Script = System.IO.File.ReadAllBytes(FD.FileNames[i]);
-#if Age
-                    EushullyEditor EE = new EushullyEditor(Script, new FormatOptions());
-                    EE.LoadScript();
-                    string[] strs = new string[EE.Strings.Length];
-                    for (int ind = 0; ind < strs.Length; ind++)
-                        strs[ind] = EE.Strings[ind].getString();
-#endif
-#if Siglus
-                    SSManager tmp = new SSManager(Script);
-                    tmp.Import();
-                    string[] strs = tmp.Strings;
-#endif
-#if KiriKiri
-                    PSBStringManager tmp = new PSBStringManager();
-                    tmp.Import(Script);
-                    string[] strs = tmp.Strings;
-#endif
-#if WillPlus
-                    WS2 tmp = new WS2(Script, true, new SJExt());
-                    WS2String[] strclass = tmp.Import();
-                    string[] strs = new string[strclass.Length];
-                    for (int x = 0; x < strclass.Length; x++)
-                        strs[x] = strclass[x].String.Replace("\\n", "\n");
-#endif
-#if Automata
-                    SMDManager tmp = new SMDManager(Script);
-                    string[] strs = tmp.Import();
-#endif
-#if PlainText
-                    string[] strs = Encoding.GetString(Script).Replace("\r\n", "\n").Split('\n');
-#endif
-#if FairyFencer
-                    GlobalDataStringEditor tmp = new GlobalDataStringEditor(Script);
-                    string[] strs;
-                    try {
-                        strs = tmp.Import();
-                    } catch {
-                        Founds += "Failed to Open: "+ System.IO.Path.GetFileName(FD.FileNames[i]) + "\n";
-                        continue;
-                    }
-#endif
-#if KrKr2CSV
-                    KrKrCSV tmp = new KrKrCSV(Script);
-                    string[] strs = tmp.Import();
-#endif
-#if KrKr2SQL
-                    SQLOpen tmp;
-                    string[] strs;
-                    try {
-                        tmp = new SQLOpen(FD.FileNames[i]);
-                        strs = tmp.Import();
-                    }
-                    catch {
-                        Founds += "Failed to Open: " + System.IO.Path.GetFileName(FD.FileNames[i]);
-                        continue;
-                    }
-#endif
-#if SSA
-                    Subtitle tmp = new Subtitle(Script);
-                    string[] strs = tmp.Import();
-#endif
-                    foreach (string s in strs)
-                        if (s.Contains(content)) {
-                            Founds += System.IO.Path.GetFileName(FD.FileNames[i]) + "\n";
+                    byte[] Script = File.ReadAllBytes(FD.FileNames[i]);
+                    Wrapper Temp = new Wrapper();
+                    string[] find = Temp.Import(Script, Path.GetExtension(FD.FileNames[i]));
+
+                    foreach (string Str in find)
+                        if (Str.Contains(content)) {
+                            Founds += Path.GetFileName(FD.FileNames[i]) + "\n";
                             break;
                         }
                 }
@@ -591,30 +346,48 @@ namespace TLBOT {
 
 
         //PTBR Prefix And Sufix to ignore when fix letter repeat
-        private List<string> BlackSplitList = new List<string>(new string[] { "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal"});
+        private List<string> BlackSplitList = new List<string>(new string[] { "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal", "bens", "recem", "recém", "line", "como", "like" });
+
         public string FixTLAlgo2(string TL, string Ori) {
             string[] NewWords = TL.Split(' ');
             for (int i = 0; i < NewWords.Length; i++) {
                 string Word = NewWords[i];
                 if (Word.Contains("-")) {
                     string[] Splited = Word.Split('-');
-                    bool Repeat = Splited.Length > 2;
+                    bool Repeat = true;
                     try {
-                        if (Repeat) {
-                            for (int x = 0; x < Splited.Length - 1; x++) {
-                                if (Splited[x].ToLower() != Splited[0].ToLower())
-                                    Repeat = false;
-                                if (string.IsNullOrEmpty(Splited[0]) || BlackSplitList.Contains(Splited[0].ToLower()) || Splited[x].Length == 0 || Splited[x + 1].Length == 0) {
-                                    Repeat = false;
-                                    throw new Exception();
-                                }
+                        for (int x = 0; x < Splited.Length - 1; x++) {
+                            if (Splited[x].ToLower() != Splited[0].ToLower())
+                                Repeat = false;
+                        }
+                        for (int x = 0; x < Splited.Length; x++) {
+                            if (string.IsNullOrEmpty(Splited[0]) || BlackSplitList.Contains(Splited[0].ToLower()) || Splited[x].Length == 0) {
+                                Repeat = false;
+                                throw new Exception();
                             }
-                        } else {
-                            string last = Splited[Splited.Length - 1].ToLower();
-                            for (int x = 0; x < Splited.Length - 1; x++) {
-                                if (last.Length <= Splited[x].Length || RepeatCheck(last, "sama") || RepeatCheck(last, "san") || RepeatCheck(last, "chan") || RepeatCheck(last, "kun") || RepeatCheck(last, "senpai") || RepeatCheck(last, "sensei")  || RepeatCheck(last, "chi") || RepeatCheck(last, "tan") || (Splited.Length > 3 && !Ori.ToLower().Contains(Splited[0].ToLower() + "-") || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3)))
-                                    Repeat = false;
+                        }
+                        string last = Splited[Splited.Length - 1].ToLower();
+                        foreach (string sufix in new string[] { "sama", "san", "chan", "kun", "chi", "senpai", "sensei" }) {
+                            if (RepeatCheck(last, sufix)) {
+                                Repeat = false;
+                                break;
                             }
+                        }
+                        if ((Ori.ToLower().Contains(Splited[0].ToLower() + "-"))) {
+                            string MergedWord = string.Empty;
+                            foreach (string str in Splited)
+                                MergedWord += str;
+                            string Trie = string.Empty;
+                            MergedWord = MergedWord.Replace("?", "").Replace("!", "").Replace(".", "");
+                            Translate(out Trie, MergedWord);
+                            if (!string.IsNullOrEmpty(Trie) && Trie != MergedWord) {
+                                Repeat = false;
+                                NewWords[i] = Trie;
+                            }
+                        }
+                        for (int x = 0; x < Splited.Length - 1; x++) {
+                            if (last.Length <= Splited[x].Length || (Splited[0][0].ToString().ToLower() != Splited[1][0].ToString().ToLower() && Splited.Length >= 3))
+                                Repeat = false;
                         }
                     }
                     catch {
@@ -642,28 +415,27 @@ namespace TLBOT {
             }
             return NewStr;
         }
-
         private bool RepeatCheck(string Str, string Word, bool AllowMissMatch = true) {
-            bool Trigger = false;
+            bool Trigger = !AllowMissMatch;
             Str = Str.ToLower();
+            Word = Word.ToLower();
             for (int i = 0, x = 0; i < Word.Length; i++) {
-                while (x < Str.Length && Str[x] == '.' || Str[x] == '?' || Str[x] == '!') 
+                char Atual = Word[i];
+                while (x < Str.Length && Str[x] == '.' || Str[x] == '?' || Str[x] == '!')
                     x++;
                 if (x >= Str.Length)
                     return false;
-                if (Str[x] != Word[i] && Trigger)
+                if (Str[x] != Atual && Trigger)
                     return false;
-                else if (Str[x] != Word[i]) {
+                else if (Str[x] != Atual) {
                     Trigger = true;
-                    while (x < Str.Length && Str[x] != Word[i])
+                    while (x < Str.Length && Str[x] != Atual)
                         x++;
                     if (x >= Str.Length)
                         return false;
                 }
-                while (x < Str.Length && Str[x] == Word[i])
+                while (x < Str.Length && Str[x] == Atual)
                     x++;
-                if (x >= Str.Length)
-                    return false;
             }
             return true;
         }
@@ -673,28 +445,20 @@ namespace TLBOT {
             OpenFileDialog FD = new OpenFileDialog();
             FD.Multiselect = true;
             FD.Filter = Filter;
-            FD.Title = "Select all files to find the string";
+            FD.Title = "Select all files or directorries to find the string";
+            FD.Multiselect = true;
             string log = string.Empty;
+
             DialogResult dr = FD.ShowDialog();
             if (dr == DialogResult.OK) {
                 Error = false;
                 foreach (string File in FD.FileNames) {
-                    Open(File);
-#if FairyFencer
-                    if (failed)
-                        continue;
-#endif
-                    BotSelect_Click(null, null);
-                    BntProc_Click(null, null);
-                    if (Error)
-                        break;
-                    try {
-                        Save(File);
-                    }
+                    try { AutoProcess(File); }
                     catch {
                         log += "\nError: " + System.IO.Path.GetFileName(File);
                     }
                 }
+
             }
             BM = false;
             if (Shutdown.Checked) {
@@ -703,22 +467,36 @@ namespace TLBOT {
             MessageBox.Show(string.Empty == log ? "Operation Cleared!" : "Sucess, but that files have a problem:" + log, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
-#if KrKr2SQL
-            Editor.Close();
-#endif
+        private void AutoProcess(string File) {
+            Abort = CanAbort = false;
+            Open(File);
+            if (StringList.Items.Count == 0)
+                throw new Exception("Failed.");
+            BotSelect_Click(null, null);
+            Application.DoEvents();
+            BntProc_Click(null, null);
+            if (Error)
+                return;
+            Save(File);
         }
 
+        int LastSearchIndex = -2;
         private void SearchKeyPress(object sender, KeyPressEventArgs e) {
             if (e.KeyChar == '\n' || e.KeyChar == '\r') {
                 string bak = Text;
                 e.Handled = true;
                 string text = SearchTB.Text.ToLower();
-                for (int i = (int)Begin.Value; i < End.Value; i++) {
+
+                int i = (int)Begin.Value;
+                if (LastSearchIndex == StringList.SelectedIndex)
+                    i = LastSearchIndex + 1;
+
+                for (; i < End.Value; i++) {
                     Text = "Searching... " + i + "/" + (int)End.Value;
                     string Str = StringList.Items[i].ToString().ToLower();
                     if (Str.Contains(text)) {
                         Text = bak;
+                        LastSearchIndex = i;
                         StringList.SelectedIndex = i;
                         return;
                     }
@@ -735,7 +513,103 @@ namespace TLBOT {
                     StringList.SetItemChecked(i, Status);
             }
         }
-    }
+
+        string lf = string.Empty;
+        private void FoldTrans_Click(object sender, EventArgs e) {
+            FolderBrowserDialog folder = new FolderBrowserDialog();
+            folder.Description = "Folder to translate all files.";
+            folder.SelectedPath = lf;
+            string log = string.Empty;
+            if (folder.ShowDialog() == DialogResult.OK) {
+                lf = folder.SelectedPath;
+                BM = true;
+                string[] Files = Directory.GetFiles(folder.SelectedPath, Filter.Split('|')[1], SearchOption.AllDirectories);
+                foreach (string File in Files)
+                    try { AutoProcess(File); }
+                    catch {
+                        log += "\nError: " + System.IO.Path.GetFileName(File);
+                    }
+                BM = false;
+            }
+
+            if (log == string.Empty) {
+                MessageBox.Show("Sucess!", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else {
+                MessageBox.Show("LOG:\n" + log, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private string DBPath = AppDomain.CurrentDomain.BaseDirectory + "Cache.bin";
+        private string LastScript;
+
+        private void SaveDB_Click(object sender, EventArgs e) {
+            StructWriter Writer = new StructWriter(new StreamWriter(DBPath).BaseStream, false, Encoding.UTF8);
+            Writer.Write(Cache.Keys.Count);
+            string[] Ori = new string[Cache.Keys.Count];
+            Cache.Keys.CopyTo(Ori, 0);
+            string[] TL = new string[Cache.Values.Count];
+            Cache.Values.CopyTo(TL, 0);
+
+            for (int i = 0; i < Cache.Keys.Count; i++){
+                Entry entry = new Entry() {
+                    Original = Ori[i],
+                    Translation = TL[i]
+                };
+                Writer.WriteStruct(ref entry);
+            }
+            Writer.Close();
+            MessageBox.Show("Cache Translation Saved.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+
+        struct Entry {
+            [PString(PrefixType = Const.INT32)]
+            internal string Original;
+            [PString(PrefixType = Const.INT32)]
+            internal string Translation;
+        }
+
+        private void LoadDB_Click(object sender, EventArgs e) {
+            StructReader Reader = new StructReader(new StreamReader(DBPath).BaseStream, false, Encoding.UTF8);
+            int max = Reader.ReadInt32();
+            for (int i = 0; i < max; i++) {
+                Entry Entry = new Entry();
+                Reader.ReadStruct(ref Entry);
+
+                if (!Cache.ContainsKey(Entry.Original))
+                    Cache.Add(Entry.Original, Entry.Translation);
+            }
+            MessageBox.Show("Cache Translation Loaded.\nTotal Cache Entries: " + Cache.Keys.Count, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        private void ProgramOpen(object sender, EventArgs e) {
+            Again:
+            ;
+            string PluginDir = HighLevelCodeProcessator.AssemblyDirectory + "\\Plugins";
+            if (!Directory.Exists(PluginDir) || Directory.GetFiles(PluginDir, "*.ini").Length == 0) {
+                if (MessageBox.Show("No plugins Detected...\nPlugins Dir:\n" + PluginDir, "TLBOT", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
+                    goto Again;
+                else
+                    Close();
+            }
+
+            string PATH = Environment.GetEnvironmentVariable("PATH");
+            Environment.SetEnvironmentVariable("PATH", PluginDir + ";" + PATH);
+            Port.Text = LEC.TryDiscoveryPort();
+            OpenBinary.Filter = Filter;
+            SaveBinary.Filter = Filter;
+            LblInfo.Text = string.Format(LblInfo.Text, "SacanaWrapper");
+            string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
+            if (System.IO.File.Exists(TLFilter)) {
+                VM = new DotNetVM(System.IO.File.ReadAllText(TLFilter));
+                BlackList = new List<string>(VM.Call("Main", "GetBlackList"));
+                string[] List = VM.Call("Main", "GetReplaces");
+                for (int i = 0; i < List.Length; i += 2)
+                    Replace.Add(List[i], List[i + 1]);
+            }
+        }
+
 #if SJIS
     class SJExt : Encoding {
         private Encoding BASE = GetEncoding(932);
@@ -758,7 +632,7 @@ namespace TLBOT {
 
         private char Encode(char lt) {
             switch (lt) {
-#region Cases
+        #region Cases
                 default:
                     return lt;
                 case 'ú':
@@ -825,13 +699,13 @@ namespace TLBOT {
                     return ocr;
                 case 'ô':
                     return och;
-#endregion
+        #endregion
             }
         }
 
         private char Decode(char lt) {
             switch (lt) {
-#region cases
+        #region cases
                 default:
                     return lt;
                 case uci:
@@ -898,7 +772,7 @@ namespace TLBOT {
                     return 'ò';
                 case och:
                     return 'ô';
-#endregion
+        #endregion
             }
         }
 
@@ -935,3 +809,4 @@ namespace TLBOT {
     }
 #endif
     }
+}
