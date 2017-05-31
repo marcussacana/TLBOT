@@ -102,29 +102,47 @@ namespace TLBOT {
                     StringList.SelectedIndex = i;
                     continue;
                 }
-                if (string.IsNullOrWhiteSpace(Input) || (Input.Length > 3 && string.IsNullOrWhiteSpace(Input.Replace(Input[0] + "", "").Replace(Input[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", "")))) {
-                    continue;
-                }
                 PrefixAndSufix(ref Input, false);
-                string Translation;
-                if (!Cache.ContainsKey(Input)) {
-                    if (InputLang.Text == OutLang.Text) {
-                        Translation = Input;
-                    } else {
-                        Translate(out Translation, Input);
-                        if (Translation.ToLower().StartsWith("-benzóico")) {
-                            Translation = LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
+
+                BreakLine(ref Input, false);
+                string[] Lines = Input.Split('\n');
+
+                for (int x = 0; x < Lines.Length; x++) {
+                    if (string.IsNullOrWhiteSpace(Lines[x]) || (Lines[x].Length > 3 && string.IsNullOrEmpty(NullStringWorker(Lines[x]))))
+                        continue;
+                    string Result = string.Empty;
+                    if (!Cache.ContainsKey(Lines[x])) {
+                        if (InputLang.Text == OutLang.Text) {
+                            Result = Lines[x];
+                        } else {
+                            Translate(out Result, Lines[x]);
+                            if (Result.ToLower().StartsWith("-benzóico")) {
+                                try {
+                                    Result = LEC.Translate(Lines[x], InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
+                                }
+                                catch { }
+                            }
+                            if (Result == null || Result.ToLower().StartsWith("-benzóico"))
+                                continue;
+                            if (VM != null)
+                                Result = VM.Call("Main", "Filter", Result);
+                            FixTL(ref Result, Lines[x]);
+                            Result = FixTLAlgo2(Result, Lines[x]);
+                            Cache.Add(Lines[x], Result);
                         }
-                        if (Translation == null || Translation.ToLower().StartsWith("-benzóico"))
-                            continue;
-                        if (VM != null)
-                            Translation = VM.Call("Main", "Filter", Translation);
-                        FixTL(ref Translation, Input);
-                        Translation = FixTLAlgo2(Translation, Input);
-                        Cache.Add(Input, Translation);
-                    }
-                } else
-                    Translation = Cache[Input];
+                    } else
+                        Result = Cache[Lines[x]];
+
+                    Lines[x] = Result;
+                }
+
+                string Translation = string.Empty;
+                for (int x = 0; x < Lines.Length; x++)
+                    Translation += Lines[x] + "\n";
+                Translation = Translation.Substring(0, Translation.Length - 1);
+
+                BreakLine(ref Translation, true);
+
                 PrefixAndSufix(ref Translation, true);
                 StringList.Items[i] = Translation;
                 StringList.SelectedIndex = i;
@@ -140,6 +158,23 @@ namespace TLBOT {
                     System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
                 }
                 MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private string NullStringWorker(string Str) {
+            return Str.Replace(Str[0] + "", "").Replace(Str[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", "").Trim();
+        }
+
+        bool ReturnFlag;
+
+        private void BreakLine(ref string Input, bool Mode) {
+            if (Mode) {
+                if (ReturnFlag)
+                    Input = Input.Replace("\n", "\r");
+            } else {
+                ReturnFlag = Input.Contains("\r") && !Input.Contains("\n");
+                if (ReturnFlag)
+                    Input = Input.Replace("\r", "\n");
             }
         }
 
@@ -455,7 +490,7 @@ namespace TLBOT {
                 foreach (string File in FD.FileNames) {
                     try { AutoProcess(File); }
                     catch {
-                        log += "\nError: " + System.IO.Path.GetFileName(File);
+                        log += "\nError: " + Path.GetFileName(File);
                     }
                 }
 
