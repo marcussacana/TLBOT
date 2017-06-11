@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using AdvancedBinary;
 using SacanaWrapper;
+using System.Threading;
 
 namespace TLBOT {
     public partial class Form1 : Form {
@@ -162,19 +163,25 @@ namespace TLBOT {
         }
 
         private string NullStringWorker(string Str) {
-            return Str.Replace(Str[0] + "", "").Replace(Str[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", "").Trim();
+            return Str.Replace(Str[0] + "", "").Replace(Str[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", "").Replace("-", "").Trim();
         }
 
         bool ReturnFlag;
+        bool DecodedFlag;
 
         private void BreakLine(ref string Input, bool Mode) {
             if (Mode) {
                 if (ReturnFlag)
-                    Input = Input.Replace("\n", "\r");
+                    Input = Input.Replace("\n", DecodedFlag ? "\\r" : "\r");
+                if (!ReturnFlag && DecodedFlag)
+                    Input = Input.Replace("\n", "\\n");
             } else {
-                ReturnFlag = Input.Contains("\r") && !Input.Contains("\n");
+                DecodedFlag = Input.Contains("\\n") || Input.Contains("\\r");
+                ReturnFlag = Input.Contains(DecodedFlag ? "\\r" : "\r") && !Input.Contains(DecodedFlag ? "\\n" : "\n");;
                 if (ReturnFlag)
-                    Input = Input.Replace("\r", "\n");
+                    Input = Input.Replace(DecodedFlag ? "\\r" : "\r", "\n");
+                if (DecodedFlag)
+                    Input = Input.Replace("\\n", "\n");
             }
         }
 
@@ -253,7 +260,7 @@ namespace TLBOT {
         private void BotSelect_Click(object sender, EventArgs e) {
             uint count = 0;
             for (int i = (int)Begin.Value; i < End.Value; i++) {
-                string text = StringList.Items[i].ToString();
+                string text = StringList.Items[i].ToString().Replace("\\n", "\n").Replace("\\r", "\r");
                 bool Status = true;
                 int Process = 0;
                 bool Asian = InputLang.Text == "JA" || InputLang.Text == "CH";
@@ -344,9 +351,60 @@ namespace TLBOT {
         private void StringList_SelectedIndexChanged(object sender, EventArgs e) {
             try {
                 Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(LastScript), (int)(((double)StringList.SelectedIndex / StringList.Items.Count) * 100));
-                SearchTB.Text = StringList.SelectedItem.ToString();
+
+                string txt = StringList.SelectedItem.ToString();
+                Encode(ref txt, true);
+                SearchTB.Text = txt;
             }
             catch { }
+        }
+        private static void Encode(ref string String, bool Enable) {
+            if (Enable) {
+                string Result = string.Empty;
+                foreach (char c in String) {
+                    if (c == '\n')
+                        Result += "\\n";
+                    else if (c == '\\')
+                        Result += "\\\\";
+                    else if (c == '\t')
+                        Result += "\\t";
+                    else if (c == '\r')
+                        Result += "\\r";
+                    else
+                        Result += c;
+                }
+                String = Result;
+            } else {
+                string Result = string.Empty;
+                bool Special = false;
+                foreach (char c in String) {
+                    if (c == '\\' & !Special) {
+                        Special = true;
+                        continue;
+                    }
+                    if (Special) {
+                        switch (c.ToString().ToLower()[0]) {
+                            case '\\':
+                                Result += '\\';
+                                break;
+                            case 'n':
+                                Result += '\n';
+                                break;
+                            case 't':
+                                Result += '\t';
+                                break;
+                            case 'r':
+                                Result += '\r';
+                                break;
+                            default:
+                                throw new Exception("\\" + c + " Isn't a valid string escape.");
+                        }
+                        Special = false;
+                    } else
+                        Result += c;
+                }
+                String = Result;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e) {
@@ -381,14 +439,21 @@ namespace TLBOT {
 
 
         //PTBR Prefix And Sufix to ignore when fix letter repeat
-        private List<string> BlackSplitList = new List<string>(new string[] { "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal", "bens", "recem", "recém", "line", "como", "like" });
+        private List<string> BlackSplitList = new List<string>(
+        new string[] {
+          "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal", "bens",
+          "recem", "recém", "line", "como", "like", "pré", "vice", "anti", "pró",
+          "pós", "ante", "porta", "tipo", "guarda"
+        });
 
         public string FixTLAlgo2(string TL, string Ori) {
+            if (!Ori.Contains("-") && !Ori.Contains("—"))
+                return TL;
             string[] NewWords = TL.Split(' ');
             for (int i = 0; i < NewWords.Length; i++) {
                 string Word = NewWords[i];
-                if (Word.Contains("-")) {
-                    string[] Splited = Word.Split('-');
+                if (Word.Contains("-") || Word.Contains("—")) {
+                    string[] Splited = Word.Split('-', '—');
                     bool Repeat = true;
                     try {
                         for (int x = 0; x < Splited.Length - 1; x++) {
@@ -402,7 +467,7 @@ namespace TLBOT {
                             }
                         }
                         string last = Splited[Splited.Length - 1].ToLower();
-                        foreach (string sufix in new string[] { "sama", "san", "chan", "kun", "chi", "senpai", "sensei" }) {
+                        foreach (string sufix in new string[] { "sama", "san", "chan", "kun", "chi", "senpai", "sensei", "dono" }) {
                             if (RepeatCheck(last, sufix)) {
                                 Repeat = false;
                                 break;
@@ -476,7 +541,6 @@ namespace TLBOT {
         }
 
         private void BntBathProc_Click(object sender, EventArgs e) {
-            BM = true;
             OpenFileDialog FD = new OpenFileDialog();
             FD.Multiselect = true;
             FD.Filter = Filter;
@@ -485,16 +549,20 @@ namespace TLBOT {
             string log = string.Empty;
 
             DialogResult dr = FD.ShowDialog();
-            if (dr == DialogResult.OK) {
-                Error = false;
-                foreach (string File in FD.FileNames) {
-                    try { AutoProcess(File); }
-                    catch {
-                        log += "\nError: " + Path.GetFileName(File);
-                    }
-                }
+            if (dr != DialogResult.OK)
+                return;
 
+            bool AutoSelect = MessageBox.Show("You want the TLBOT select the string automatically?\n\nIf not, all strings are selected.", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+            BM = true;
+            Error = false;
+            foreach (string File in FD.FileNames) {
+                try { AutoProcess(File, AutoSelect); }
+                catch {
+                    log += "\nError: " + Path.GetFileName(File);
+                }
             }
+
             BM = false;
             if (Shutdown.Checked) {
                 System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
@@ -502,12 +570,15 @@ namespace TLBOT {
             MessageBox.Show(string.Empty == log ? "Operation Cleared!" : "Sucess, but that files have a problem:" + log, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void AutoProcess(string File) {
+        private void AutoProcess(string File, bool AutoSelect) {
             Abort = CanAbort = false;
             Open(File);
             if (StringList.Items.Count == 0)
                 throw new Exception("Failed.");
-            BotSelect_Click(null, null);
+            if (AutoSelect)
+                BotSelect_Click(null, null);
+            else
+                MassSelect_Click(null, null);
             Application.DoEvents();
             BntProc_Click(null, null);
             if (Error)
@@ -555,17 +626,21 @@ namespace TLBOT {
             folder.Description = "Folder to translate all files.";
             folder.SelectedPath = lf;
             string log = string.Empty;
-            if (folder.ShowDialog() == DialogResult.OK) {
-                lf = folder.SelectedPath;
-                BM = true;
-                string[] Files = Directory.GetFiles(folder.SelectedPath, Filter.Split('|')[1], SearchOption.AllDirectories);
-                foreach (string File in Files)
-                    try { AutoProcess(File); }
-                    catch {
-                        log += "\nError: " + System.IO.Path.GetFileName(File);
-                    }
-                BM = false;
-            }
+            if (folder.ShowDialog() != DialogResult.OK)
+                return;
+
+            lf = folder.SelectedPath;
+            bool AutoSelect = MessageBox.Show("You want the TLBOT select the string automatically?\n\nIf not, all strings are selected.", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+            BM = true;
+            string[] Files = Directory.GetFiles(folder.SelectedPath, Filter.Split('|')[1], SearchOption.AllDirectories);
+            foreach (string File in Files)
+                try { AutoProcess(File, AutoSelect); }
+                catch {
+                    log += "\nError: " + System.IO.Path.GetFileName(File);
+                }
+            BM = false;
+
 
             if (log == string.Empty) {
                 MessageBox.Show("Sucess!", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -643,6 +718,17 @@ namespace TLBOT {
                 for (int i = 0; i < List.Length; i += 2)
                     Replace.Add(List[i], List[i + 1]);
             }
+        }
+
+        private void OverwriteBnt_Click(object sender, EventArgs e) {
+            if (StringList.SelectedIndex == -1) {
+                MessageBox.Show("Before Overwrite a line, you need select he in the list.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string txt = SearchTB.Text;
+            Encode(ref txt, false);
+            StringList.Items[StringList.SelectedIndex] = txt;
         }
 
 #if SJIS

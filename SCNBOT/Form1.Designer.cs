@@ -36,7 +36,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.Port = new System.Windows.Forms.MaskedTextBox();
             this.BotSelect = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.BntBathFind = new System.Windows.Forms.Button();
             this.BntBathProc = new System.Windows.Forms.Button();
             this.LblInfo = new System.Windows.Forms.Label();
             this.CkOffline = new System.Windows.Forms.CheckBox();
@@ -51,6 +51,7 @@
             this.FoldTrans = new System.Windows.Forms.Button();
             this.SaveDB = new System.Windows.Forms.Button();
             this.LoadDB = new System.Windows.Forms.Button();
+            this.OverwriteBnt = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
             this.SuspendLayout();
@@ -64,7 +65,7 @@
             this.StringList.Location = new System.Drawing.Point(16, 15);
             this.StringList.Margin = new System.Windows.Forms.Padding(4);
             this.StringList.Name = "StringList";
-            this.StringList.Size = new System.Drawing.Size(929, 361);
+            this.StringList.Size = new System.Drawing.Size(929, 378);
             this.StringList.TabIndex = 0;
             this.StringList.SelectedIndexChanged += new System.EventHandler(this.StringList_SelectedIndexChanged);
             // 
@@ -141,7 +142,7 @@
             // BntOpen
             // 
             this.BntOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntOpen.Location = new System.Drawing.Point(754, 500);
+            this.BntOpen.Location = new System.Drawing.Point(750, 500);
             this.BntOpen.Margin = new System.Windows.Forms.Padding(4);
             this.BntOpen.Name = "BntOpen";
             this.BntOpen.Size = new System.Drawing.Size(92, 28);
@@ -153,7 +154,7 @@
             // BntSave
             // 
             this.BntSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntSave.Location = new System.Drawing.Point(853, 498);
+            this.BntSave.Location = new System.Drawing.Point(850, 500);
             this.BntSave.Margin = new System.Windows.Forms.Padding(4);
             this.BntSave.Name = "BntSave";
             this.BntSave.Size = new System.Drawing.Size(92, 28);
@@ -208,16 +209,16 @@
             this.BotSelect.UseVisualStyleBackColor = true;
             this.BotSelect.Click += new System.EventHandler(this.BotSelect_Click);
             // 
-            // button1
+            // BntBathFind
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(15, 430);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(105, 28);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Batch Find";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.BntBathFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BntBathFind.Location = new System.Drawing.Point(15, 430);
+            this.BntBathFind.Name = "BntBathFind";
+            this.BntBathFind.Size = new System.Drawing.Size(105, 28);
+            this.BntBathFind.TabIndex = 12;
+            this.BntBathFind.Text = "Batch Find";
+            this.BntBathFind.UseVisualStyleBackColor = true;
+            this.BntBathFind.Click += new System.EventHandler(this.button1_Click);
             // 
             // BntBathProc
             // 
@@ -325,20 +326,21 @@
             // 
             // label6
             // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(649, 473);
+            this.label6.Location = new System.Drawing.Point(494, 472);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(102, 17);
+            this.label6.Size = new System.Drawing.Size(39, 17);
             this.label6.TabIndex = 21;
-            this.label6.Text = "Find in this file:";
+            this.label6.Text = "Line:";
             // 
             // SearchTB
             // 
-            this.SearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchTB.Location = new System.Drawing.Point(754, 470);
+            this.SearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchTB.Location = new System.Drawing.Point(536, 470);
             this.SearchTB.Name = "SearchTB";
-            this.SearchTB.Size = new System.Drawing.Size(191, 22);
+            this.SearchTB.Size = new System.Drawing.Size(287, 22);
             this.SearchTB.TabIndex = 22;
             this.SearchTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SearchKeyPress);
             // 
@@ -387,11 +389,23 @@
             this.LoadDB.UseVisualStyleBackColor = true;
             this.LoadDB.Click += new System.EventHandler(this.LoadDB_Click);
             // 
+            // OverwriteBnt
+            // 
+            this.OverwriteBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OverwriteBnt.Location = new System.Drawing.Point(829, 470);
+            this.OverwriteBnt.Name = "OverwriteBnt";
+            this.OverwriteBnt.Size = new System.Drawing.Size(113, 23);
+            this.OverwriteBnt.TabIndex = 27;
+            this.OverwriteBnt.Text = "Overwrite Line";
+            this.OverwriteBnt.UseVisualStyleBackColor = true;
+            this.OverwriteBnt.Click += new System.EventHandler(this.OverwriteBnt_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(955, 549);
+            this.Controls.Add(this.OverwriteBnt);
             this.Controls.Add(this.LoadDB);
             this.Controls.Add(this.SaveDB);
             this.Controls.Add(this.FoldTrans);
@@ -406,7 +420,7 @@
             this.Controls.Add(this.CkOffline);
             this.Controls.Add(this.LblInfo);
             this.Controls.Add(this.BntBathProc);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.BntBathFind);
             this.Controls.Add(this.BotSelect);
             this.Controls.Add(this.Port);
             this.Controls.Add(this.label3);
@@ -445,7 +459,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.MaskedTextBox Port;
         private System.Windows.Forms.Button BotSelect;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button BntBathFind;
         private System.Windows.Forms.Button BntBathProc;
         private System.Windows.Forms.Label LblInfo;
         private System.Windows.Forms.CheckBox CkOffline;
@@ -460,6 +474,7 @@
         private System.Windows.Forms.Button FoldTrans;
         private System.Windows.Forms.Button SaveDB;
         private System.Windows.Forms.Button LoadDB;
+        private System.Windows.Forms.Button OverwriteBnt;
     }
 }
 
