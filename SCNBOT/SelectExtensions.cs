@@ -29,11 +29,12 @@ namespace TLBOT {
                 return;
             }
            
-            string[] exts = textBox1.Text.Split(';');
+            string[] exts = textBox1.Text.Split(';', ',', '|');
             for (int i = 0; i < exts.Length; i++)
                 exts[i] = "." + exts[i].Trim().ToLower();
             Extensions = exts;
             DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }
