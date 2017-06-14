@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define SJIS
+using System;
 using TLIB;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -32,12 +33,16 @@ namespace TLBOT {
         private void Open(string file) {
             byte[] Script = File.ReadAllBytes(file);
             Editor = new Wrapper();
-            Strs = Editor.Import(Script, Path.GetExtension(file));
+            Strs = Editor.Import(Script, Path.GetExtension(file), true);
             LastScript = file;
 
             StringList.Items.Clear();
             foreach (string str in Strs) {
+#if SJIS
+                StringList.Items.Add(Remap.GetString(SJIS.GetBytes(str)), false);
+#else
                 StringList.Items.Add(str, false);
+#endif
             }
 
             Begin.Maximum = End.Maximum = StringList.Items.Count;
@@ -49,9 +54,18 @@ namespace TLBOT {
             SaveBinary.ShowDialog();
         }
 
+#if SJIS
+        SJExt Remap = new SJExt();
+        Encoding SJIS = Encoding.GetEncoding(932);
+#endif
         private void ImportList() {
+#if SJIS
+            for (int i = 0; i < Strs.Length; i++)
+                Strs[i] = SJIS.GetString(Remap.GetBytes(StringList.Items[i].ToString()));
+#else
             for (int i = 0; i < Strs.Length; i++)
                 Strs[i] = StringList.Items[i].ToString();
+#endif
         }
 
         bool BM = false;
@@ -106,6 +120,7 @@ namespace TLBOT {
                 PrefixAndSufix(ref Input, false);
 
                 BreakLine(ref Input, false);
+                Other(ref Input, false);
                 string[] Lines = Input.Split('\n');
 
                 for (int x = 0; x < Lines.Length; x++) {
@@ -142,6 +157,7 @@ namespace TLBOT {
                     Translation += Lines[x] + "\n";
                 Translation = Translation.Substring(0, Translation.Length - 1);
 
+                Other(ref Translation, true);
                 BreakLine(ref Translation, true);
 
                 PrefixAndSufix(ref Translation, true);
@@ -149,16 +165,49 @@ namespace TLBOT {
                 StringList.SelectedIndex = i;
                 Application.DoEvents();
             }
-            Text = "TLBOT - (" + System.IO.Path.GetFileName(OpenBinary.FileName) + ") - In Game Machine Translation";
+            Text = "TLBOT - (" + Path.GetFileName(OpenBinary.FileName) + ") - In Game Machine Translation";
             CanAbort = false;
             BntProc.Text = "Translate!";
             if (!BM) {
                 if (Shutdown.Checked) {
                     BM = true;
-                    Save(System.IO.Path.GetDirectoryName(OpenBinary.FileName) + "\\" + System.IO.Path.GetFileNameWithoutExtension(OpenBinary.FileName) + "-autosave" + System.IO.Path.GetExtension(OpenBinary.FileName));
+                    Save(Path.GetDirectoryName(OpenBinary.FileName) + "\\" + Path.GetFileNameWithoutExtension(OpenBinary.FileName) + "-autosave" + System.IO.Path.GetExtension(OpenBinary.FileName));
                     System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
                 }
                 MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        bool NoEdit = false;
+        //Grisaia no Kajitsu
+        private void Other(ref string Input, bool Mode) {
+            string[] Replacement = new string[] { "fn", "fss", "fs", "@", "r"};
+            if (Mode) {
+                if (NoEdit)
+                    return;
+
+                Input = Input.Replace("[ ", "[").Replace(" ]", "]");
+                foreach (string tag in Replacement) {
+                    while (Input.ToLower().Contains("[" + tag + "]")) {
+                        int Len = tag.Length + 2;
+                        int Pos = Input.ToLower().IndexOf("[" + tag + "]");
+                        string Rep = Input.Substring(Pos, Len);//bypass case
+                        Input = Input.Replace(Rep, "\\" + tag);
+                    }
+                }
+            } else {
+                NoEdit = true;
+                if (Input.Contains("[ ") || Input.Contains(" ]"))
+                    return;
+                NoEdit = false;
+                foreach (string tag in Replacement) {
+                    while (Input.ToLower().Contains("\\" + tag)) {
+                        int Len = tag.Length + 1;
+                        int Pos = Input.ToLower().IndexOf("\\" + tag);
+                        string Rep = Input.Substring(Pos, Len);//bypass case
+                        Input = Input.Replace(Rep, "[" + tag + "]");
+                    }
+                }
             }
         }
 
@@ -421,7 +470,7 @@ namespace TLBOT {
                 for (int i = 0; i < FD.FileNames.Length; i++) {
                     byte[] Script = File.ReadAllBytes(FD.FileNames[i]);
                     Wrapper Temp = new Wrapper();
-                    string[] find = Temp.Import(Script, Path.GetExtension(FD.FileNames[i]));
+                    string[] find = Temp.Import(Script, Path.GetExtension(FD.FileNames[i]), true);
 
                     foreach (string Str in find)
                         if (Str.Contains(content)) {
@@ -443,7 +492,7 @@ namespace TLBOT {
         new string[] {
           "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal", "bens",
           "recem", "recém", "line", "como", "like", "pré", "vice", "anti", "pró",
-          "pós", "ante", "porta", "tipo", "guarda"
+          "pós", "ante", "porta", "tipo", "guarda", "mail", "o"
         });
 
         public string FixTLAlgo2(string TL, string Ori) {
@@ -753,7 +802,7 @@ namespace TLBOT {
 
         private char Encode(char lt) {
             switch (lt) {
-        #region Cases
+#region Cases
                 default:
                     return lt;
                 case 'ú':
@@ -820,13 +869,13 @@ namespace TLBOT {
                     return ocr;
                 case 'ô':
                     return och;
-        #endregion
+#endregion
             }
         }
 
         private char Decode(char lt) {
             switch (lt) {
-        #region cases
+#region cases
                 default:
                     return lt;
                 case uci:
@@ -893,7 +942,7 @@ namespace TLBOT {
                     return 'ò';
                 case och:
                     return 'ô';
-        #endregion
+#endregion
             }
         }
 
