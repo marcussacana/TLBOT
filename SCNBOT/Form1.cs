@@ -9,6 +9,7 @@ using System.IO;
 using AdvancedBinary;
 using SacanaWrapper;
 using System.Threading;
+using System.Linq;
 
 namespace TLBOT {
     public partial class Form1 : Form {
@@ -678,11 +679,19 @@ namespace TLBOT {
             if (folder.ShowDialog() != DialogResult.OK)
                 return;
 
+            SelectExtensions exts = new SelectExtensions();
+            exts.Default = "*";
+            if (exts.ShowDialog() != DialogResult.OK)
+                return;
+
+
             lf = folder.SelectedPath;
             bool AutoSelect = MessageBox.Show("You want the TLBOT select the string automatically?\n\nIf not, all strings are selected.", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
 
             BM = true;
-            string[] Files = Directory.GetFiles(folder.SelectedPath, Filter.Split('|')[1], SearchOption.AllDirectories);
+            string[] Files = Directory.GetFiles(folder.SelectedPath, "*.*", SearchOption.AllDirectories);
+            Files = (from string f in Files where exts.Extensions.Contains(Path.GetExtension(f).ToLower()) select f).ToArray();
+
             foreach (string File in Files)
                 try { AutoProcess(File, AutoSelect); }
                 catch {
