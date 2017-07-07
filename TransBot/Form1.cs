@@ -92,7 +92,7 @@ namespace TLBOT {
                 Abort = true;
                 return;
             }
-            if (!LEC.ServerIsOpen(Port.Text)) {
+            if (CkOffline.Checked && !LEC.ServerIsOpen(Port.Text)) {
                 MessageBox.Show("Invalid Server Port", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Error = true;
                 return;
@@ -266,13 +266,26 @@ namespace TLBOT {
             int tries = -1;
             Translation = null;
             while (tries++ < 5 && Translation == null) {
-                try {
-                    Translation =
-                        CkOffline.Checked ?
-                        LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
-                        Google.Translate(Input, InputLang.Text, OutLang.Text);
-                }
-                catch { }
+                if (ckDoubleStep.Checked) {
+                    try {
+                        Translation =
+                            CkOffline.Checked ?
+                            LEC.Translate(Input, InputLang.Text, "EN", LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
+                            Google.Translate(Input, InputLang.Text, "EN");
+                        Translation =
+                            CkOffline.Checked ?
+                            LEC.Translate(Translation, "EN", OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
+                            Google.Translate(Translation, "EN", OutLang.Text);
+                    }
+                    catch { }
+                } else
+                    try {
+                        Translation =
+                            CkOffline.Checked ?
+                            LEC.Translate(Input, InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text) :
+                            Google.Translate(Input, InputLang.Text, OutLang.Text);
+                    }
+                    catch { }
             }
         }
 
@@ -311,35 +324,39 @@ namespace TLBOT {
             uint count = 0;
             for (int i = (int)Begin.Value; i < End.Value; i++) {
                 string text = StringList.Items[i].ToString().Replace("\\n", "\n").Replace("\\r", "\r");
-                bool Status = true;
+                bool Status = !string.IsNullOrWhiteSpace(text);
                 int Process = 0;
                 bool Asian = InputLang.Text == "JA" || InputLang.Text == "CH";
+                bool Russian = InputLang.Text == "RU";
                 while (Status) {
                     switch (Process) {
                         default:
                             goto ExitWhile;
                         case 0:
-                            bool Alternate = false;
-                            if (text.StartsWith("<") && text.EndsWith(">"))
-                                Alternate = true;
+                            if (Russian) {
+                                Status = MinimiumFound(text, Properties.Resources.RusCommon, text.Length / 4);
+                                if (Status)
+                                    goto ExitWhile;
+                            }
+                            bool Alternate = text.StartsWith("<") && text.EndsWith(">");
                             Status = !ContainsOR(text, Alternate ? "@,§,$,\\,|,_,/" : "@,§,$,\\,|,_,<,>,/");
                             break;
                         case 1:
                             Status = NumberLimiter(text, text.Length / 4);
                             break;
                         case 2:
-                            Status = text.Length >= 4 || EndsWithOr(text, ".,!,?");
+                            Status = text.Length >= 3 || EndsWithOr(text, ".,!,?");
                             break;
                         case 3:
                             if (Asian)
-                                Status = MinimiumFound(text, Properties.Resources.JapCommom, text.Length / 4);
-                            else
+                                Status = MinimiumFound(text, Properties.Resources.JapCommon, text.Length / 4);
+                            else 
                                 Status = text.Contains(((char)32).ToString()) || EndsWithOr(text, ".\",!\",?\",.,!,?");
                             break;
                         case 4:
-                            if (!Asian)
+                            if (!Asian && !Russian)
                                 break;
-                            Status = !ContainsOR(text, "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,x,w,y,z,▽,★,♪,.");
+                            Status = !ContainsOR(text, "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,x,w,y,z,▽,★,♪");
                             break;
                     }
                     Process++;
@@ -370,7 +387,7 @@ namespace TLBOT {
                         break;
                     }
             }
-            return found >= min;
+            return found >= min || found == text.Length;
         }
 
         private bool NumberLimiter(string text, int val) {
@@ -789,6 +806,13 @@ namespace TLBOT {
             StringList.Items[StringList.SelectedIndex] = txt;
         }
 
+        private void VerifyLang(object sender, EventArgs e) {
+            bool DoubleStepPossible = InputLang.Text != "EN" && OutLang.Text != "EN";
+            if (!DoubleStepPossible)
+                ckDoubleStep.Checked = false;
+            ckDoubleStep.Enabled = DoubleStepPossible;
+        }
+
 #if SJIS
     class SJExt : Encoding {
         private Encoding BASE = GetEncoding(932);
@@ -811,7 +835,7 @@ namespace TLBOT {
 
         private char Encode(char lt) {
             switch (lt) {
-#region Cases
+        #region Cases
                 default:
                     return lt;
                 case 'ú':
@@ -878,13 +902,13 @@ namespace TLBOT {
                     return ocr;
                 case 'ô':
                     return och;
-#endregion
+        #endregion
             }
         }
 
         private char Decode(char lt) {
             switch (lt) {
-#region cases
+        #region cases
                 default:
                     return lt;
                 case uci:
@@ -951,7 +975,7 @@ namespace TLBOT {
                     return 'ò';
                 case och:
                     return 'ô';
-#endregion
+        #endregion
             }
         }
 

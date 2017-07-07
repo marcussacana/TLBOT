@@ -52,6 +52,7 @@
             this.SaveDB = new System.Windows.Forms.Button();
             this.LoadDB = new System.Windows.Forms.Button();
             this.OverwriteBnt = new System.Windows.Forms.Button();
+            this.ckDoubleStep = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
             this.SuspendLayout();
@@ -86,6 +87,7 @@
             this.InputLang.Size = new System.Drawing.Size(52, 24);
             this.InputLang.TabIndex = 1;
             this.InputLang.Text = "JA";
+            this.InputLang.TextChanged += new System.EventHandler(this.VerifyLang);
             // 
             // label1
             // 
@@ -126,6 +128,7 @@
             this.OutLang.Size = new System.Drawing.Size(52, 24);
             this.OutLang.TabIndex = 4;
             this.OutLang.Text = "EN";
+            this.OutLang.TextChanged += new System.EventHandler(this.VerifyLang);
             // 
             // BntProc
             // 
@@ -400,11 +403,23 @@
             this.OverwriteBnt.UseVisualStyleBackColor = true;
             this.OverwriteBnt.Click += new System.EventHandler(this.OverwriteBnt_Click);
             // 
+            // ckDoubleStep
+            // 
+            this.ckDoubleStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ckDoubleStep.AutoSize = true;
+            this.ckDoubleStep.Location = new System.Drawing.Point(428, 433);
+            this.ckDoubleStep.Name = "ckDoubleStep";
+            this.ckDoubleStep.Size = new System.Drawing.Size(100, 21);
+            this.ckDoubleStep.TabIndex = 28;
+            this.ckDoubleStep.Text = "2-Steps TL";
+            this.ckDoubleStep.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(955, 549);
+            this.Controls.Add(this.ckDoubleStep);
             this.Controls.Add(this.OverwriteBnt);
             this.Controls.Add(this.LoadDB);
             this.Controls.Add(this.SaveDB);
@@ -475,6 +490,7 @@
         private System.Windows.Forms.Button SaveDB;
         private System.Windows.Forms.Button LoadDB;
         private System.Windows.Forms.Button OverwriteBnt;
+        private System.Windows.Forms.CheckBox ckDoubleStep;
     }
 }
 
