@@ -50,7 +50,11 @@ public class HighLevelCodeProcessator {
         if (Instance == null)
             Instance = assembly.CreateInstance(Class);
         MethodInfo printMethod = fooType.GetMethod(Function);
-        return printMethod.Invoke(Instance, BindingFlags.InvokeMethod, null, Args, CultureInfo.CurrentCulture);
+        try {
+            return printMethod.Invoke(Instance, BindingFlags.InvokeMethod, null, Args, CultureInfo.CurrentCulture);
+        }catch(TargetInvocationException Ex) {
+            throw Ex.InnerException;
+        }
     }
     private Assembly InitializeEngine(string[] lines) {
         CodeDomProvider cpd = new CSharpCodeProvider();

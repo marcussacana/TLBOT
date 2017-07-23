@@ -237,26 +237,37 @@ namespace TLBOT {
 
         string Prefix;
         string Sufix;
-        private void PrefixAndSufix(ref string Str, bool Mode) {
-            List<string> PrefixArr = new List<string>(new string[] { "\"", "[", "“", "［", "《", "«", "「", "『", "【", "～" });
-            List<string> SufixArr = new List<string>(new string[] { "\"", "]", "”", "］", "》", "»", "」", "』", "】", "～" });
+        private void PrefixAndSufix(ref string Str, bool Mode, bool ReadOnly = false) {
+            List<string> TrimData = new List<string>(new string[] { "\"", "[", "“", "［", "《", "«", "「", "『", "【", "]", "”", "］", "》", "»", "」", "』", "】", "～" });
+
+            if (VM != null) {
+                string[] TD = VM.Call("Main", "Trim");
+                foreach (string Trim in TD) {
+                    TrimData.Add(Trim);
+                }
+            }
             if (Mode) {
                 Str = Prefix + Str + Sufix;
             } else {
-                Prefix = string.Empty;
-                Sufix = string.Empty;
+                if (!ReadOnly) {
+                    Prefix = string.Empty;
+                    Sufix = string.Empty;
+                }
                 string Before = string.Empty;
-                while (Before != Str && Str.Length > 2) {
+                while (Before != Str) {
                     Before = Str;
-                    char PrefixC = Str[0];
-                    char SufixC = Str[Str.Length - 1];
-                    if (PrefixArr.Contains(PrefixC.ToString())) {
-                        Prefix += PrefixC;
-                        Str = Str.Substring(1, Str.Length - 1);
-                    }
-                    if (SufixArr.Contains(SufixC.ToString())) {
-                        Sufix = SufixC + Sufix;
-                        Str = Str.Substring(0, Str.Length - 1);
+                    foreach (string Trim in TrimData) {
+                        if (Str.StartsWith(Trim)) {
+                            if (!ReadOnly)
+                                Prefix += Trim;
+                            Str = Str.Substring(Trim.Length, Str.Length - Trim.Length);
+                        }
+
+                        if (Str.EndsWith(Trim)) {
+                            if (!ReadOnly)
+                                Sufix = Trim + Sufix;
+                            Str = Str.Substring(0, Str.Length - Trim.Length);
+                        }
                     }
                 }
             }
@@ -324,6 +335,7 @@ namespace TLBOT {
             uint count = 0;
             for (int i = (int)Begin.Value; i < End.Value; i++) {
                 string text = StringList.Items[i].ToString().Replace("\\n", "\n").Replace("\\r", "\r");
+                PrefixAndSufix(ref text, false, true);
                 bool Status = !string.IsNullOrWhiteSpace(text);
                 int Process = 0;
                 bool Asian = InputLang.Text == "JA" || InputLang.Text == "CH";
@@ -772,7 +784,7 @@ namespace TLBOT {
             Again:
             ;
             string PluginDir = HighLevelCodeProcessator.AssemblyDirectory + "\\Plugins";
-            if (!Directory.Exists(PluginDir) || Directory.GetFiles(PluginDir, "*.ini").Length == 0) {
+            if (!Directory.Exists(PluginDir) || Directory.GetFiles(PluginDir, "*.ini").Concat(Directory.GetFiles(PluginDir, "*.inf")).ToArray().Length == 0) {
                 if (MessageBox.Show("No plugins Detected...\nPlugins Dir:\n" + PluginDir, "TLBOT", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
                     goto Again;
                 else
@@ -786,8 +798,8 @@ namespace TLBOT {
             SaveBinary.Filter = Filter;
             LblInfo.Text = string.Format(LblInfo.Text, "SacanaWrapper");
             string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
-            if (System.IO.File.Exists(TLFilter)) {
-                VM = new DotNetVM(System.IO.File.ReadAllText(TLFilter));
+            if (File.Exists(TLFilter)) {
+                VM = new DotNetVM(File.ReadAllText(TLFilter));
                 BlackList = new List<string>(VM.Call("Main", "GetBlackList"));
                 string[] List = VM.Call("Main", "GetReplaces");
                 for (int i = 0; i < List.Length; i += 2)
