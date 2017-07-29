@@ -1,6 +1,3 @@
-[submodule "TLIB"]
-	path = TLIB
-	url = https://github.com/marcussacana/TLIB
 [submodule "SacanaWrapper"]
 	path = SacanaWrapper
 	url = https://github.com/marcussacana/SacanaWrapper
