@@ -3,4 +3,4 @@
 	url = https://github.com/marcussacana/TLIB
 [submodule "SacanaWrapper"]
 	path = SacanaWrapper
-	url = ./SacanaWrapper
+	url = https://github.com/marcussacana/SacanaWrapper
