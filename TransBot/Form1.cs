@@ -824,6 +824,38 @@ namespace TLBOT {
                 ckDoubleStep.Checked = false;
             ckDoubleStep.Enabled = DoubleStepPossible;
         }
+        
+        private void ExportClicked(object sender, EventArgs e) {
+            string Output = AppDomain.CurrentDomain.BaseDirectory + "Strings.strs";
+            if (File.Exists(Output))
+                File.Delete(Output);
+
+            StructWriter Writer = new StructWriter(Output);
+            Writer.Write(StringList.Items.Count);
+            foreach (string String in StringList.Items) {
+                Writer.Write(String, StringStyle.PString);
+            }
+            Writer.Close();
+            MessageBox.Show("Strings Exported.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ImportClick(object sender, EventArgs e) {
+            string Input = AppDomain.CurrentDomain.BaseDirectory + "Strings.strs";
+            if (!File.Exists(Input))
+                return;
+            StructReader Reader = new StructReader(Input);
+            int Max = Reader.ReadInt32();
+            if (End.Value > Max) {
+                Max = (int)End.Value;
+            }
+            for (int i = (int)Begin.Value; i < Max; i++) {
+                if (i < StringList.Items.Count)
+                    StringList.Items[i] = Reader.ReadString(StringStyle.PString);
+                else
+                    StringList.Items.Add(Reader.ReadString(StringStyle.PString));
+            }
+            MessageBox.Show("Strings Imported.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
 #if SJIS
     class SJExt : Encoding {

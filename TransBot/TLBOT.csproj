@@ -89,7 +89,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SacanaWrapper\SacanaWrapper\SacanaWrapper.csproj">
+    <ProjectReference Include="..\..\SacanaWrapper\SacanaWrapper\SacanaWrapper.csproj">
       <Project>{66c4fb33-9701-4bb2-82b0-b9ad4f807dfa}</Project>
       <Name>SacanaWrapper</Name>
     </ProjectReference>

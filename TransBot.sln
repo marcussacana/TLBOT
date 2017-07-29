@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLBOT", "TransBot\TLBOT.csproj", "{079C8B3B-D2E3-4CF2-82EA-8D9AEEEF3D56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLIB", "TLIB\TLIB.csproj", "{B7489AF3-FAD2-4D45-9746-CD72D9F22BFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SacanaWrapper", "SacanaWrapper\SacanaWrapper\SacanaWrapper.csproj", "{66C4FB33-9701-4BB2-82B0-B9AD4F807DFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SacanaWrapper", "..\SacanaWrapper\SacanaWrapper\SacanaWrapper.csproj", "{66C4FB33-9701-4BB2-82B0-B9AD4F807DFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
