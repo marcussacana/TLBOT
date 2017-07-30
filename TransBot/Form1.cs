@@ -132,6 +132,8 @@ namespace TLBOT {
                         if (InputLang.Text == OutLang.Text) {
                             Result = Lines[x];
                         } else {
+                            if (VM != null)
+                                Result = VM.Call("Main", "BeforeTL", Result);
                             Translate(out Result, Lines[x]);
                             if (Result.ToLower().StartsWith("-benzóico")) {
                                 try {
@@ -142,7 +144,7 @@ namespace TLBOT {
                             if (Result == null || Result.ToLower().StartsWith("-benzóico"))
                                 continue;
                             if (VM != null)
-                                Result = VM.Call("Main", "Filter", Result);
+                                Result = VM.Call("Main", "AfterTL", Result);
                             FixTL(ref Result, Lines[x]);
                             Result = FixTLAlgo2(Result, Lines[x]);
                             Cache.Add(Lines[x], Result);
