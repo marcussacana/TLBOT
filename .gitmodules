@@ -4,5 +4,4 @@
 [submodule "TLIB"]
 	path = TLIB
 	url = ./TLIB
-	branch = master
 
