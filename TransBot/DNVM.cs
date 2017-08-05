@@ -2,6 +2,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 class DotNetVM {
     internal DotNetVM(string Content) {
@@ -39,13 +40,20 @@ class DotNetVM {
         return exec(Arguments, ClassName, FunctionName, Engine);
     }
 
-    private object instance = null;
+    private object Instance = null;
     private object exec(object[] Args, string Class, string Function, Assembly assembly) {
         Type fooType = assembly.GetType(Class);
-        if (instance == null)
-            instance = assembly.CreateInstance(Class);
-        MethodInfo printMethod = fooType.GetMethod(Function);
-        return printMethod.Invoke(instance, BindingFlags.InvokeMethod, null, Args, CultureInfo.CurrentCulture);
+        if (Instance == null)
+            Instance = assembly.CreateInstance(Class);
+        MethodInfo[] Methods = fooType.GetMethods().Where(x => x.Name == Function).Select(x => x).ToArray();
+        foreach (MethodInfo Method in Methods) {
+            if (Method.GetParameters().Length == Args.Length) {
+                try {
+                    return Method?.Invoke(Instance, BindingFlags.InvokeMethod, null, Args, CultureInfo.CurrentCulture);
+                } catch { }
+            }
+        }
+        throw new Exception("Failed to find the method...");
     }
     private Assembly InitializeEngine(string[] lines) {
         CodeDomProvider cpd = new CSharpCodeProvider();

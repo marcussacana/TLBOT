@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
+using System.Linq;
 
 namespace TLIB {
     public class LEC {
@@ -111,6 +112,7 @@ namespace TLIB {
     }
 
     public class Google {
+        const string UserAgent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
         public static string Translate(string Text, string SourceLang, string TargetLang) {
             const string REQ = "http://translate.googleapis.com/translate_a/single";
             const string TAG = "],[\"";
@@ -121,7 +123,7 @@ namespace TLIB {
             try {
                 WebClient Client = new WebClient();
                 Client.Encoding = Encoding.UTF8;
-                Client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
+                Client.Headers.Add(HttpRequestHeader.UserAgent, UserAgent);
                 Client.Headers.Add(HttpRequestHeader.AcceptCharset, "UTF-8");
                 Client.QueryString.Add("client", "gtx");
                 Client.QueryString.Add("dt", "t");
@@ -152,6 +154,78 @@ namespace TLIB {
                     goto again;
                throw new Exception("Translation Error");
             }
+        }
+
+        const string FormEntry = "----WebKitFormBoundary";
+        public static string[] Translate(string[] Strings, string SourceLang, string TargetLang) {
+            const string FormTemplate = "{0}\r\nContent-Disposition: form-data; name=\"sl\"\r\n\r\nen\r\n{0}\r\nContent-Disposition: form-data; name=\"tl\"\r\n\r\npt\r\n{0}\r\nContent-Disposition: form-data; name=\"js\"\r\n\r\ny\r\n{0}\r\nContent-Disposition: form-data; name=\"ie\"\r\n\r\nUTF-8\r\n{0}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"Content.txt\"\r\nContent-Type: text/plain\r\n\r\n{1}\r\n{0}--";
+            const string URL = "https://translate.googleusercontent.com/translate_f";
+            const string Type = "multipart/form-data; boundary={0}";
+
+            //Get Valid Form Info
+            string Entry = FormEntry;
+            while (Strings.Where(x => x.StartsWith(Entry)).Select(x => x).LongCount() != 0) {
+                Entry = FormEntry + RndTxt();
+            }
+
+            //Generate Text
+            StringBuilder Builder = new StringBuilder();
+            foreach (string String in Strings) {
+                if (String.Contains("\n") || String.Contains("\r")) {
+                    Builder.AppendLine(String.Replace("\r", "").Replace("\n", " "));
+                } else
+                    Builder.AppendLine(String);
+            }
+            Builder = null;
+            byte[] Content = new UTF8Encoding(false).GetBytes(string.Format(FormTemplate, Entry, Builder.ToString()));
+
+            //Request
+            HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(URL);
+            Request.UserAgent = UserAgent;
+            Request.ContentType = string.Format(Type, Entry);
+            Stream Upload = Request.GetRequestStream();
+            MemoryStream Data = new MemoryStream(Content);
+            Data.CopyTo(Upload);
+            Data.Close();
+            Content = null;
+            
+            //Response
+            WebResponse Response = Request.GetResponse();
+            Stream Download = Response.GetResponseStream();
+            Data = new MemoryStream();
+            Download.CopyTo(Data);
+            Download.Close();
+            Request = null;
+            Response = null;
+
+            //Convert Response
+            string Reply = Encoding.UTF8.GetString(Data.ToArray());
+            if (!(Reply.StartsWith("<pre>") && Reply.EndsWith("</pre>")))
+                throw new Exception("Failed To Translate");
+            Reply = Reply.Substring(5, Reply.Length - 11);//Cut off <pre></pre>
+            string[] Result = Reply.Replace("\r\n", "\n").Split('\n');
+            Reply = null;
+
+            for (long i = 0; i < Result.LongLength; i++) {
+                string Str = string.Empty;
+                while (Str != HttpUtility.HtmlDecode(Str))
+                    Str = HttpUtility.HtmlDecode(Str);
+                Result[i] = Str;
+            }
+            return Result;
+        }
+
+        private static string RndTxt(int len = 10) {
+            const int Min = 'A', Max = 'z';
+            string Rnd = string.Empty;
+            int Seed = new Random().Next(int.MinValue, int.MaxValue);
+            while (Rnd.Length < len) {
+                Rnd += (char)new Random(Seed).Next(Min, Max);
+                //Fast Random
+                int XSD = (int)((new Random().Next(int.MinValue, int.MaxValue) * Rnd.Length) & 0xFFFFFFFF);
+                Seed = new Random(Seed ^ XSD).Next(int.MinValue, int.MaxValue);
+            }
+            return Rnd;
         }
 
         private static string GetStringAt(int pos, string Text) {

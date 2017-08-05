@@ -40,7 +40,7 @@
             this.BntBathProc = new System.Windows.Forms.Button();
             this.LblInfo = new System.Windows.Forms.Label();
             this.CkOffline = new System.Windows.Forms.CheckBox();
-            this.Shutdown = new System.Windows.Forms.CheckBox();
+            this.MassMode = new System.Windows.Forms.CheckBox();
             this.Begin = new System.Windows.Forms.NumericUpDown();
             this.End = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
@@ -103,7 +103,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(215, 410);
+            this.label2.Location = new System.Drawing.Point(214, 410);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(23, 13);
             this.label2.TabIndex = 3;
@@ -130,7 +130,7 @@
             // BntProc
             // 
             this.BntProc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BntProc.Location = new System.Drawing.Point(402, 406);
+            this.BntProc.Location = new System.Drawing.Point(395, 406);
             this.BntProc.Name = "BntProc";
             this.BntProc.Size = new System.Drawing.Size(75, 23);
             this.BntProc.TabIndex = 5;
@@ -176,7 +176,7 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(289, 410);
+            this.label3.Location = new System.Drawing.Point(289, 411);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(57, 13);
             this.label3.TabIndex = 9;
@@ -185,7 +185,7 @@
             // Port
             // 
             this.Port.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Port.Location = new System.Drawing.Point(351, 408);
+            this.Port.Location = new System.Drawing.Point(343, 408);
             this.Port.Mask = "00000";
             this.Port.Name = "Port";
             this.Port.Size = new System.Drawing.Size(46, 20);
@@ -250,18 +250,21 @@
             this.CkOffline.TabIndex = 15;
             this.CkOffline.Text = "Offline TL";
             this.CkOffline.UseVisualStyleBackColor = true;
+            this.CkOffline.CheckedChanged += new System.EventHandler(this.OfflineChanged);
             // 
-            // Shutdown
+            // MassMode
             // 
-            this.Shutdown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Shutdown.AutoSize = true;
-            this.Shutdown.Location = new System.Drawing.Point(251, 326);
-            this.Shutdown.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.Shutdown.Name = "Shutdown";
-            this.Shutdown.Size = new System.Drawing.Size(99, 17);
-            this.Shutdown.TabIndex = 16;
-            this.Shutdown.Text = "Auto Shutdown";
-            this.Shutdown.UseVisualStyleBackColor = true;
+            this.MassMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MassMode.AutoSize = true;
+            this.MassMode.Checked = true;
+            this.MassMode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.MassMode.Location = new System.Drawing.Point(251, 326);
+            this.MassMode.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.MassMode.Name = "MassMode";
+            this.MassMode.Size = new System.Drawing.Size(95, 17);
+            this.MassMode.TabIndex = 16;
+            this.MassMode.Text = "Massive Mode";
+            this.MassMode.UseVisualStyleBackColor = true;
             // 
             // Begin
             // 
@@ -457,7 +460,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.End);
             this.Controls.Add(this.Begin);
-            this.Controls.Add(this.Shutdown);
+            this.Controls.Add(this.MassMode);
             this.Controls.Add(this.CkOffline);
             this.Controls.Add(this.LblInfo);
             this.Controls.Add(this.BntBathProc);
@@ -503,7 +506,7 @@
         private System.Windows.Forms.Button BntBathProc;
         private System.Windows.Forms.Label LblInfo;
         private System.Windows.Forms.CheckBox CkOffline;
-        private System.Windows.Forms.CheckBox Shutdown;
+        private System.Windows.Forms.CheckBox MassMode;
         private System.Windows.Forms.NumericUpDown Begin;
         private System.Windows.Forms.NumericUpDown End;
         private System.Windows.Forms.Label label4;

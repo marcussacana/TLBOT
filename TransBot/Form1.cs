@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using AdvancedBinary;
 using SacanaWrapper;
-using System.Threading;
 using System.Linq;
 
 namespace TLBOT {
@@ -100,6 +99,20 @@ namespace TLBOT {
             CanAbort = true;
             Abort = false;
             BntProc.Text = "Abort!";
+            if (MassMode.Checked) {
+                MassiveTranslate();
+            } else {
+                LinePerLineTranslate();
+            }
+            Text = "TLBOT - (" + Path.GetFileName(OpenBinary.FileName) + ") - In Game Machine Translation";
+            CanAbort = false;
+            BntProc.Text = "Translate!";
+            if (!BM) {
+                MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void LinePerLineTranslate() {
             for (int i = 0; i < StringList.Items.Count; i++) {
                 if (Abort) {
                     MessageBox.Show("Operation Aborted!", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -121,7 +134,6 @@ namespace TLBOT {
                 PrefixAndSufix(ref Input, false);
 
                 BreakLine(ref Input, false);
-                Other(ref Input, false);
                 string[] Lines = Input.Split('\n');
 
                 for (int x = 0; x < Lines.Length; x++) {
@@ -138,8 +150,7 @@ namespace TLBOT {
                             if (Result.ToLower().StartsWith("-benzóico")) {
                                 try {
                                     Result = LEC.Translate(Lines[x], InputLang.Text, OutLang.Text, LEC.Gender.Male, LEC.Formality.Formal, Port.Text);
-                                }
-                                catch { }
+                                } catch { }
                             }
                             if (Result == null || Result.ToLower().StartsWith("-benzóico"))
                                 continue;
@@ -160,7 +171,6 @@ namespace TLBOT {
                     Translation += Lines[x] + "\n";
                 Translation = Translation.Substring(0, Translation.Length - 1);
 
-                Other(ref Translation, true);
                 BreakLine(ref Translation, true);
 
                 PrefixAndSufix(ref Translation, true);
@@ -168,48 +178,94 @@ namespace TLBOT {
                 StringList.SelectedIndex = i;
                 Application.DoEvents();
             }
-            Text = "TLBOT - (" + Path.GetFileName(OpenBinary.FileName) + ") - In Game Machine Translation";
-            CanAbort = false;
-            BntProc.Text = "Translate!";
-            if (!BM) {
-                if (Shutdown.Checked) {
-                    BM = true;
-                    Save(Path.GetDirectoryName(OpenBinary.FileName) + "\\" + Path.GetFileNameWithoutExtension(OpenBinary.FileName) + "-autosave" + System.IO.Path.GetExtension(OpenBinary.FileName));
-                    System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
-                }
-                MessageBox.Show("All Lines Translated.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
         }
 
-        bool NoEdit = false;
-        //Grisaia no Kajitsu
-        private void Other(ref string Input, bool Mode) {
-            string[] Replacement = new string[] { "fn", "fss", "fs", "@", "r"};
-            if (Mode) {
-                if (NoEdit)
-                    return;
-
-                Input = Input.Replace("[ ", "[").Replace(" ]", "]");
-                foreach (string tag in Replacement) {
-                    while (Input.ToLower().Contains("[" + tag + "]")) {
-                        int Len = tag.Length + 2;
-                        int Pos = Input.ToLower().IndexOf("[" + tag + "]");
-                        string Rep = Input.Substring(Pos, Len);//bypass case
-                        Input = Input.Replace(Rep, "\\" + tag);
-                    }
+        private void MassiveTranslate() {
+            Text = "TLBOT - Initializing Massive Translation...";
+            var Strings = new List<string>();
+            var IndMap = new Dictionary<int, int>();
+            var LinesCount = new Dictionary<int, int>();
+            var Prx = new Dictionary<int, string>();
+            var Sfx = new Dictionary<int, string>();
+            var RetFlg = new Dictionary<int, bool>();
+            var DecFlg = new Dictionary<int, bool>();
+            for (int i = 0; i < StringList.Items.Count; i++) {
+                bool Checked = StringList.GetItemChecked(i);
+                if (!Checked)
+                    continue;
+                string Input = StringList.Items[i].ToString();
+                if (BlackList.Contains(Input))
+                    continue;
+                if (Replace.ContainsKey(Input)) {
+                    StringList.Items[i] = Replace[Input];
+                    StringList.SelectedIndex = i;
+                    continue;
                 }
-            } else {
-                NoEdit = true;
-                if (Input.Contains("[ ") || Input.Contains(" ]"))
-                    return;
-                NoEdit = false;
-                foreach (string tag in Replacement) {
-                    while (Input.ToLower().Contains("\\" + tag)) {
-                        int Len = tag.Length + 1;
-                        int Pos = Input.ToLower().IndexOf("\\" + tag);
-                        string Rep = Input.Substring(Pos, Len);//bypass case
-                        Input = Input.Replace(Rep, "[" + tag + "]");
-                    }
+                if (Cache.ContainsKey(Input)) {
+                    StringList.Items[i] = Cache[Input];
+                    continue;
+                }
+
+                PrefixAndSufix(ref Input, false);
+                Prx[i] = Prefix;
+                Sfx[i] = Sufix;
+
+                BreakLine(ref Input, false);
+                DecFlg[i] = DecodedFlag;
+                RetFlg[i] = ReturnFlag;
+
+                string[] Lines = Input.Split('\n');
+
+                for (int x = 0; x < Lines.Length; x++) {
+                    IndMap[Strings.Count()] = i;
+                    Strings.Add(Lines[x]);
+                }
+                StringList.Items[i] = string.Empty;
+                Application.DoEvents();
+            }
+            Text = "TLBOT - Translating...";
+
+            string[] Original = Strings.ToArray();
+            if (VM != null)
+                Original = VM.Call("Main", "BeforeTL", (object)Original);
+
+            string[] Translated;
+            if (ckDoubleStep.Checked) {
+                Translated = Google.Translate(Original, InputLang.Text, "EN");
+                Translated = Google.Translate(Translated, "EN", OutLang.Text);
+            } else
+                Translated = Google.Translate(Original, InputLang.Text, OutLang.Text);
+
+            if (VM != null)
+                Translated = VM.Call("Main", "AfterTL", (object)Translated);
+
+            for (int i = 0; i < Translated.Length; i++) {
+                int Index = IndMap[i];
+                bool Continue = (i + 1 < Translated.Length && IndMap[i + 1] == Index);
+                if (Continue) {
+                    StringList.Items[Index] += Translated[i] + "\n";
+                } else {
+                    string Str = StringList.Items[Index].ToString();
+                    Str += Translated[i];
+
+                    Prefix = Prx[Index];
+                    Sufix = Sfx[Index];
+                    DecodedFlag = DecFlg[Index];
+                    ReturnFlag = RetFlg[Index];
+
+                    BreakLine(ref Str, true);
+                    PrefixAndSufix(ref Str, true);
+
+                    StringList.Items[Index] = Str;
+
+                    if (i % 10 == 0 || !(i + 1 < Translated.Length))
+                        StringList.SelectedIndex = Index;
+
+                    if (!Cache.ContainsKey(Original[i]))
+                        Cache.Add(Original[i], Translated[i]);
+
+                    if (i % 10 == 0 || !(i + 1 < Translated.Length))
+                        Application.DoEvents();
                 }
             }
         }
@@ -645,9 +701,6 @@ namespace TLBOT {
             }
 
             BM = false;
-            if (Shutdown.Checked) {
-                System.Diagnostics.Process.Start("shutdown.exe", "/f /s /t 120");
-            }
             MessageBox.Show(string.Empty == log ? "Operation Cleared!" : "Sucess, but that files have a problem:" + log, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -801,11 +854,18 @@ namespace TLBOT {
             LblInfo.Text = string.Format(LblInfo.Text, "SacanaWrapper");
             string TLFilter = AppDomain.CurrentDomain.BaseDirectory + "Filter.cs";
             if (File.Exists(TLFilter)) {
-                VM = new DotNetVM(File.ReadAllText(TLFilter));
+                reload:;
+                try {
+                    VM = new DotNetVM(File.ReadAllText(TLFilter));
+                } catch {
+                    DialogResult dr = MessageBox.Show("Failed to Initialize the Filter.", "TLBOT", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Retry)
+                        goto reload;
+                }
                 BlackList = new List<string>(VM.Call("Main", "GetBlackList"));
-                string[] List = VM.Call("Main", "GetReplaces");
-                for (int i = 0; i < List.Length; i += 2)
-                    Replace.Add(List[i], List[i + 1]);
+                    string[] List = VM.Call("Main", "GetReplaces");
+                    for (int i = 0; i < List.Length; i += 2)
+                        Replace.Add(List[i], List[i + 1]);
             }
         }
 
@@ -857,6 +917,11 @@ namespace TLBOT {
                     StringList.Items.Add(Reader.ReadString(StringStyle.PString));
             }
             MessageBox.Show("Strings Imported.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void OfflineChanged(object sender, EventArgs e) {
+            MassMode.Checked = !CkOffline.Checked;
+            MassMode.Enabled = !CkOffline.Checked;
         }
 
 #if SJIS
