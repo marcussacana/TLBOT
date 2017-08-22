@@ -60,8 +60,6 @@ class DotNetVM {
         var cp = new CompilerParameters();
         string sourceCode = string.Empty;
         foreach (string line in lines) {
-            if (line.StartsWith("using ") && line.EndsWith(";"))
-                cp.ReferencedAssemblies.Add(line.Substring(6, line.Length - 7) + ".dll");
             if (line.StartsWith("//#import="))
                 cp.ReferencedAssemblies.Add(line.Split('=')[1]);
             sourceCode += line.Replace("\t", "") + '\n';

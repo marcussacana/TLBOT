@@ -34,12 +34,10 @@
             this.OpenBinary = new System.Windows.Forms.OpenFileDialog();
             this.SaveBinary = new System.Windows.Forms.SaveFileDialog();
             this.label3 = new System.Windows.Forms.Label();
-            this.Port = new System.Windows.Forms.MaskedTextBox();
             this.BotSelect = new System.Windows.Forms.Button();
             this.BntBathFind = new System.Windows.Forms.Button();
             this.BntBathProc = new System.Windows.Forms.Button();
             this.LblInfo = new System.Windows.Forms.Label();
-            this.CkOffline = new System.Windows.Forms.CheckBox();
             this.MassMode = new System.Windows.Forms.CheckBox();
             this.Begin = new System.Windows.Forms.NumericUpDown();
             this.End = new System.Windows.Forms.NumericUpDown();
@@ -55,8 +53,14 @@
             this.ckDoubleStep = new System.Windows.Forms.CheckBox();
             this.ExportTextBnt = new System.Windows.Forms.Button();
             this.ImportTextBnt = new System.Windows.Forms.Button();
+            this.MaxPerLine = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.ckUseOriLen = new System.Windows.Forms.CheckBox();
+            this.Client = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxPerLine)).BeginInit();
             this.SuspendLayout();
             // 
             // StringList
@@ -67,7 +71,7 @@
             this.StringList.FormattingEnabled = true;
             this.StringList.Location = new System.Drawing.Point(12, 12);
             this.StringList.Name = "StringList";
-            this.StringList.Size = new System.Drawing.Size(698, 304);
+            this.StringList.Size = new System.Drawing.Size(680, 289);
             this.StringList.TabIndex = 0;
             this.StringList.SelectedIndexChanged += new System.EventHandler(this.StringList_SelectedIndexChanged);
             // 
@@ -82,7 +86,7 @@
             "PT",
             "CH",
             "RU"});
-            this.InputLang.Location = new System.Drawing.Point(168, 407);
+            this.InputLang.Location = new System.Drawing.Point(172, 413);
             this.InputLang.Name = "InputLang";
             this.InputLang.Size = new System.Drawing.Size(40, 21);
             this.InputLang.TabIndex = 1;
@@ -93,7 +97,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 410);
+            this.label1.Location = new System.Drawing.Point(12, 416);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(154, 13);
             this.label1.TabIndex = 2;
@@ -103,7 +107,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(214, 410);
+            this.label2.Location = new System.Drawing.Point(218, 416);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(23, 13);
             this.label2.TabIndex = 3;
@@ -120,7 +124,7 @@
             "PT",
             "CH",
             "RU"});
-            this.OutLang.Location = new System.Drawing.Point(243, 407);
+            this.OutLang.Location = new System.Drawing.Point(247, 413);
             this.OutLang.Name = "OutLang";
             this.OutLang.Size = new System.Drawing.Size(40, 21);
             this.OutLang.TabIndex = 4;
@@ -130,7 +134,7 @@
             // BntProc
             // 
             this.BntProc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BntProc.Location = new System.Drawing.Point(395, 406);
+            this.BntProc.Location = new System.Drawing.Point(416, 412);
             this.BntProc.Name = "BntProc";
             this.BntProc.Size = new System.Drawing.Size(75, 23);
             this.BntProc.TabIndex = 5;
@@ -141,7 +145,7 @@
             // BntOpen
             // 
             this.BntOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntOpen.Location = new System.Drawing.Point(563, 406);
+            this.BntOpen.Location = new System.Drawing.Point(549, 412);
             this.BntOpen.Name = "BntOpen";
             this.BntOpen.Size = new System.Drawing.Size(69, 23);
             this.BntOpen.TabIndex = 6;
@@ -152,7 +156,7 @@
             // BntSave
             // 
             this.BntSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntSave.Location = new System.Drawing.Point(637, 406);
+            this.BntSave.Location = new System.Drawing.Point(623, 412);
             this.BntSave.Name = "BntSave";
             this.BntSave.Size = new System.Drawing.Size(69, 23);
             this.BntSave.TabIndex = 7;
@@ -176,26 +180,16 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(289, 411);
+            this.label3.Location = new System.Drawing.Point(293, 417);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(57, 13);
+            this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 9;
-            this.label3.Text = "With Port: ";
-            // 
-            // Port
-            // 
-            this.Port.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Port.Location = new System.Drawing.Point(343, 408);
-            this.Port.Mask = "00000";
-            this.Port.Name = "Port";
-            this.Port.Size = new System.Drawing.Size(46, 20);
-            this.Port.TabIndex = 10;
-            this.Port.Text = "29511";
+            this.label3.Text = "With: ";
             // 
             // BotSelect
             // 
             this.BotSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BotSelect.Location = new System.Drawing.Point(95, 348);
+            this.BotSelect.Location = new System.Drawing.Point(95, 333);
             this.BotSelect.Name = "BotSelect";
             this.BotSelect.Size = new System.Drawing.Size(94, 23);
             this.BotSelect.TabIndex = 11;
@@ -206,7 +200,7 @@
             // BntBathFind
             // 
             this.BntBathFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BntBathFind.Location = new System.Drawing.Point(11, 350);
+            this.BntBathFind.Location = new System.Drawing.Point(12, 333);
             this.BntBathFind.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.BntBathFind.Name = "BntBathFind";
             this.BntBathFind.Size = new System.Drawing.Size(79, 23);
@@ -218,7 +212,7 @@
             // BntBathProc
             // 
             this.BntBathProc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BntBathProc.Location = new System.Drawing.Point(12, 322);
+            this.BntBathProc.Location = new System.Drawing.Point(12, 307);
             this.BntBathProc.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.BntBathProc.Name = "BntBathProc";
             this.BntBathProc.Size = new System.Drawing.Size(122, 23);
@@ -230,7 +224,7 @@
             // LblInfo
             // 
             this.LblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LblInfo.Location = new System.Drawing.Point(460, 352);
+            this.LblInfo.Location = new System.Drawing.Point(443, 335);
             this.LblInfo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.LblInfo.Name = "LblInfo";
             this.LblInfo.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -239,26 +233,13 @@
             this.LblInfo.Text = "TLBOT by Marcussacana - {0} Build";
             this.LblInfo.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // CkOffline
-            // 
-            this.CkOffline.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.CkOffline.AutoSize = true;
-            this.CkOffline.Location = new System.Drawing.Point(251, 352);
-            this.CkOffline.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.CkOffline.Name = "CkOffline";
-            this.CkOffline.Size = new System.Drawing.Size(72, 17);
-            this.CkOffline.TabIndex = 15;
-            this.CkOffline.Text = "Offline TL";
-            this.CkOffline.UseVisualStyleBackColor = true;
-            this.CkOffline.CheckedChanged += new System.EventHandler(this.OfflineChanged);
-            // 
             // MassMode
             // 
             this.MassMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.MassMode.AutoSize = true;
             this.MassMode.Checked = true;
             this.MassMode.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.MassMode.Location = new System.Drawing.Point(251, 326);
+            this.MassMode.Location = new System.Drawing.Point(251, 309);
             this.MassMode.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.MassMode.Name = "MassMode";
             this.MassMode.Size = new System.Drawing.Size(95, 17);
@@ -274,7 +255,7 @@
             0,
             0,
             0});
-            this.Begin.Location = new System.Drawing.Point(158, 382);
+            this.Begin.Location = new System.Drawing.Point(162, 388);
             this.Begin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.Begin.Maximum = new decimal(new int[] {
             1,
@@ -293,7 +274,7 @@
             0,
             0,
             0});
-            this.End.Location = new System.Drawing.Point(269, 382);
+            this.End.Location = new System.Drawing.Point(273, 388);
             this.End.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.End.Maximum = new decimal(new int[] {
             1,
@@ -308,7 +289,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 384);
+            this.label4.Location = new System.Drawing.Point(14, 390);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(141, 13);
             this.label4.TabIndex = 19;
@@ -318,7 +299,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(248, 384);
+            this.label5.Location = new System.Drawing.Point(252, 390);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(17, 13);
             this.label5.TabIndex = 20;
@@ -328,7 +309,7 @@
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(371, 383);
+            this.label6.Location = new System.Drawing.Point(380, 390);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(30, 13);
@@ -339,17 +320,17 @@
             // 
             this.SearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchTB.Location = new System.Drawing.Point(402, 382);
+            this.SearchTB.Location = new System.Drawing.Point(414, 388);
             this.SearchTB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SearchTB.Name = "SearchTB";
-            this.SearchTB.Size = new System.Drawing.Size(216, 20);
+            this.SearchTB.Size = new System.Drawing.Size(190, 20);
             this.SearchTB.TabIndex = 22;
             this.SearchTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SearchKeyPress);
             // 
             // MassSelect
             // 
             this.MassSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MassSelect.Location = new System.Drawing.Point(195, 348);
+            this.MassSelect.Location = new System.Drawing.Point(195, 333);
             this.MassSelect.Name = "MassSelect";
             this.MassSelect.Size = new System.Drawing.Size(52, 23);
             this.MassSelect.TabIndex = 23;
@@ -360,7 +341,7 @@
             // FoldTrans
             // 
             this.FoldTrans.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.FoldTrans.Location = new System.Drawing.Point(139, 322);
+            this.FoldTrans.Location = new System.Drawing.Point(139, 307);
             this.FoldTrans.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.FoldTrans.Name = "FoldTrans";
             this.FoldTrans.Size = new System.Drawing.Size(108, 23);
@@ -372,7 +353,7 @@
             // SaveDB
             // 
             this.SaveDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SaveDB.Location = new System.Drawing.Point(349, 324);
+            this.SaveDB.Location = new System.Drawing.Point(350, 307);
             this.SaveDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SaveDB.Name = "SaveDB";
             this.SaveDB.Size = new System.Drawing.Size(74, 19);
@@ -384,7 +365,7 @@
             // LoadDB
             // 
             this.LoadDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LoadDB.Location = new System.Drawing.Point(428, 324);
+            this.LoadDB.Location = new System.Drawing.Point(428, 307);
             this.LoadDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.LoadDB.Name = "LoadDB";
             this.LoadDB.Size = new System.Drawing.Size(74, 19);
@@ -396,7 +377,7 @@
             // OverwriteBnt
             // 
             this.OverwriteBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OverwriteBnt.Location = new System.Drawing.Point(622, 382);
+            this.OverwriteBnt.Location = new System.Drawing.Point(608, 388);
             this.OverwriteBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.OverwriteBnt.Name = "OverwriteBnt";
             this.OverwriteBnt.Size = new System.Drawing.Size(85, 19);
@@ -409,7 +390,7 @@
             // 
             this.ckDoubleStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ckDoubleStep.AutoSize = true;
-            this.ckDoubleStep.Location = new System.Drawing.Point(321, 352);
+            this.ckDoubleStep.Location = new System.Drawing.Point(251, 334);
             this.ckDoubleStep.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ckDoubleStep.Name = "ckDoubleStep";
             this.ckDoubleStep.Size = new System.Drawing.Size(78, 17);
@@ -420,7 +401,7 @@
             // ExportTextBnt
             // 
             this.ExportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ExportTextBnt.Location = new System.Drawing.Point(506, 324);
+            this.ExportTextBnt.Location = new System.Drawing.Point(585, 307);
             this.ExportTextBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ExportTextBnt.Name = "ExportTextBnt";
             this.ExportTextBnt.Size = new System.Drawing.Size(74, 19);
@@ -432,7 +413,7 @@
             // ImportTextBnt
             // 
             this.ImportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ImportTextBnt.Location = new System.Drawing.Point(584, 324);
+            this.ImportTextBnt.Location = new System.Drawing.Point(507, 307);
             this.ImportTextBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ImportTextBnt.Name = "ImportTextBnt";
             this.ImportTextBnt.Size = new System.Drawing.Size(74, 19);
@@ -441,11 +422,77 @@
             this.ImportTextBnt.UseVisualStyleBackColor = true;
             this.ImportTextBnt.Click += new System.EventHandler(this.ImportClick);
             // 
+            // MaxPerLine
+            // 
+            this.MaxPerLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MaxPerLine.Location = new System.Drawing.Point(139, 362);
+            this.MaxPerLine.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.MaxPerLine.Maximum = new decimal(new int[] {
+            300,
+            0,
+            0,
+            0});
+            this.MaxPerLine.Name = "MaxPerLine";
+            this.MaxPerLine.Size = new System.Drawing.Size(85, 20);
+            this.MaxPerLine.TabIndex = 31;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(19, 364);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(115, 13);
+            this.label7.TabIndex = 32;
+            this.label7.Text = "Wordwrap with max of:";
+            // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(229, 364);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(108, 13);
+            this.label8.TabIndex = 33;
+            this.label8.Text = "chars per line. (0=Off)";
+            // 
+            // ckUseOriLen
+            // 
+            this.ckUseOriLen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ckUseOriLen.AutoSize = true;
+            this.ckUseOriLen.Location = new System.Drawing.Point(343, 363);
+            this.ckUseOriLen.Name = "ckUseOriLen";
+            this.ckUseOriLen.Size = new System.Drawing.Size(117, 17);
+            this.ckUseOriLen.TabIndex = 34;
+            this.ckUseOriLen.Text = "Use Orig. Line Len.";
+            this.ckUseOriLen.UseVisualStyleBackColor = true;
+            // 
+            // Client
+            // 
+            this.Client.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Client.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.Client.FormattingEnabled = true;
+            this.Client.Items.AddRange(new object[] {
+            "Google",
+            "Bing Neural",
+            "Bing Statical",
+            "LEC"});
+            this.Client.Location = new System.Drawing.Point(328, 414);
+            this.Client.Name = "Client";
+            this.Client.Size = new System.Drawing.Size(82, 21);
+            this.Client.TabIndex = 35;
+            this.Client.TextChanged += new System.EventHandler(this.ClientChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(717, 447);
+            this.ClientSize = new System.Drawing.Size(699, 447);
+            this.Controls.Add(this.Client);
+            this.Controls.Add(this.ckUseOriLen);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.MaxPerLine);
             this.Controls.Add(this.ImportTextBnt);
             this.Controls.Add(this.ExportTextBnt);
             this.Controls.Add(this.ckDoubleStep);
@@ -461,12 +508,10 @@
             this.Controls.Add(this.End);
             this.Controls.Add(this.Begin);
             this.Controls.Add(this.MassMode);
-            this.Controls.Add(this.CkOffline);
             this.Controls.Add(this.LblInfo);
             this.Controls.Add(this.BntBathProc);
             this.Controls.Add(this.BntBathFind);
             this.Controls.Add(this.BotSelect);
-            this.Controls.Add(this.Port);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.BntSave);
             this.Controls.Add(this.BntOpen);
@@ -476,12 +521,13 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.InputLang);
             this.Controls.Add(this.StringList);
-            this.MinimumSize = new System.Drawing.Size(733, 486);
+            this.MinimumSize = new System.Drawing.Size(715, 486);
             this.Name = "Form1";
             this.Text = "TLBOT - In Game Machine Transation";
             this.Shown += new System.EventHandler(this.ProgramOpen);
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxPerLine)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -500,12 +546,10 @@
         private System.Windows.Forms.OpenFileDialog OpenBinary;
         private System.Windows.Forms.SaveFileDialog SaveBinary;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.MaskedTextBox Port;
         private System.Windows.Forms.Button BotSelect;
         private System.Windows.Forms.Button BntBathFind;
         private System.Windows.Forms.Button BntBathProc;
         private System.Windows.Forms.Label LblInfo;
-        private System.Windows.Forms.CheckBox CkOffline;
         private System.Windows.Forms.CheckBox MassMode;
         private System.Windows.Forms.NumericUpDown Begin;
         private System.Windows.Forms.NumericUpDown End;
@@ -521,6 +565,11 @@
         private System.Windows.Forms.CheckBox ckDoubleStep;
         private System.Windows.Forms.Button ExportTextBnt;
         private System.Windows.Forms.Button ImportTextBnt;
+        private System.Windows.Forms.NumericUpDown MaxPerLine;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.CheckBox ckUseOriLen;
+        private System.Windows.Forms.ComboBox Client;
     }
 }
 

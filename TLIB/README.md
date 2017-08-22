@@ -1,11 +1,14 @@
-### TLIB 0.1.2
-[![Build Status](https://travis-ci.org/ForumHulp/pageaddon.svg?branch=master)](http://katawa.url.ph)
+### TLIB 0.2.3
+[![Build Status](https://travis-ci.org/ForumHulp/pageaddon.svg?branch=master)](http://vnx.uvnworks.com)
 
-####LEC: Language Engineering Company
-A .NET Client for LEC Power Translator Local Server
+### LEC: Language Engineering Company
+A .NET Client for LEC Power Translator Local Server and more.
 
 
-Support: Local LEC Server, Online Goole Translator (No-API)
+#### Support: 
+- Local LEC Server
+- Google Translator (No-API)
+- Bing Translator (No-API)
 
 [Buy the Main Program Here](https://www.lec.com/listProduct.asp?product=World%20Premium&family=Power-Translator)
-[Sample Project Here](https://github.com/marcussacana/TLIB/releases/tag/0.1.3)
+[Sample Project Here](https://github.com/marcussacana/TLIB/releases/tag/0.2.3)
