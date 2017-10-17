@@ -57,7 +57,11 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.ckUseOriLen = new System.Windows.Forms.CheckBox();
-            this.Client = new System.Windows.Forms.ComboBox();
+            this.FirstClient = new System.Windows.Forms.ComboBox();
+            this.MultiThrdCh = new System.Windows.Forms.CheckBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.SecondClient = new System.Windows.Forms.ComboBox();
+            this.ckFakeBreakline = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxPerLine)).BeginInit();
@@ -71,7 +75,7 @@
             this.StringList.FormattingEnabled = true;
             this.StringList.Location = new System.Drawing.Point(12, 12);
             this.StringList.Name = "StringList";
-            this.StringList.Size = new System.Drawing.Size(680, 289);
+            this.StringList.Size = new System.Drawing.Size(739, 289);
             this.StringList.TabIndex = 0;
             this.StringList.SelectedIndexChanged += new System.EventHandler(this.StringList_SelectedIndexChanged);
             // 
@@ -134,7 +138,7 @@
             // BntProc
             // 
             this.BntProc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BntProc.Location = new System.Drawing.Point(416, 412);
+            this.BntProc.Location = new System.Drawing.Point(527, 413);
             this.BntProc.Name = "BntProc";
             this.BntProc.Size = new System.Drawing.Size(75, 23);
             this.BntProc.TabIndex = 5;
@@ -145,9 +149,9 @@
             // BntOpen
             // 
             this.BntOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntOpen.Location = new System.Drawing.Point(549, 412);
+            this.BntOpen.Location = new System.Drawing.Point(630, 412);
             this.BntOpen.Name = "BntOpen";
-            this.BntOpen.Size = new System.Drawing.Size(69, 23);
+            this.BntOpen.Size = new System.Drawing.Size(60, 23);
             this.BntOpen.TabIndex = 6;
             this.BntOpen.Text = "Open";
             this.BntOpen.UseVisualStyleBackColor = true;
@@ -156,9 +160,9 @@
             // BntSave
             // 
             this.BntSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntSave.Location = new System.Drawing.Point(623, 412);
+            this.BntSave.Location = new System.Drawing.Point(696, 412);
             this.BntSave.Name = "BntSave";
-            this.BntSave.Size = new System.Drawing.Size(69, 23);
+            this.BntSave.Size = new System.Drawing.Size(55, 23);
             this.BntSave.TabIndex = 7;
             this.BntSave.Text = "Save";
             this.BntSave.UseVisualStyleBackColor = true;
@@ -224,7 +228,7 @@
             // LblInfo
             // 
             this.LblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LblInfo.Location = new System.Drawing.Point(443, 335);
+            this.LblInfo.Location = new System.Drawing.Point(502, 335);
             this.LblInfo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.LblInfo.Name = "LblInfo";
             this.LblInfo.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -239,13 +243,14 @@
             this.MassMode.AutoSize = true;
             this.MassMode.Checked = true;
             this.MassMode.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.MassMode.Location = new System.Drawing.Point(251, 309);
+            this.MassMode.Location = new System.Drawing.Point(342, 362);
             this.MassMode.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.MassMode.Name = "MassMode";
             this.MassMode.Size = new System.Drawing.Size(95, 17);
             this.MassMode.TabIndex = 16;
             this.MassMode.Text = "Massive Mode";
             this.MassMode.UseVisualStyleBackColor = true;
+            this.MassMode.CheckedChanged += new System.EventHandler(this.MassCheckedChange);
             // 
             // Begin
             // 
@@ -323,7 +328,7 @@
             this.SearchTB.Location = new System.Drawing.Point(414, 388);
             this.SearchTB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SearchTB.Name = "SearchTB";
-            this.SearchTB.Size = new System.Drawing.Size(190, 20);
+            this.SearchTB.Size = new System.Drawing.Size(249, 20);
             this.SearchTB.TabIndex = 22;
             this.SearchTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SearchKeyPress);
             // 
@@ -352,8 +357,8 @@
             // 
             // SaveDB
             // 
-            this.SaveDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SaveDB.Location = new System.Drawing.Point(350, 307);
+            this.SaveDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveDB.Location = new System.Drawing.Point(442, 307);
             this.SaveDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SaveDB.Name = "SaveDB";
             this.SaveDB.Size = new System.Drawing.Size(74, 19);
@@ -364,8 +369,8 @@
             // 
             // LoadDB
             // 
-            this.LoadDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LoadDB.Location = new System.Drawing.Point(428, 307);
+            this.LoadDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadDB.Location = new System.Drawing.Point(520, 307);
             this.LoadDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.LoadDB.Name = "LoadDB";
             this.LoadDB.Size = new System.Drawing.Size(74, 19);
@@ -377,7 +382,7 @@
             // OverwriteBnt
             // 
             this.OverwriteBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OverwriteBnt.Location = new System.Drawing.Point(608, 388);
+            this.OverwriteBnt.Location = new System.Drawing.Point(667, 388);
             this.OverwriteBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.OverwriteBnt.Name = "OverwriteBnt";
             this.OverwriteBnt.Size = new System.Drawing.Size(85, 19);
@@ -390,18 +395,20 @@
             // 
             this.ckDoubleStep.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ckDoubleStep.AutoSize = true;
-            this.ckDoubleStep.Location = new System.Drawing.Point(251, 334);
+            this.ckDoubleStep.Enabled = false;
+            this.ckDoubleStep.Location = new System.Drawing.Point(255, 311);
             this.ckDoubleStep.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ckDoubleStep.Name = "ckDoubleStep";
             this.ckDoubleStep.Size = new System.Drawing.Size(78, 17);
             this.ckDoubleStep.TabIndex = 28;
             this.ckDoubleStep.Text = "2-Steps TL";
             this.ckDoubleStep.UseVisualStyleBackColor = true;
+            this.ckDoubleStep.CheckedChanged += new System.EventHandler(this.DoubleStepStatusChanged);
             // 
             // ExportTextBnt
             // 
-            this.ExportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ExportTextBnt.Location = new System.Drawing.Point(585, 307);
+            this.ExportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ExportTextBnt.Location = new System.Drawing.Point(677, 307);
             this.ExportTextBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ExportTextBnt.Name = "ExportTextBnt";
             this.ExportTextBnt.Size = new System.Drawing.Size(74, 19);
@@ -412,8 +419,8 @@
             // 
             // ImportTextBnt
             // 
-            this.ImportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ImportTextBnt.Location = new System.Drawing.Point(507, 307);
+            this.ImportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ImportTextBnt.Location = new System.Drawing.Point(599, 307);
             this.ImportTextBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ImportTextBnt.Name = "ImportTextBnt";
             this.ImportTextBnt.Size = new System.Drawing.Size(74, 19);
@@ -460,35 +467,89 @@
             // 
             this.ckUseOriLen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ckUseOriLen.AutoSize = true;
-            this.ckUseOriLen.Location = new System.Drawing.Point(343, 363);
+            this.ckUseOriLen.Location = new System.Drawing.Point(255, 337);
             this.ckUseOriLen.Name = "ckUseOriLen";
             this.ckUseOriLen.Size = new System.Drawing.Size(117, 17);
             this.ckUseOriLen.TabIndex = 34;
             this.ckUseOriLen.Text = "Use Orig. Line Len.";
             this.ckUseOriLen.UseVisualStyleBackColor = true;
             // 
-            // Client
+            // FirstClient
             // 
-            this.Client.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Client.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.Client.FormattingEnabled = true;
-            this.Client.Items.AddRange(new object[] {
+            this.FirstClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.FirstClient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FirstClient.FormattingEnabled = true;
+            this.FirstClient.Items.AddRange(new object[] {
             "Google",
             "Bing Neural",
             "Bing Statical",
             "LEC"});
-            this.Client.Location = new System.Drawing.Point(328, 414);
-            this.Client.Name = "Client";
-            this.Client.Size = new System.Drawing.Size(82, 21);
-            this.Client.TabIndex = 35;
-            this.Client.TextChanged += new System.EventHandler(this.ClientChanged);
+            this.FirstClient.Location = new System.Drawing.Point(326, 414);
+            this.FirstClient.Name = "FirstClient";
+            this.FirstClient.Size = new System.Drawing.Size(82, 21);
+            this.FirstClient.TabIndex = 35;
+            this.FirstClient.TextChanged += new System.EventHandler(this.ClientChanged);
+            // 
+            // MultiThrdCh
+            // 
+            this.MultiThrdCh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MultiThrdCh.AutoSize = true;
+            this.MultiThrdCh.Enabled = false;
+            this.MultiThrdCh.Location = new System.Drawing.Point(442, 362);
+            this.MultiThrdCh.Name = "MultiThrdCh";
+            this.MultiThrdCh.Size = new System.Drawing.Size(133, 17);
+            this.MultiThrdCh.TabIndex = 36;
+            this.MultiThrdCh.Text = "Multithread Translation";
+            this.MultiThrdCh.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(409, 417);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(32, 13);
+            this.label9.TabIndex = 37;
+            this.label9.Text = "And: ";
+            // 
+            // SecondClient
+            // 
+            this.SecondClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SecondClient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.SecondClient.Enabled = false;
+            this.SecondClient.FormattingEnabled = true;
+            this.SecondClient.Items.AddRange(new object[] {
+            "Google",
+            "Bing Neural",
+            "Bing Statical",
+            "LEC"});
+            this.SecondClient.Location = new System.Drawing.Point(439, 414);
+            this.SecondClient.Name = "SecondClient";
+            this.SecondClient.Size = new System.Drawing.Size(82, 21);
+            this.SecondClient.TabIndex = 38;
+            this.SecondClient.TextChanged += new System.EventHandler(this.ClientChanged);
+            // 
+            // ckFakeBreakline
+            // 
+            this.ckFakeBreakline.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ckFakeBreakline.AutoSize = true;
+            this.ckFakeBreakline.Location = new System.Drawing.Point(378, 337);
+            this.ckFakeBreakline.Name = "ckFakeBreakline";
+            this.ckFakeBreakline.Size = new System.Drawing.Size(81, 17);
+            this.ckFakeBreakline.TabIndex = 39;
+            this.ckFakeBreakline.Text = "Fak. BrkLn.";
+            this.ckFakeBreakline.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(699, 447);
-            this.Controls.Add(this.Client);
+            this.ClientSize = new System.Drawing.Size(758, 447);
+            this.Controls.Add(this.ckFakeBreakline);
+            this.Controls.Add(this.SecondClient);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.MultiThrdCh);
+            this.Controls.Add(this.FirstClient);
             this.Controls.Add(this.ckUseOriLen);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -524,6 +585,7 @@
             this.MinimumSize = new System.Drawing.Size(715, 486);
             this.Name = "Form1";
             this.Text = "TLBOT - In Game Machine Transation";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClosingForm);
             this.Shown += new System.EventHandler(this.ProgramOpen);
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).EndInit();
@@ -569,7 +631,11 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox ckUseOriLen;
-        private System.Windows.Forms.ComboBox Client;
+        private System.Windows.Forms.ComboBox FirstClient;
+        private System.Windows.Forms.CheckBox MultiThrdCh;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox SecondClient;
+        private System.Windows.Forms.CheckBox ckFakeBreakline;
     }
 }
 

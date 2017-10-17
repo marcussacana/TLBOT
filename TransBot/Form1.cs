@@ -1,4 +1,5 @@
 ﻿//#define SJIS
+#define LECFix
 using System;
 using TLIB;
 using System.ComponentModel;
@@ -9,6 +10,7 @@ using AdvancedBinary;
 using SacanaWrapper;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace TLBOT {
     public partial class Form1 : Form {
@@ -23,6 +25,7 @@ namespace TLBOT {
 
         string[] Strs;
         string Filter = "All Files|*.*";
+
         Wrapper Editor;
         private void BntOpen_Click(object sender, EventArgs e) {
             OpenBinary.ShowDialog();
@@ -105,7 +108,7 @@ namespace TLBOT {
                 Abort = true;
                 return;
             }
-            if (Client.Text == "LEC" && !LEC.ServerIsOpen(_Port)) {
+            if (FirstClient.Text == "LEC" && !LEC.ServerIsOpen(LecPort)) {
                 MessageBox.Show("Failed to catch the LEC Server Port", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Error = true;
                 return;
@@ -119,6 +122,16 @@ namespace TLBOT {
                         throw new Exception();
                     else
                         return;
+                }
+            } else if (MultiThrdCh.Checked) {
+                if (!MultitreadTranslate()) {
+                    if (BM)
+                        throw new Exception();
+                    else
+                        return;
+                }
+                if (Abort && !BM) {
+                    MessageBox.Show("Task Aborted", "TLBot", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 }
             } else {
                 LinePerLineTranslate();
@@ -158,6 +171,7 @@ namespace TLBOT {
 
                 BreakLine(ref Input, false);
                 string[] Lines = Input.Split('\n');
+                bool FromCache = false;
 
                 for (int x = 0; x < Lines.Length; x++) {
                     if (string.IsNullOrWhiteSpace(Lines[x]) || (Lines[x].Length > 3 && string.IsNullOrEmpty(NullStringWorker(Lines[x]))))
@@ -170,12 +184,14 @@ namespace TLBOT {
                             string Source = Lines[x];
                             if (VM != null)
                                 Source = VM.Call("Main", "BeforeTL", Source);
-                            Translate(out Result, Source);
+
+                            TranslateAsync(out Result, Source);
                             if (Result.ToLower().StartsWith("-benzóico")) {
                                 try {
                                     Result = Bing.Translate(Source, InputLang.Text, OutLang.Text, true);
                                 } catch { }
                             }
+
                             if (Result == null || Result.ToLower().StartsWith("-benzóico"))
                                 continue;
                             if (VM != null)
@@ -185,9 +201,10 @@ namespace TLBOT {
                             if (!Cache.ContainsKey(Source))
                                 Cache.Add(Source, Result);
                         }
-                    } else
+                    } else {
                         Result = Cache[Lines[x]];
-
+                        FromCache = true;
+                    }
                     Lines[x] = Result;
                 }
 
@@ -200,7 +217,10 @@ namespace TLBOT {
 
                 PrefixAndSufix(ref Translation, true);
                 StringList.Items[i] = Translation;
-                StringList.SelectedIndex = i;
+                if (i % 10 == 0)
+                    StringList.SelectedIndex = i;
+                else if (!FromCache)
+                    StringList.SelectedIndex = i;
                 Application.DoEvents();
             }
         }
@@ -215,7 +235,7 @@ namespace TLBOT {
             var RetFlg = new Dictionary<int, bool>();
             var DecFlg = new Dictionary<int, bool>();
             var LenInf = new Dictionary<int, int>();
-            for (int i = 0; i < StringList.Items.Count; i++) {
+            for (int i = (int)Begin.Value; i < End.Value; i++) {
                 bool Checked = StringList.GetItemChecked(i);
                 if (!Checked)
                     continue;
@@ -261,7 +281,7 @@ namespace TLBOT {
                 Original = VM.Call("Main", "BeforeTL", (object)Original);
 
             string[] Translated;
-            switch (Client.Text) {
+            switch (FirstClient.Text) {
                 case "Google":
                     if (ckDoubleStep.Checked) {
                         Translated = Google.Translate(Original, InputLang.Text, "EN");
@@ -317,7 +337,114 @@ namespace TLBOT {
 
                     StringList.Items[Index] = Str;
 
-                    if (i % 10 == 0 || !(i + 1 < Translated.Length)) { 
+                    if (i % 10 == 0 || !(i + 1 < Translated.Length)) {
+                        StringList.SelectedIndex = Index;
+                        Application.DoEvents();
+                    }
+                    l = 0;
+                }
+            }
+            return true;
+        }
+        private bool MultitreadTranslate() {
+            Text = "TLBOT - Initializing Multithread Translation...";
+            var Strings = new List<string>();
+            var IndMap = new Dictionary<int, int>();
+            var LinesCount = new Dictionary<int, int>();
+            var Prx = new Dictionary<int, string>();
+            var Sfx = new Dictionary<int, string>();
+            var RetFlg = new Dictionary<int, bool>();
+            var DecFlg = new Dictionary<int, bool>();
+            var LenInf = new Dictionary<int, int>();
+            for (int i = (int)Begin.Value; i < End.Value; i++) {
+                bool Checked = StringList.GetItemChecked(i);
+                if (!Checked)
+                    continue;
+                string Input = StringList.Items[i].ToString();
+                if (BlackList.Contains(Input))
+                    continue;
+                if (Replace.ContainsKey(Input)) {
+                    StringList.Items[i] = Replace[Input];
+                    StringList.SelectedIndex = i;
+                    continue;
+                }
+                PrefixAndSufix(ref Input, false);
+                BreakLine(ref Input, false);
+
+
+                if (Cache.ContainsKey(Input)) {
+                    string Str = Cache[Input];
+                    PrefixAndSufix(ref Str, true);
+                    BreakLine(ref Str, true);
+                    StringList.Items[i] = Str;
+                    continue;
+                }
+
+                Prx[i] = Prefix;
+                Sfx[i] = Sufix;
+                DecFlg[i] = DecodedFlag;
+                RetFlg[i] = ReturnFlag;
+                LenInf[i] = MaxLine;
+
+                string[] Lines = Input.Split('\n');
+
+                for (int x = 0; x < Lines.Length; x++) {
+                    IndMap[Strings.Count()] = i;
+                    Strings.Add(Lines[x]);
+                }
+                StringList.Items[i] = string.Empty;
+                Application.DoEvents();
+            }
+            Text = "TLBOT - Translating...";
+
+            string[] Original = Strings.ToArray();
+            if (VM != null)
+                Original = VM.Call("Main", "BeforeTL", (object)Original);
+
+            string[] Translated = MultiThreadTl(Original, IndMap);
+
+            if (Translated == null) {
+                MessageBox.Show("Failed to Translate, try other client or try again later", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (VM != null)
+                Translated = VM.Call("Main", "AfterTL", (object)Translated);
+
+            for (int i = 0, l = 0; i < Translated.Length; i++) {
+                int Index = IndMap[i];
+                bool Continue = (i + 1 < Translated.Length && IndMap[i + 1] == Index);
+                if (Continue) {
+                    if (Abort && string.IsNullOrEmpty(Translated[i])) {
+                        return true;
+                    }
+                    l++;
+                    StringList.Items[Index] += Translated[i] + "\n";
+                } else {
+                    string Str = StringList.Items[Index].ToString();
+                    Str += Translated[i];
+
+
+                    Prefix = Prx[Index];
+                    Sufix = Sfx[Index];
+                    DecodedFlag = DecFlg[Index];
+                    ReturnFlag = RetFlg[Index];
+                    MaxLine = LenInf[Index];
+
+                    BreakLine(ref Str, true);
+
+                    string OriStr = string.Empty;
+                    while (l >= 0)
+                        OriStr += Original[i - (l--)] + "\n";
+                    OriStr = OriStr.TrimEnd('\n');
+                    if (!(string.IsNullOrWhiteSpace(Str) && !string.IsNullOrWhiteSpace(OriStr))) {
+                        Cache[OriStr] = Str;
+                    }
+
+                    PrefixAndSufix(ref Str, true);
+
+                    StringList.Items[Index] = Str;
+
+                    if (i % 10 == 0 || !(i + 1 < Translated.Length)) {
                         StringList.SelectedIndex = Index;
                         Application.DoEvents();
                     }
@@ -327,6 +454,108 @@ namespace TLBOT {
             return true;
         }
 
+        private string[] MultiThreadTl(string[] Original, Dictionary<int, int> IndexMap, uint BlockLength = 25) {
+            string[] Result = new string[Original.Length];
+            for (uint i = 0; i < Original.Length; i += BlockLength) {
+                bool IsLast = i + BlockLength < Original.Length;
+                string[] Buffer = new string[(IsLast ? BlockLength : Original.Length - i)];
+                for (int x = 0; x < Buffer.Length; x++)
+                    Buffer[x] = Original[i + x];
+                int tries = 0;
+                bool PrevLoop = false;
+                again:;
+                try {
+                    Buffer = TransBlock(Buffer);
+                } catch {
+                    if (tries++ > 3) {
+                        switch (TLClient1) {
+                            case "Google":
+                                if (PrevLoop)
+                                    goto default;
+                                PrevLoop = true;
+                                TLClient1 = "Bing Neural";
+                                break;
+                            case "Bing Neural":
+                                TLClient1 = "LEC";
+                                break;
+                            case "LEC":
+                                TLClient1 = "Google";
+                                break;
+                            default:
+                                Abort = true;
+                                break;
+                        }
+                        switch (TLClient2) {
+                            case "Google":
+                                if (PrevLoop)
+                                    goto default;
+                                PrevLoop = true;
+                                TLClient2 = "Bing Neural";
+                                break;
+                            case "Bing Neural":
+                                TLClient2 = "LEC";
+                                break;
+                            case "LEC":
+                                TLClient2 = "Google";
+                                break;
+                            default:
+                                Abort = true;
+                                break;
+                        }
+                    }
+                    goto again;
+                }
+                int RealIndex = IndexMap[(int)i];
+
+                for (int x = 0; x < Buffer.Length; x++) {
+                    Result[i + x] = Buffer[x];
+                    StringList.Items[RealIndex + x] = "";
+                }
+                
+                Text = string.Format("Translating... {0}/{1} ({2}%)", i, Original.Length, (int)(((double)i/Original.Length)*100));
+                Application.DoEvents();
+                if (Abort)
+                    return Result;
+            }
+            return Result;
+        }
+
+        static string[] NTSafeArr;
+        private string[] TransBlock(string[] Buffer) {
+            uint Translated = 0;
+            string[] NTSafeArr = new string[Buffer.Length];
+            for (int i = 0; i < Buffer.Length; i++) {
+                bool Wait = true;
+                string InputLang = this.InputLang.Text;
+                string OutLang = this.OutLang.Text;
+                new Thread(() => {
+                    int Pos = (i * 2) / 2;//Prevent Pointer Copy
+                    Wait = false;
+                    int tries = 0;
+                    again:;
+                    try {
+                        string Input = Buffer[Pos];
+                        Translate(out string Rst, Input, InputLang, OutLang);
+                        NTSafeArr[Pos] = Rst;
+                    } catch {
+                        if (tries++ > 3)
+                            throw new Exception("Failed to Translate");
+                        goto again;
+                    }
+                    Translated++;
+                }).Start();
+
+                while (Wait)
+                    Thread.Sleep(50);
+            }
+            while (Translated != Buffer.Length) {
+                Application.DoEvents();
+                Thread.Sleep(10);
+            }
+            return NTSafeArr;
+        }
+
+        private delegate void SetArr();
         private string NullStringWorker(string Str) {
             return Str.Replace(Str[0] + "", "").Replace(Str[1] + "", "").Replace(".", "").Replace("!", "").Replace("?", "").Replace("-", "").Trim();
         }
@@ -336,35 +565,52 @@ namespace TLBOT {
         int MaxLine = 0;
 
         private void BreakLine(ref string Input, bool Mode) {
-            if (Mode) {
-                if (MaxLine != 0) {
-                    Input = WordWrap(Input, MaxLine - 2);//No-Monospaced Prevention
-                } else {
-                    int WL = (int)MaxPerLine.Value;
-                    if (WL != 0) {
-                        Input = WordWrap(Input, WL);
+            if (ckFakeBreakline.Checked) {
+                if (Mode) {
+                    Input = WordWrap(Input, (int)MaxPerLine.Value);
+                    string[] Lines = Input.Split('\n');
+                    Input = string.Empty;
+                    for (int i = 0; i < Lines.Length; i++) {
+                        string Line = Lines[i];
+                        while (Line.Length < (int)MaxPerLine.Value)
+                            Line += ' ';
+                        Input += Line;
                     }
+                } else {
+                    while (Input.Replace(@"  ", @" ") != Input)
+                        Input = Input.Replace(@"  ", @" ");
                 }
-                if (ReturnFlag)
-                    Input = Input.Replace("\n", DecodedFlag ? "\\r" : "\r");
-                if (!ReturnFlag && DecodedFlag)
-                    Input = Input.Replace("\n", "\\n");
-            } else {
-                DecodedFlag = Input.Contains("\\n") || Input.Contains("\\r");
-                ReturnFlag = Input.Contains(DecodedFlag ? "\\r" : "\r") && !Input.Contains(DecodedFlag ? "\\n" : "\n");;
-                if (ReturnFlag)
-                    Input = Input.Replace(DecodedFlag ? "\\r" : "\r", "\n");
-                if (DecodedFlag)
-                    Input = Input.Replace("\\n", "\n");
-                if (Input.IndexOf("\n") > 10 && !Input.Contains("\n\n")) {
-                    if (ckUseOriLen.Checked)
-                        MaxLine = Input.IndexOf("\n");
-                    else
+            }   else {
+                if (Mode) {
+                    if (MaxLine != 0) {
+                        Input = WordWrap(Input, MaxLine - 2);//No-Monospaced Prevention
+                    } else {
+                        int WL = (int)MaxPerLine.Value;
+                        if (WL != 0) {
+                            Input = WordWrap(Input, WL);
+                        }
+                    }
+                    if (ReturnFlag)
+                        Input = Input.Replace("\n", DecodedFlag ? "\\r" : "\r");
+                    if (!ReturnFlag && DecodedFlag)
+                        Input = Input.Replace("\n", "\\n");
+                } else {
+                    DecodedFlag = Input.Contains("\\n") || Input.Contains("\\r");
+                    ReturnFlag = Input.Contains(DecodedFlag ? "\\r" : "\r") && !Input.Contains(DecodedFlag ? "\\n" : "\n"); ;
+                    if (ReturnFlag)
+                        Input = Input.Replace(DecodedFlag ? "\\r" : "\r", "\n");
+                    if (DecodedFlag)
+                        Input = Input.Replace("\\n", "\n");
+                    if (Input.IndexOf("\n") > 10 && !Input.Contains("\n\n")) {
+                        if (ckUseOriLen.Checked)
+                            MaxLine = Input.IndexOf("\n");
+                        else
+                            MaxLine = 0;
+                        //prevent too many spaces in the new string
+                        Input = Input.Replace(" \n ", "  ").Replace(" \n", " ").Replace("\n ", " ").Replace("\n", " ");
+                    } else
                         MaxLine = 0;
-                    //prevent too many spaces in the new string
-                    Input = Input.Replace(" \n ", "  ").Replace(" \n", " ").Replace("\n ", " ").Replace("\n", " ");
-                } else
-                    MaxLine = 0;
+                }
             }
         }
 
@@ -414,15 +660,24 @@ namespace TLBOT {
 
         string Prefix;
         string Sufix;
-        private void PrefixAndSufix(ref string Str, bool Mode, bool ReadOnly = false) {
-            List<string> TrimData = new List<string>(new string[] { "'", "(", ")", "\"", "[", "“", "［", "《", "«", "「", "『", "【", "]", "”", "］", "》", "»", "」", "』", "】", "～" });
 
+
+        List<string> TrimData = null;
+
+        private void TrimLoad() {
+            TrimData = new List<string>(new string[] { "(", ")", "[", "“", "［", "《", "«", "「", "『", "【", "]", "”", "］", "》", "»", "」", "』", "】", "～" });
             if (VM != null) {
                 string[] TD = VM.Call("Main", "Trim");
                 foreach (string Trim in TD) {
                     TrimData.Add(Trim);
                 }
             }
+        }
+
+        private void PrefixAndSufix(ref string Str, bool Mode, bool ReadOnly = false) {
+            if (TrimData == null)
+                TrimLoad();
+
             if (Mode) {
                 Str = Prefix + Str + Sufix;
             } else {
@@ -449,7 +704,46 @@ namespace TLBOT {
                 }
             }
         }
+        
+        private static string Rst = null;
+        private void TranslateAsync(out string Translation, string Input, string SourceLang = null, string TargetLang = null, bool Fast = false) {
+            string TLC1 = TLClient1, TLC2 = TLClient2;
+            int Tries = 0;
 
+            again:;
+            if (SourceLang == null)
+                SourceLang = InputLang.Text;
+            if (TargetLang == null)
+                TargetLang = OutLang.Text;
+            Rst = null;
+            DateTime Begin = DateTime.Now;
+            bool Running = true;
+            Thread TL = new Thread(() => {
+                try {
+                    Translate(out string TLRst, Input, SourceLang, TargetLang, Fast);
+                    Rst = TLRst;
+                } catch { }
+                Running = false;
+            });
+            TL.Start();
+            while (Running && (DateTime.Now - Begin).TotalSeconds < 40) {
+                Application.DoEvents();
+                Thread.Sleep(10);
+            }
+            if (Rst == null) {
+                TL.Abort();
+                if (Tries++ < 4){
+                    if (TLC1 == "LEC")
+                        TLClient1 = "Google";
+                    if (TLC2 == "LEC")
+                        TLClient2 = "Google";
+                    goto again;
+                }
+            }
+            TLClient1 = TLC1;
+            TLClient2 = TLC2;
+            Translation = Rst;
+        }
         private void Translate(out string Translation, string Input, string SourceLang = null, string TargetLang = null, bool Fast = false) {
             if (SourceLang == null)
                 SourceLang = InputLang.Text;
@@ -458,31 +752,91 @@ namespace TLBOT {
             int tries = -1;
             Translation = null;
             while (tries++ < 5 && Translation == null) {
-                if (ckDoubleStep.Checked && !Fast) {
+                if (!Fast && ckDoubleStep.Checked) {
                     try {
-                        Translation = ReqTL(Input, SourceLang, "EN");
-                        Translation = ReqTL(Translation, "EN", TargetLang);
-                    }
-                    catch { }
+                        Translation = ReqTL(Input, SourceLang, "EN", Client.First);
+#if LECFix
+                        if (SourceLang == "JA") {
+                            if (TrimData == null)
+                                TrimLoad();
+                            bool OK = true;
+                            foreach (char c in Translation) {
+                                if (TrimData.Contains(c.ToString()))
+                                    continue;
+                                if (c >= ' ' && c <= '~')
+                                    continue;
+                                OK = false;
+                                break;
+                            }
+
+                            if (!OK) {
+                                Translation = ReqTL(Input, SourceLang, "EN", Client.Second);
+                            }
+                        }
+#endif
+                            Translation = ReqTL(Translation, "EN", TargetLang, Client.Second);
+                    } catch { }
                 } else
                     try {
-                        Translation = ReqTL(Input, SourceLang, TargetLang);
-                    }
-                    catch { }
+                        Translation = ReqTL(Input, SourceLang, TargetLang, Client.First);
+                    } catch { }
             }
         }
 
-        private string ReqTL(string Text, string InputLang, string OutputLang) {
-            switch (Client.Text) {
-                case "LEC":
-                    return LEC.Translate(Text, InputLang, OutputLang, LEC.Gender.Male, LEC.Formality.Formal, LecPort);
-                case "Google":
-                    return Google.Translate(Text, InputLang, OutputLang);
-                case "Bing Statical":
-                    return Bing.Translate(Text, InputLang, OutputLang, false);
-                case "Bing Neural":
-                    return Bing.Translate(Text, InputLang, OutputLang, true);
+        static string _CTL2;
+        static string _CTL1;
+        string TLClient1 {
+            get {
+                if (!FirstClient.InvokeRequired)
+                    _CTL1 = FirstClient.Text;
+                return _CTL1;
             }
+            set {
+                FirstClient.Text = value;
+                _CTL1 = value;
+            }
+        }
+        string TLClient2 {
+            get {
+                if (!SecondClient.InvokeRequired)
+                    _CTL2 = SecondClient.Text;
+                return _CTL2;
+            }
+            set {
+                SecondClient.Text = value;
+                _CTL2 = value;
+            }
+        }
+        enum Client {
+            First, Second
+        }
+        private string ReqTL(string Text, string InputLang, string OutputLang, Client With) {
+            switch (With) {
+                case Client.First:
+                    switch (TLClient1) {
+                        case "LEC":
+                            return LEC.Translate(Text, InputLang, OutputLang, LEC.Gender.Male, LEC.Formality.Formal, LecPort);
+                        case "Google":
+                            return Google.Translate(Text, InputLang, OutputLang);
+                        case "Bing Statical":
+                            return Bing.Translate(Text, InputLang, OutputLang, false);
+                        case "Bing Neural":
+                            return Bing.Translate(Text, InputLang, OutputLang, true);
+                    }
+                    break;
+                case Client.Second:
+                    switch (TLClient2) {
+                        case "LEC":
+                            return LEC.Translate(Text, InputLang, OutputLang, LEC.Gender.Male, LEC.Formality.Formal, LecPort);
+                        case "Google":
+                            return Google.Translate(Text, InputLang, OutputLang);
+                        case "Bing Statical":
+                            return Bing.Translate(Text, InputLang, OutputLang, false);
+                        case "Bing Neural":
+                            return Bing.Translate(Text, InputLang, OutputLang, true);
+                    }
+                    break;
+         }
             throw new Exception("Invalid Translation Client");
         }
         private void FixTL(ref string translation, string input) {
@@ -919,11 +1273,18 @@ namespace TLBOT {
         }
 
         private void MassSelect_Click(object sender, EventArgs e) {
+            int Max = (int)(End.Value - Begin.Value);
             if (StringList.Items.Count > 1) {
-                bool Status = !StringList.GetItemChecked(0);
-                for (int i = 0; i < StringList.Items.Count; i++)
+                bool Status = !StringList.GetItemChecked((int)Begin.Value);
+                for (int i = (int)Begin.Value; i < End.Value; i++) {
                     StringList.SetItemChecked(i, Status);
+                    if (i % 10 == 0) {
+                        Application.DoEvents();
+                        Text = "Checking... " + i + "/" + Max;
+                    }
+                }
             }
+            Text = "TLBOT - In Game Machine Transation";
         }
 
         string lf = string.Empty;
@@ -1054,7 +1415,8 @@ namespace TLBOT {
                     for (int i = 0; i < List.Length; i += 2)
                         Replace.Add(List[i], List[i + 1]);
             }
-            Client.SelectedIndex = 0;
+            FirstClient.SelectedIndex = 0;
+            SecondClient.SelectedIndex = 0;
         }
 
         private void OverwriteBnt_Click(object sender, EventArgs e) {
@@ -1108,10 +1470,28 @@ namespace TLBOT {
         }
 
         private void ClientChanged(object sender, EventArgs e) {
-            bool MassAvaliable = Client.Text != "LEC" && Client.Text != "Bing Statical";
+            bool MassAvaliable = TLClient1 != "LEC" && TLClient1 != "Bing Statical";
+            MassAvaliable &= TLClient2 != "LEC" && TLClient2 != "Bing Statical";
             if (!MassAvaliable)
                 MassMode.Checked = false;
             MassMode.Enabled = MassAvaliable;
+
+            _CTL1 = TLClient1;
+            _CTL2 = TLClient2;
+        }
+
+        private void MassCheckedChange(object sender, EventArgs e) {
+            MultiThrdCh.Enabled = !MassMode.Checked;
+            if (MassMode.Checked)
+                MultiThrdCh.Checked = false;
+        }
+
+        private void ClosingForm(object sender, FormClosingEventArgs e) {
+            Environment.Exit(0);
+        }
+
+        private void DoubleStepStatusChanged(object sender, EventArgs e) {
+            SecondClient.Enabled = ckDoubleStep.Checked;
         }
 
 #if SJIS
@@ -1136,7 +1516,7 @@ namespace TLBOT {
 
         private char Encode(char lt) {
             switch (lt) {
-#region Cases
+        #region Cases
                 default:
                     return lt;
                 case 'ú':
@@ -1203,13 +1583,13 @@ namespace TLBOT {
                     return ocr;
                 case 'ô':
                     return och;
-#endregion
+        #endregion
             }
         }
 
         private char Decode(char lt) {
             switch (lt) {
-#region cases
+        #region cases
                 default:
                     return lt;
                 case uci:
@@ -1276,7 +1656,7 @@ namespace TLBOT {
                     return 'ò';
                 case och:
                     return 'ô';
-#endregion
+        #endregion
             }
         }
 
