@@ -329,6 +329,10 @@ namespace TLBOT {
                     while (l >= 0)
                         OriStr += Original[i - (l--)] + "\n";
                     OriStr = OriStr.TrimEnd('\n');
+
+                    FixTL(ref Str, OriStr);
+                    Str = FixTLAlgo2(Str, OriStr);
+
                     if (!(string.IsNullOrWhiteSpace(Str) && !string.IsNullOrWhiteSpace(OriStr))) {
                         Cache[OriStr] = Str;
                     }
@@ -436,6 +440,10 @@ namespace TLBOT {
                     while (l >= 0)
                         OriStr += Original[i - (l--)] + "\n";
                     OriStr = OriStr.TrimEnd('\n');
+
+                    FixTL(ref Str, OriStr);
+                    Str = FixTLAlgo2(Str, OriStr);
+
                     if (!(string.IsNullOrWhiteSpace(Str) && !string.IsNullOrWhiteSpace(OriStr))) {
                         Cache[OriStr] = Str;
                     }
@@ -1245,8 +1253,10 @@ namespace TLBOT {
         private void SearchKeyPress(object sender, KeyPressEventArgs e) {
             if (e.KeyChar == '\n' || e.KeyChar == '\r') {
                 if (StringList.Items.Count == 0) {
+#if DEBUG
                     MessageBox.Show(((string[])(VM.Call("Main", "AfterTL", (object)new string[] { SearchTB.Text })))[0]);
                     MessageBox.Show(FixTLAlgo2(SearchTB.Text, SearchTB.Text));
+#endif
                     return;
                 }
                 string bak = Text;
