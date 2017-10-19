@@ -1,16 +1,17 @@
 ﻿//#define SJIS
 #define LECFix
 using System;
-using TLIB;
+using System.IO;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.IO;
-using AdvancedBinary;
-using SacanaWrapper;
 using System.Linq;
 using System.Text;
 using System.Threading;
+
+using TLIB;
+using AdvancedBinary;
+using SacanaWrapper;
 
 namespace TLBOT {
     public partial class Form1 : Form {

@@ -75,7 +75,7 @@
             this.StringList.FormattingEnabled = true;
             this.StringList.Location = new System.Drawing.Point(12, 12);
             this.StringList.Name = "StringList";
-            this.StringList.Size = new System.Drawing.Size(739, 289);
+            this.StringList.Size = new System.Drawing.Size(725, 289);
             this.StringList.TabIndex = 0;
             this.StringList.SelectedIndexChanged += new System.EventHandler(this.StringList_SelectedIndexChanged);
             // 
@@ -149,7 +149,7 @@
             // BntOpen
             // 
             this.BntOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntOpen.Location = new System.Drawing.Point(630, 412);
+            this.BntOpen.Location = new System.Drawing.Point(616, 414);
             this.BntOpen.Name = "BntOpen";
             this.BntOpen.Size = new System.Drawing.Size(60, 23);
             this.BntOpen.TabIndex = 6;
@@ -160,7 +160,7 @@
             // BntSave
             // 
             this.BntSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BntSave.Location = new System.Drawing.Point(696, 412);
+            this.BntSave.Location = new System.Drawing.Point(682, 414);
             this.BntSave.Name = "BntSave";
             this.BntSave.Size = new System.Drawing.Size(55, 23);
             this.BntSave.TabIndex = 7;
@@ -228,7 +228,7 @@
             // LblInfo
             // 
             this.LblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LblInfo.Location = new System.Drawing.Point(502, 335);
+            this.LblInfo.Location = new System.Drawing.Point(488, 335);
             this.LblInfo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.LblInfo.Name = "LblInfo";
             this.LblInfo.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -328,7 +328,7 @@
             this.SearchTB.Location = new System.Drawing.Point(414, 388);
             this.SearchTB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SearchTB.Name = "SearchTB";
-            this.SearchTB.Size = new System.Drawing.Size(249, 20);
+            this.SearchTB.Size = new System.Drawing.Size(235, 20);
             this.SearchTB.TabIndex = 22;
             this.SearchTB.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SearchKeyPress);
             // 
@@ -358,7 +358,7 @@
             // SaveDB
             // 
             this.SaveDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveDB.Location = new System.Drawing.Point(442, 307);
+            this.SaveDB.Location = new System.Drawing.Point(428, 307);
             this.SaveDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SaveDB.Name = "SaveDB";
             this.SaveDB.Size = new System.Drawing.Size(74, 19);
@@ -370,7 +370,7 @@
             // LoadDB
             // 
             this.LoadDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LoadDB.Location = new System.Drawing.Point(520, 307);
+            this.LoadDB.Location = new System.Drawing.Point(506, 307);
             this.LoadDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.LoadDB.Name = "LoadDB";
             this.LoadDB.Size = new System.Drawing.Size(74, 19);
@@ -382,7 +382,7 @@
             // OverwriteBnt
             // 
             this.OverwriteBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OverwriteBnt.Location = new System.Drawing.Point(667, 388);
+            this.OverwriteBnt.Location = new System.Drawing.Point(653, 388);
             this.OverwriteBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.OverwriteBnt.Name = "OverwriteBnt";
             this.OverwriteBnt.Size = new System.Drawing.Size(85, 19);
@@ -408,7 +408,7 @@
             // ExportTextBnt
             // 
             this.ExportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ExportTextBnt.Location = new System.Drawing.Point(677, 307);
+            this.ExportTextBnt.Location = new System.Drawing.Point(663, 307);
             this.ExportTextBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ExportTextBnt.Name = "ExportTextBnt";
             this.ExportTextBnt.Size = new System.Drawing.Size(74, 19);
@@ -420,7 +420,7 @@
             // ImportTextBnt
             // 
             this.ImportTextBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ImportTextBnt.Location = new System.Drawing.Point(599, 307);
+            this.ImportTextBnt.Location = new System.Drawing.Point(585, 307);
             this.ImportTextBnt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.ImportTextBnt.Name = "ImportTextBnt";
             this.ImportTextBnt.Size = new System.Drawing.Size(74, 19);
@@ -544,7 +544,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(758, 447);
+            this.ClientSize = new System.Drawing.Size(744, 447);
             this.Controls.Add(this.ckFakeBreakline);
             this.Controls.Add(this.SecondClient);
             this.Controls.Add(this.label9);
@@ -582,7 +582,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.InputLang);
             this.Controls.Add(this.StringList);
-            this.MinimumSize = new System.Drawing.Size(715, 486);
+            this.MinimumSize = new System.Drawing.Size(760, 486);
             this.Name = "Form1";
             this.Text = "TLBOT - In Game Machine Transation";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClosingForm);
