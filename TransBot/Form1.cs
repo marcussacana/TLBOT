@@ -36,9 +36,8 @@ namespace TLBOT {
         }
         private void Open(string file) {
             OpenBinary.FileName = file;
-            byte[] Script = File.ReadAllBytes(file);
             Editor = new Wrapper();
-            Strs = Editor.Import(Script, Path.GetExtension(file), true);
+            Strs = Editor.Import(file, true, true);
             LastScript = file;
 
             StringList.Items.Clear();
@@ -275,7 +274,7 @@ namespace TLBOT {
                 StringList.Items[i] = string.Empty;
                 Application.DoEvents();
             }
-            Text = "TLBOT - Translating...";
+            Text = string.Format("TLBOT - \"{0}\" Translating...", Path.GetFileName(LastScript));
 
             string[] Original = Strings.ToArray();
             if (VM != null)
@@ -400,7 +399,7 @@ namespace TLBOT {
                 StringList.Items[i] = string.Empty;
                 Application.DoEvents();
             }
-            Text = "TLBOT - Translating...";
+            Text = string.Format("TLBOT - \"{0}\" Translating...", Path.GetFileName(LastScript));
 
             string[] Original = Strings.ToArray();
             if (VM != null)
@@ -529,21 +528,21 @@ namespace TLBOT {
             return Result;
         }
 
-        static string[] NTSafeArr;
-        private string[] TransBlock(string[] Buffer) {
+        private string[] TransBlock(string[] Buffer, uint Tries = 0) {
             uint Translated = 0;
+            DateTime Begin = DateTime.Now;
             string[] NTSafeArr = new string[Buffer.Length];
             for (int i = 0; i < Buffer.Length; i++) {
                 bool Wait = true;
                 string InputLang = this.InputLang.Text;
                 string OutLang = this.OutLang.Text;
                 new Thread(() => {
-                    int Pos = (i * 2) / 2;//Prevent Pointer Copy
-                    Wait = false;
+                    int Pos = (i + 1) - 1;//Prevent Pointer Copy
                     int tries = 0;
                     again:;
                     try {
                         string Input = Buffer[Pos];
+                        Wait = false;
                         Translate(out string Rst, Input, InputLang, OutLang);
                         NTSafeArr[Pos] = Rst;
                     } catch {
@@ -555,12 +554,19 @@ namespace TLBOT {
                 }).Start();
 
                 while (Wait)
-                    Thread.Sleep(50);
+                    Thread.Sleep(1);
             }
-            while (Translated != Buffer.Length) {
+            while (Translated != Buffer.Length && (DateTime.Now - Begin).TotalMinutes < 3) {
                 Application.DoEvents();
                 Thread.Sleep(10);
             }
+
+            if (Translated != Buffer.Length && Tries <= 3) {
+                return TransBlock(Buffer, Tries + 1);
+            } else if (Translated != Buffer.Length) {
+                throw new Exception("Failed to Translate.");
+            }
+
             return NTSafeArr;
         }
 
@@ -883,7 +889,11 @@ namespace TLBOT {
             uint count = 0;
             for (int i = (int)Begin.Value; i < End.Value; i++) {
                 string text = StringList.Items[i].ToString().Replace("\\n", "\n").Replace("\\r", "\r");
-                PrefixAndSufix(ref text, false, true);
+                string ori = text.Trim();
+                if (TrimData == null)
+                    TrimLoad();
+                foreach (string T in TrimData)
+                    text = text.Replace(T, "");
                 bool Status = !string.IsNullOrWhiteSpace(text);
                 int Process = 0;
                 bool Asian = InputLang.Text == "JA" || InputLang.Text == "CH";
@@ -905,6 +915,11 @@ namespace TLBOT {
                             Status = NumberLimiter(text, text.Length / 4);
                             break;
                         case 2:
+                            if (Asian) {
+                                if (ori.StartsWith("「") && ori.EndsWith("」")) {
+                                    goto default;
+                                }
+                            }
                             Status = text.Length >= 3 || EndsWithOr(text, ".,!,?");
                             break;
                         case 3:
@@ -966,7 +981,7 @@ namespace TLBOT {
                     total++;
                 else if (chr >= asmin && chr <= asmax)
                     total++;
-            return total < val;
+            return total <= val && total != text.Length;
         }
         private bool ContainsOR(string text, string MASK) {
             string[] entries = MASK.Split(',');
@@ -985,7 +1000,7 @@ namespace TLBOT {
 
         private void StringList_SelectedIndexChanged(object sender, EventArgs e) {
             try {
-                Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, System.IO.Path.GetFileName(LastScript), (int)(((double)StringList.SelectedIndex / StringList.Items.Count) * 100));
+                Text = string.Format("TLBOT - {2} ({0}/{1} - {3}%)", StringList.SelectedIndex, StringList.Items.Count, Path.GetFileName(LastScript), (int)(((double)StringList.SelectedIndex / StringList.Items.Count) * 100));
 
                 string txt = StringList.SelectedItem.ToString();
                 Encode(ref txt, true);
@@ -1378,6 +1393,15 @@ namespace TLBOT {
             public string[] Replace;
         }
 
+        private string Simplify(string String) {
+            if (TrimData == null)
+                TrimLoad();
+            string rst = String;
+            foreach (string Trim in TrimData)
+                rst = rst.Replace(Trim, "");
+
+            return rst;
+        }
         private void LoadDB_Click(object sender, EventArgs e) {
             StructReader Reader = new StructReader(DBPath);
             TLBC CacheData = new TLBC();
@@ -1387,8 +1411,13 @@ namespace TLBOT {
                 MessageBox.Show("Bad Cache Format.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            if (MessageBox.Show("Clear Atual Database?", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                Cache = new Dictionary<string, string>();
+
             for (uint i = 0; i < CacheData.Original.LongLength; i++)
                 if (!string.IsNullOrWhiteSpace(CacheData.Replace[i])) {
+                    if (Simplify(CacheData.Original[i]) != Simplify(CacheData.Replace[i]))
                         Cache[CacheData.Original[i]] = CacheData.Replace[i];
                 }
 
@@ -1398,7 +1427,7 @@ namespace TLBOT {
         private void ProgramOpen(object sender, EventArgs e) {
             Again:
             ;
-            string PluginDir = HighLevelCodeProcessator.AssemblyDirectory + "\\Plugins";
+            string PluginDir = DotNetVM.AssemblyDirectory + "\\Plugins";
             if (!Directory.Exists(PluginDir) || Directory.GetFiles(PluginDir, "*.ini").Concat(Directory.GetFiles(PluginDir, "*.inf")).ToArray().Length == 0) {
                 if (MessageBox.Show("No plugins Detected...\nPlugins Dir:\n" + PluginDir, "TLBOT", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
                     goto Again;
@@ -1705,3 +1734,5 @@ namespace TLBOT {
 #endif
     }
 }
+
+
