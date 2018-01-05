@@ -62,6 +62,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.SecondClient = new System.Windows.Forms.ComboBox();
             this.ckFakeBreakline = new System.Windows.Forms.CheckBox();
+            this.GenDB = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxPerLine)).BeginInit();
@@ -358,7 +359,7 @@
             // SaveDB
             // 
             this.SaveDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveDB.Location = new System.Drawing.Point(428, 307);
+            this.SaveDB.Location = new System.Drawing.Point(351, 307);
             this.SaveDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.SaveDB.Name = "SaveDB";
             this.SaveDB.Size = new System.Drawing.Size(74, 19);
@@ -370,7 +371,7 @@
             // LoadDB
             // 
             this.LoadDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LoadDB.Location = new System.Drawing.Point(506, 307);
+            this.LoadDB.Location = new System.Drawing.Point(429, 307);
             this.LoadDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.LoadDB.Name = "LoadDB";
             this.LoadDB.Size = new System.Drawing.Size(74, 19);
@@ -540,11 +541,24 @@
             this.ckFakeBreakline.Text = "Fak. BrkLn.";
             this.ckFakeBreakline.UseVisualStyleBackColor = true;
             // 
+            // GenDB
+            // 
+            this.GenDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.GenDB.Location = new System.Drawing.Point(507, 307);
+            this.GenDB.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.GenDB.Name = "GenDB";
+            this.GenDB.Size = new System.Drawing.Size(74, 19);
+            this.GenDB.TabIndex = 40;
+            this.GenDB.Text = "Gen TL DB";
+            this.GenDB.UseVisualStyleBackColor = true;
+            this.GenDB.Click += new System.EventHandler(this.GenDB_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(744, 447);
+            this.Controls.Add(this.GenDB);
             this.Controls.Add(this.ckFakeBreakline);
             this.Controls.Add(this.SecondClient);
             this.Controls.Add(this.label9);
@@ -636,6 +650,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox SecondClient;
         private System.Windows.Forms.CheckBox ckFakeBreakline;
+        private System.Windows.Forms.Button GenDB;
     }
 }
 

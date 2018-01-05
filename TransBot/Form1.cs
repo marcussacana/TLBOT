@@ -464,6 +464,7 @@ namespace TLBOT {
 
         private string[] MultiThreadTl(string[] Original, Dictionary<int, int> IndexMap, uint BlockLength = 25) {
             string[] Result = new string[Original.Length];
+            uint PreciseProg = 0;
             for (uint i = 0; i < Original.Length; i += BlockLength) {
                 bool IsLast = i + BlockLength < Original.Length;
                 string[] Buffer = new string[(IsLast ? BlockLength : Original.Length - i)];
@@ -473,7 +474,7 @@ namespace TLBOT {
                 bool PrevLoop = false;
                 again:;
                 try {
-                    Buffer = TransBlock(Buffer);
+                    Buffer = TransBlock(Buffer, ref PreciseProg);
                 } catch {
                     if (tries++ > 3) {
                         switch (TLClient1) {
@@ -520,7 +521,7 @@ namespace TLBOT {
                     StringList.Items[RealIndex + x] = "";
                 }
                 
-                Text = string.Format("Translating... {0}/{1} ({2}%)", i, Original.Length, (int)(((double)i/Original.Length)*100));
+                Text = string.Format("TLBOT - \"{3}\" Translating... {0}/{1} ({2}%)", i + PreciseProg, Original.Length, (int)(((double)(i+PreciseProg)/Original.Length)*100), Path.GetFileName(LastScript));
                 Application.DoEvents();
                 if (Abort)
                     return Result;
@@ -528,8 +529,9 @@ namespace TLBOT {
             return Result;
         }
 
-        private string[] TransBlock(string[] Buffer, uint Tries = 0) {
-            uint Translated = 0;
+        private string[] TransBlock(string[] Buffer, ref uint Translated, uint Tries = 0) {
+            Translated = 0;
+            uint _Translated = 0;
             DateTime Begin = DateTime.Now;
             string[] NTSafeArr = new string[Buffer.Length];
             for (int i = 0; i < Buffer.Length; i++) {
@@ -550,7 +552,7 @@ namespace TLBOT {
                             throw new Exception("Failed to Translate");
                         goto again;
                     }
-                    Translated++;
+                    _Translated++;
                 }).Start();
 
                 while (Wait)
@@ -558,11 +560,12 @@ namespace TLBOT {
             }
             while (Translated != Buffer.Length && (DateTime.Now - Begin).TotalMinutes < 3) {
                 Application.DoEvents();
+                Translated = _Translated;
                 Thread.Sleep(10);
             }
 
             if (Translated != Buffer.Length && Tries <= 3) {
-                return TransBlock(Buffer, Tries + 1);
+                return TransBlock(Buffer, ref Translated,Tries + 1);
             } else if (Translated != Buffer.Length) {
                 throw new Exception("Failed to Translate.");
             }
@@ -1079,6 +1082,12 @@ namespace TLBOT {
                             break;
                         }
                 }
+            } else if (LastScript != null) {
+                foreach (string Str in StringList.Items)
+                    if (Str.Contains(content)) {
+                        StringList.SelectedItem = Str;
+                        return;
+                    }
             }
             if (Founds != "Found At:\n") {
                 MessageBox.Show(Founds, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1360,7 +1369,7 @@ namespace TLBOT {
         }
 
         private string DBPath = AppDomain.CurrentDomain.BaseDirectory + "Cache.tbc";
-        private string LastScript;
+        private string LastScript = null;
 
         private void SaveDB_Click(object sender, EventArgs e) {
             StructWriter Writer = new StructWriter(DBPath);
@@ -1532,6 +1541,89 @@ namespace TLBOT {
 
         private void DoubleStepStatusChanged(object sender, EventArgs e) {
             SecondClient.Enabled = ckDoubleStep.Checked;
+        }
+
+        private void GenDB_Click(object sender, EventArgs e) {
+            SelectExtensions exts = new SelectExtensions();
+            exts.Default = "*";
+            if (exts.ShowDialog() != DialogResult.OK)
+                return;
+
+            FolderBrowserDialog fOri = new FolderBrowserDialog();
+            fOri.Description = "Select the Original Script Directory";
+
+            FolderBrowserDialog fRst = new FolderBrowserDialog();
+            fRst.Description = "Select the Modified Script Directory";
+
+            if (fOri.ShowDialog() != DialogResult.OK)
+                return;
+
+            if (fRst.ShowDialog() != DialogResult.OK)
+                return;
+
+            if (MessageBox.Show("Clear Atual Database?", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                Cache = new Dictionary<string, string>();
+
+
+            string[] OriFiles = Directory.GetFiles(fOri.SelectedPath, "*.*", SearchOption.AllDirectories);
+            OriFiles = (from string f in OriFiles where exts.Extensions.Contains(Path.GetExtension(f).ToLower()) || exts.Extensions.Contains(".*") select f).ToArray();
+
+            string InBase = fOri.SelectedPath;
+            if (!InBase.EndsWith("\\"))
+                InBase += "\\";
+
+            string OutBase = fRst.SelectedPath;
+            if (!OutBase.EndsWith("\\"))
+                OutBase += "\\";
+
+            string Log = "DB Generation Log:";
+            for (uint x = 0; x < OriFiles.Length; x++) {
+                string In = OriFiles[x];
+                string Out = OutBase + In.Substring(InBase.Length, In.Length - InBase.Length);
+
+                bool b = true;
+
+                again:;
+                if (!File.Exists(Out)) {
+                    if (b) {
+                        b = false;
+                        Out = Out.Replace(".ws2", "_E.ws2");
+                        goto again;
+                    }
+                    Log += string.Format("\n\"{0}\" Not Found into the Modified Directory", Path.GetFileName(Out));
+                    continue;
+                }
+
+                Wrapper Reader = new Wrapper();
+                string[] Ori = Reader.Import(In, TryLastPluginFirst: true);
+                string[] Rst = Reader.Import(Out, TryLastPluginFirst: true);
+
+                if (Ori.Length != Rst.Length) {
+                    Log += string.Format("\n\"{0}\" Can't be merged, The lines count dosen't match", Path.GetFileName(Out));
+                    continue;
+                }
+
+                for (uint i = 0; i < Ori.Length; i++) {
+                    string Original = Ori[i];
+                    string Translation = Rst[i];
+
+                    PrefixAndSufix(ref Original, false, true);
+                    PrefixAndSufix(ref Translation, false, true);
+
+                    if (Original == Translation)
+                        continue;
+
+                    if (!Cache.ContainsKey(Original))
+                        Cache.Add(Original, Translation);
+                }
+            }
+
+
+            if (Log.IndexOf("\n") != -1)
+                MessageBox.Show(Log, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            MessageBox.Show("Cache Translation Generated.\nTotal Cache Entries: " + Cache.Keys.Count, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
 
 #if SJIS
