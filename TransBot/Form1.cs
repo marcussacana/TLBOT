@@ -296,6 +296,9 @@ namespace TLBOT {
                     } else
                         Translated = Bing.Translate(Original, InputLang.Text, OutLang.Text);
                     break;
+                case "TLBOT DB":
+                    Translated = Original;
+                    break;
                 default:
                     throw new Exception("Invalid Translation Client");
             }
@@ -840,6 +843,8 @@ namespace TLBOT {
                             return Bing.Translate(Text, InputLang, OutputLang, false);
                         case "Bing Neural":
                             return Bing.Translate(Text, InputLang, OutputLang, true);
+                        case "TLBOT DB":
+                            return Text;
                     }
                     break;
                 case Client.Second:
@@ -852,6 +857,8 @@ namespace TLBOT {
                             return Bing.Translate(Text, InputLang, OutputLang, false);
                         case "Bing Neural":
                             return Bing.Translate(Text, InputLang, OutputLang, true);
+                        case "TLBOT DB":
+                            return Text;
                     }
                     break;
          }
@@ -1072,15 +1079,19 @@ namespace TLBOT {
             DialogResult dr = FD.ShowDialog();
             if (dr == DialogResult.OK) {
                 for (int i = 0; i < FD.FileNames.Length; i++) {
-                    byte[] Script = File.ReadAllBytes(FD.FileNames[i]);
-                    Wrapper Temp = new Wrapper();
-                    string[] find = Temp.Import(Script, Path.GetExtension(FD.FileNames[i]), true);
+                    try {
+                        byte[] Script = File.ReadAllBytes(FD.FileNames[i]);
+                        Wrapper Temp = new Wrapper();
+                        string[] find = Temp.Import(Script, Path.GetExtension(FD.FileNames[i]), true);
 
-                    foreach (string Str in find)
-                        if (Str.Contains(content)) {
-                            Founds += Path.GetFileName(FD.FileNames[i]) + "\n";
-                            break;
-                        }
+                        foreach (string Str in find)
+                            if (Str.Contains(content)) {
+                                Founds += Path.GetFileName(FD.FileNames[i]) + "\n";
+                                break;
+                            }
+                    } catch {
+                        continue;
+                    }
                 }
             } else if (LastScript != null) {
                 foreach (string Str in StringList.Items)
@@ -1102,7 +1113,7 @@ namespace TLBOT {
         new string[] {
           "auto", "me", "se", "lhe", "tes", "te", "ti", "a", "bem", "mal", "bens",
           "recem", "recém", "line", "como", "like", "pré", "vice", "anti", "pró",
-          "pós", "ante", "porta", "tipo", "guarda", "mail", "o"
+          "pós", "ante", "porta", "tipo", "guarda", "mail", "o", "super", "ultra", "meia"
         });
 
         public string FixTLAlgo2(string TL, string Ori) {
@@ -1231,7 +1242,12 @@ namespace TLBOT {
             if (dr != DialogResult.OK)
                 return;
 
-            bool AutoSelect = MessageBox.Show("You want the TLBOT select the string automatically?\n\nIf not, all strings are selected.", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+            bool AutoSelect = MessageBox.Show("You want the TLBOT select the string automatically?\n\nIf not, all strings are selected or will use the Filter Selection.", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+            bool FilterSelect = false;
+            if (!AutoSelect) {
+                FilterSelect = MessageBox.Show("You want use the Custom Selection? if not all strings will be selected.", "TLBOT", MessageBoxButtons.YesNo) == DialogResult.Yes;
+            }
+
 
             BM = true;
             Error = false;
@@ -1239,7 +1255,7 @@ namespace TLBOT {
                 int tries = 0;
                 Again:;
                 try {
-                    AutoProcess(File, AutoSelect);
+                    AutoProcess(File, AutoSelect, FilterSelect);
                     if (Abort) {
                         Abort = false;
                         return;
@@ -1256,13 +1272,15 @@ namespace TLBOT {
             MessageBox.Show(string.Empty == log ? "Operation Cleared!" : "Sucess, but that files have a problem:" + log, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void AutoProcess(string File, bool AutoSelect) {
+        private void AutoProcess(string File, bool AutoSelect, bool FilterSelect) {
             Abort = CanAbort = false;
             Open(File);
             if (StringList.Items.Count == 0)
                 throw new Exception("Failed.");
             if (AutoSelect)
                 BotSelect_Click(null, null);
+            else if (FilterSelect)
+                CustomSelection_Click(null, null);
             else
                 MassSelect_Click(null, null);
             Application.DoEvents();
@@ -1339,6 +1357,11 @@ namespace TLBOT {
 
             lf = folder.SelectedPath;
             bool AutoSelect = MessageBox.Show("You want the TLBOT select the string automatically?\n\nIf not, all strings are selected.", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+            bool FilterSelect = false;
+            if (!AutoSelect) {
+                FilterSelect = MessageBox.Show("You want use the Custom Selection? if not all strings will be selected.", "TLBOT", MessageBoxButtons.YesNo) == DialogResult.Yes;
+            }
+
 
             BM = true;
             string[] Files = Directory.GetFiles(folder.SelectedPath, "*.*", SearchOption.AllDirectories);
@@ -1347,7 +1370,7 @@ namespace TLBOT {
             foreach (string File in Files) {
                 int tries = 0;
                 Again:;
-                try { AutoProcess(File, AutoSelect);
+                try { AutoProcess(File, AutoSelect, FilterSelect);
                     if (Abort) {
                         Abort = false;
                         return;
@@ -1405,6 +1428,7 @@ namespace TLBOT {
         private string Simplify(string String) {
             if (TrimData == null)
                 TrimLoad();
+
             string rst = String;
             foreach (string Trim in TrimData)
                 rst = rst.Replace(Trim, "");
@@ -1423,11 +1447,42 @@ namespace TLBOT {
 
             if (MessageBox.Show("Clear Atual Database?", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 Cache = new Dictionary<string, string>();
-
+            bool JAP = InputLang.Text.ToLower() == "ja";
+            bool RUS = InputLang.Text.ToLower() == "ru";
             for (uint i = 0; i < CacheData.Original.LongLength; i++)
                 if (!string.IsNullOrWhiteSpace(CacheData.Replace[i])) {
-                    if (Simplify(CacheData.Original[i]) != Simplify(CacheData.Replace[i]))
-                        Cache[CacheData.Original[i]] = CacheData.Replace[i];
+                    string L1 = Simplify(CacheData.Original[i]);
+                    string L2 = Simplify(CacheData.Replace[i]);
+                    if (L1 == L2)
+                        continue;
+
+                    if (JAP) {
+                        int len = 0;
+                        foreach (char c in L2)
+                            if (Properties.Resources.JapCommon.Contains(c)) {
+                                len++;
+                                if (len >= 3)
+                                    break;
+                            }
+
+                        if (len >= 3)
+                            continue;
+
+                    } else if (RUS) {
+                        int len = 0;
+                        foreach (char c in L2)
+                            if (Properties.Resources.RusCommon.Contains(c)) {
+                                len++;
+                                if (len >= 3)
+                                    break;
+                            }
+
+                        if (len >= 3)
+                            continue;
+
+                    }                    
+
+                    Cache[CacheData.Original[i]] = CacheData.Replace[i];
                 }
 
             MessageBox.Show("Cache Translation Loaded.\nTotal Cache Entries: " + Cache.Keys.Count, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1624,6 +1679,24 @@ namespace TLBOT {
 
             MessageBox.Show("Cache Translation Generated.\nTotal Cache Entries: " + Cache.Keys.Count, "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+        }
+
+        private void CustomSelection_Click(object sender, EventArgs e) {
+            string[] Strings = StringList.Items.Cast<string>().ToArray();
+
+            bool[] Selection = VM.Call("Main", "FilterText", (object)Strings);
+
+            for (int i = (int)Begin.Value; i < End.Value; i++) {
+                StringList.SetItemChecked(i, Selection[i]);
+
+                if (i % 10 == 0) {
+                    Application.DoEvents();
+                    Text = "Checking... " + i + "/" + End.Value;
+                }
+            }
+
+
+            Text = "TLBOT - In Game Machine Transation";
         }
 
 #if SJIS

@@ -21,6 +21,11 @@ class Main {
 		return Line;
 	}
 	
+	//Permite Uma Seleção costumizada das linhas.
+	public bool[] FilterText(string[] Lines){
+		return new bool[Lines.Length];		
+	}
+	
 	//Faz substituições em massa na linha traduzida...
 	private void Replace(ref string txt){
 		string[] In = new string[] { " .", " ?", " !", " :"};

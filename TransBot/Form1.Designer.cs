@@ -63,6 +63,7 @@
             this.SecondClient = new System.Windows.Forms.ComboBox();
             this.ckFakeBreakline = new System.Windows.Forms.CheckBox();
             this.GenDB = new System.Windows.Forms.Button();
+            this.CustomSelection = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Begin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.End)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxPerLine)).BeginInit();
@@ -194,9 +195,9 @@
             // BotSelect
             // 
             this.BotSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BotSelect.Location = new System.Drawing.Point(95, 333);
+            this.BotSelect.Location = new System.Drawing.Point(96, 333);
             this.BotSelect.Name = "BotSelect";
-            this.BotSelect.Size = new System.Drawing.Size(94, 23);
+            this.BotSelect.Size = new System.Drawing.Size(83, 23);
             this.BotSelect.TabIndex = 11;
             this.BotSelect.Text = "Text Recog.";
             this.BotSelect.UseVisualStyleBackColor = true;
@@ -220,7 +221,7 @@
             this.BntBathProc.Location = new System.Drawing.Point(12, 307);
             this.BntBathProc.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.BntBathProc.Name = "BntBathProc";
-            this.BntBathProc.Size = new System.Drawing.Size(122, 23);
+            this.BntBathProc.Size = new System.Drawing.Size(79, 23);
             this.BntBathProc.TabIndex = 13;
             this.BntBathProc.Text = "Batch Trans.";
             this.BntBathProc.UseVisualStyleBackColor = true;
@@ -336,9 +337,9 @@
             // MassSelect
             // 
             this.MassSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MassSelect.Location = new System.Drawing.Point(195, 333);
+            this.MassSelect.Location = new System.Drawing.Point(183, 307);
             this.MassSelect.Name = "MassSelect";
-            this.MassSelect.Size = new System.Drawing.Size(52, 23);
+            this.MassSelect.Size = new System.Drawing.Size(66, 23);
             this.MassSelect.TabIndex = 23;
             this.MassSelect.Text = "Sel. All";
             this.MassSelect.UseVisualStyleBackColor = true;
@@ -347,10 +348,10 @@
             // FoldTrans
             // 
             this.FoldTrans.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.FoldTrans.Location = new System.Drawing.Point(139, 307);
+            this.FoldTrans.Location = new System.Drawing.Point(95, 307);
             this.FoldTrans.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.FoldTrans.Name = "FoldTrans";
-            this.FoldTrans.Size = new System.Drawing.Size(108, 23);
+            this.FoldTrans.Size = new System.Drawing.Size(83, 23);
             this.FoldTrans.TabIndex = 24;
             this.FoldTrans.Text = "Folder Trans.";
             this.FoldTrans.UseVisualStyleBackColor = true;
@@ -484,7 +485,8 @@
             "Google",
             "Bing Neural",
             "Bing Statical",
-            "LEC"});
+            "LEC",
+            "TLBOT DB"});
             this.FirstClient.Location = new System.Drawing.Point(326, 414);
             this.FirstClient.Name = "FirstClient";
             this.FirstClient.Size = new System.Drawing.Size(82, 21);
@@ -523,7 +525,8 @@
             "Google",
             "Bing Neural",
             "Bing Statical",
-            "LEC"});
+            "LEC",
+            "TLBOT DB"});
             this.SecondClient.Location = new System.Drawing.Point(439, 414);
             this.SecondClient.Name = "SecondClient";
             this.SecondClient.Size = new System.Drawing.Size(82, 21);
@@ -553,6 +556,17 @@
             this.GenDB.UseVisualStyleBackColor = true;
             this.GenDB.Click += new System.EventHandler(this.GenDB_Click);
             // 
+            // CustomSelection
+            // 
+            this.CustomSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.CustomSelection.Location = new System.Drawing.Point(183, 333);
+            this.CustomSelection.Name = "CustomSelection";
+            this.CustomSelection.Size = new System.Drawing.Size(66, 23);
+            this.CustomSelection.TabIndex = 23;
+            this.CustomSelection.Text = "Cust. Sel.";
+            this.CustomSelection.UseVisualStyleBackColor = true;
+            this.CustomSelection.Click += new System.EventHandler(this.CustomSelection_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -575,6 +589,7 @@
             this.Controls.Add(this.LoadDB);
             this.Controls.Add(this.SaveDB);
             this.Controls.Add(this.FoldTrans);
+            this.Controls.Add(this.CustomSelection);
             this.Controls.Add(this.MassSelect);
             this.Controls.Add(this.SearchTB);
             this.Controls.Add(this.label6);
@@ -651,6 +666,7 @@
         private System.Windows.Forms.ComboBox SecondClient;
         private System.Windows.Forms.CheckBox ckFakeBreakline;
         private System.Windows.Forms.Button GenDB;
+        private System.Windows.Forms.Button CustomSelection;
     }
 }
 
