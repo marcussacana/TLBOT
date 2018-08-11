@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLBOT", "TransBot\TLBOT.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SacanaWrapper", "SacanaWrapper\SacanaWrapper\SacanaWrapper.csproj", "{66C4FB33-9701-4BB2-82B0-B9AD4F807DFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLIB", "..\TLIB\TLIB.csproj", "{B7489AF3-FAD2-4D45-9746-CD72D9F22BFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLIB", "TLIB\TLIB.csproj", "{B7489AF3-FAD2-4D45-9746-CD72D9F22BFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F2ED893-99DB-43B4-9933-431FCCC4CD37}
 	EndGlobalSection
 EndGlobal

@@ -122,13 +122,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TLIB\TLIB.csproj">
-      <Project>{b7489af3-fad2-4d45-9746-cd72d9f22bff}</Project>
-      <Name>TLIB</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SacanaWrapper\SacanaWrapper\SacanaWrapper.csproj">
       <Project>{66c4fb33-9701-4bb2-82b0-b9ad4f807dfa}</Project>
       <Name>SacanaWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TLIB\TLIB.csproj">
+      <Project>{b7489af3-fad2-4d45-9746-cd72d9f22bff}</Project>
+      <Name>TLIB</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
