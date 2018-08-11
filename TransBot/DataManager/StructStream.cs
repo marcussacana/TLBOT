@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Collections;
+using System.Linq;
 
 /// <summary>
 /// Advanced Binary Tools - By Marcussacana
 /// </summary>
 namespace AdvancedBinary {
 
-    enum StringStyle {
+    public enum StringStyle {
         /// <summary>
         /// C-Style String (null terminated)
         /// </summary>
@@ -31,7 +33,7 @@ namespace AdvancedBinary {
     /// <param name="Stream">Stream Instance</param>
     /// <param name="FromReader">Determine if the method is invoked from the StructReader or StructWriter</param>
     /// <param name="StructInstance">Struct instance reference</param>
-    /// <return>Struct Instance</return>
+    /// <return>New Struct Instance</return>
     public delegate dynamic FieldInvoke(Stream Stream, bool FromReader, dynamic StructInstance);
 
     /// <summary>
@@ -61,11 +63,12 @@ namespace AdvancedBinary {
     /// </summary>
     public class FString : Attribute {
         public long Length;
+        public bool TrimNull;
     }
 
 
     /// <summary>
-    /// Fixed Length Array
+    /// Fixed Length Byte Array
     /// </summary>
     public class FArray : Attribute {
         public long Length;
@@ -79,10 +82,17 @@ namespace AdvancedBinary {
     }
 
     /// <summary>
+    /// Field Reference Length Array 
+    /// </summary>
+    public class RArray : Attribute {
+        public string FieldName = null;
+    }
+
+    /// <summary>
     /// Struct Field Type (required only to sub structs)
     /// </summary>
     public class StructField : Attribute { }
-    internal class Const {
+    public class Const {
         //Types
         public const string INT8 = "System.SByte";
         public const string UINT8 = "System.Byte";
@@ -96,6 +106,8 @@ namespace AdvancedBinary {
         public const string UINT64 = "System.UInt64";
         public const string STRING = "System.String";
         public const string DELEGATE = "System.MulticastDelegate";
+        public const string CHAR = "System.Char";
+        public const string BOOLEAN = "System.Boolean";
 
         //Attributes
         public const string PSTRING = "PString";
@@ -106,6 +118,7 @@ namespace AdvancedBinary {
         public const string IGNORE = "Ignore";
         public const string FARRAY = "FArray";
         public const string PARRAY = "PArray";
+        public const string RARRAY = "RArray";
     }
 
     static class Tools {
@@ -230,9 +243,10 @@ namespace AdvancedBinary {
                     return true;
             return false;
         }
-        public static void ReadStruct<T>(byte[] Array, ref T Struct, bool IsBigEnddian = false, Encoding Encoding = null) {
+        public static void ReadStruct<T>(byte[] Array, ref T Struct, bool IsBigEnddian = false, Encoding Encoding = null, long BaseOffset = 0) {
             MemoryStream Stream = new MemoryStream(Array);
             StructReader Reader = new StructReader(Stream, IsBigEnddian, Encoding);
+            Reader.Seek(BaseOffset, SeekOrigin.Begin);
             Reader.ReadStruct(ref Struct);
             Reader.Close();
             Stream?.Close();
@@ -260,18 +274,18 @@ namespace AdvancedBinary {
         }
     }
 
-    class StructWriter : BinaryWriter {
+    public class StructWriter : BinaryWriter {
 
-        private bool BigEndian = false;
-        private Encoding Encoding;
+        internal bool BigEndian = false;
+        internal Encoding Encoding;
 
-        public StructWriter(Stream Input, bool BigEndian = false, Encoding Encoding = null) : base(Input) {
+        public StructWriter(Stream Output, bool BigEndian = false, Encoding Encoding = null) : base(Output) {
             if (Encoding == null)
                 Encoding = Encoding.UTF8;
             this.BigEndian = BigEndian;
             this.Encoding = Encoding;
         }
-        public StructWriter(string Input, bool BigEndian = false, Encoding Encoding = null) : base(new StreamWriter(Input).BaseStream) {
+        public StructWriter(string OutputFile, bool BigEndian = false, Encoding Encoding = null) : base(new FileStream(OutputFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
             if (Encoding == null)
                 Encoding = Encoding.UTF8;
             this.BigEndian = BigEndian;
@@ -285,47 +299,56 @@ namespace AdvancedBinary {
             Struct = (T)tmp;
         }
 
-        private void WriteStruct(Type type, ref object Instance) {
+        internal void WriteStruct(Type type, ref object Instance) {
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            foreach (FieldInfo field in fields) {
+                if (HasAttribute(field, Const.IGNORE) || !HasAttribute(field, Const.RARRAY))
+                    continue;
+
+                dynamic Value = field.GetValue(Instance);
+                string PFieldName = Tools.GetAttributePropertyValue(field, Const.RARRAY, "FieldName");
+                FieldInfo PrefixField = (from x in fields where x.Name == PFieldName select x).First();
+                PrefixField.SetValue(Instance, ParseType(Value.LongLength, PrefixField.FieldType.FullName));
+            }
+
             foreach (FieldInfo field in fields) {
                 if (HasAttribute(field, Const.IGNORE))
-                    break;
+                    continue;
                 dynamic Value = field.GetValue(Instance);
                 string Type = field.FieldType.ToString();
                 if (!Type.EndsWith("[]")) {
                     WriteField(Value, Type, field, ref Instance);
                     continue;
                 }
+                
                 if (HasAttribute(field, Const.FARRAY)) {
-                    long BufferLen = Tools.GetAttributePropertyValue(field, Const.FARRAY, "Length");
+                    long Length = Tools.GetAttributePropertyValue(field, Const.FARRAY, "Length");
 
-                    if (Value.Length > BufferLen)
-                        throw new Exception("Wrong Array Buffer Length");
+                    if (Value.LongLength > Length)
+                        throw new Exception("Wrong Array Buffer Length"); 
 
-                    byte[] Arr = new byte[BufferLen];
-                    Value.CopyTo(Arr, 0);
+                } else if (HasAttribute(field, Const.PARRAY)) {
+                    string PType = Tools.GetAttributePropertyValue(field, Const.PARRAY, "PrefixType");
+                    dynamic Length = ParseType(Value.LongLength, PType);
 
-                    Write(Arr);
-                    continue;
-                }
+                    if (BigEndian)
+                        Length = Tools.Reverse(Length);
+                    Write(Length);                
+                    
+                } else if (!HasAttribute(field, Const.RARRAY))
+                    throw new Exception("Bad Struct Array Configuration");
 
-                if (!HasAttribute(field, Const.PARRAY))
-                    throw new Exception("Bad Struct Array Configuration.");
-
-                string PType = Tools.GetAttributePropertyValue(field, Const.PARRAY, "PrefixType");
-                dynamic Length = ParseType(Value.LongLength, PType);
-
-                if (BigEndian)
-                    Length = Tools.Reverse(Length);
-                Write(Length);
-
-                for (long i = 0; i < Length; i++) {
-                    WriteField(Value[i], Type.Substring(0, Type.Length-2), field, ref Instance);
+                string RealType = Type.Substring(0, Type.Length - 2);
+                IEnumerator Enum = Value.GetEnumerator();
+                for (long i = 0; i < Value.LongLength; i++) {
+                    Enum.MoveNext();
+                    WriteField(Enum.Current, RealType, field, ref Instance);
                 }
             }
         }
 
-        private dynamic ParseType(dynamic Value, string Type) {
+        internal dynamic ParseType(dynamic Value, string Type) {
             switch (Type) {
                 case Const.INT8:
                     return (sbyte)Value;
@@ -352,7 +375,7 @@ namespace AdvancedBinary {
             }
         }
 
-        private void WriteField(dynamic Value, string Type, FieldInfo field, ref object Instance) {
+        internal void WriteField(dynamic Value, string Type, FieldInfo field, ref object Instance) {
             switch (Type) {
                 case Const.STRING:
                     if (HasAttribute(field, Const.CSTRING)) {
@@ -376,7 +399,7 @@ namespace AdvancedBinary {
                     throw new Exception("String Attribute Not Specified.");
                 default:
                     if (HasAttribute(field, Const.STRUCT)) {
-                        WriteStruct(field.FieldType, ref Value);
+                        WriteStruct(System.Type.GetType(Type), ref Value);
                     } else {
                         if (field.FieldType.BaseType.ToString() == Const.DELEGATE) {
                             FieldInvoke Invoker = ((FieldInvoke)Value);
@@ -418,7 +441,7 @@ namespace AdvancedBinary {
             }
         }
 
-        private void WritePString(FieldInfo Field, dynamic Value) {
+        internal void WritePString(FieldInfo Field, dynamic Value) {
             byte[] Arr = Encoding.GetBytes(Value);
 
             string Prefix = Tools.GetAttributePropertyValue(Field, Const.PSTRING, "PrefixType");
@@ -478,7 +501,7 @@ namespace AdvancedBinary {
             base.Write(Arr);
         }
 
-        private bool HasAttribute(FieldInfo Field, string Attrib) {
+        internal bool HasAttribute(FieldInfo Field, string Attrib) {
             foreach (Attribute attrib in Field.GetCustomAttributes(true))
                 if (attrib.GetType().Name == Attrib)
                     return true;
@@ -493,15 +516,15 @@ namespace AdvancedBinary {
 
     class StructReader : BinaryReader {
 
-        private bool BigEndian = false;
-        private Encoding Encoding;
+        internal bool BigEndian = false;
+        internal Encoding Encoding;
         public StructReader(Stream Input, bool BigEndian = false, Encoding Encoding = null) : base(Input) {
             if (Encoding == null)
                 Encoding = Encoding.UTF8;
             this.BigEndian = BigEndian;
             this.Encoding = Encoding;
         }
-        public StructReader(string Input, bool BigEndian = false, Encoding Encoding = null) : base(new StreamReader(Input).BaseStream) {
+        public StructReader(string Input, bool BigEndian = false, Encoding Encoding = null) : base(new FileStream(Input, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
             if (Encoding == null)
                 Encoding = Encoding.UTF8;
             this.BigEndian = BigEndian;
@@ -515,7 +538,7 @@ namespace AdvancedBinary {
             Struct = (T)tmp;
         }
 
-        private void ReadStruct(Type type, ref object Instance) {
+        internal void ReadStruct(Type type, ref object Instance) {
             FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             for (int i = 0; i < fields.Length; i++) {
                 FieldInfo field = fields[i];
@@ -527,36 +550,39 @@ namespace AdvancedBinary {
 
                 if (!FType.EndsWith("[]")) {
                     Value = ReadField(FType, field, ref Instance);
-
                 } else {
+                    dynamic Count = null;
                     if (Tools.HasAttribute(field, Const.FARRAY)) {
-                        byte[] Buffer = new byte[Tools.GetAttributePropertyValue(field, Const.FARRAY, "Length")];
-
-                        if (Read(Buffer, 0, Buffer.Length) != Buffer.Length)
-                            throw new Exception("Failed to Read");
-
-                        Value = Buffer;
+                        Count = Tools.GetAttributePropertyValue(field, Const.FARRAY, "Length");
 
                     } else if (Tools.HasAttribute(field, Const.PARRAY)) {
-                        FType = FType.Substring(0, FType.Length - 2);
-
                         string PType = Tools.GetAttributePropertyValue(field, Const.PARRAY, "PrefixType");
-                        dynamic Count = ReadField(PType, field, ref Instance);
+                        Count = ReadField(PType, field, ref Instance);
 
-                        Value = CreateArrayInstance(FType, Count);
-                        for (long x = 0; x < Count; x++) {
-                            Value[x] = ReadField(FType, field, ref Instance);
-                        }
+                    } else if (Tools.HasAttribute(field, Const.RARRAY)) {
+                        string PFieldName = Tools.GetAttributePropertyValue(field, Const.RARRAY, "FieldName");
+                        FieldInfo PrefixField = (from x in fields where x.Name == PFieldName select x).First();
+                        Count = PrefixField.GetValue(Instance);
 
-                    } else
-                        throw new Exception("Bad Struct Configuration");
+                    } else throw new Exception("Bad Struct Array Configuration");
+
+                    FType = FType.Substring(0, FType.Length - 2);
+
+                    object[] Content = new object[Count];
+                    for (long x = 0; x < Count; x++) {
+                        Content[x] = ReadField(FType, field, ref Instance);
+                    }
+
+
+                    Value = Array.CreateInstance(Type.GetType(FType), Count);
+                    Content.CopyTo(Value, 0);
                 }                
 
                 field.SetValue(Instance, Value);
             }
         }
 
-        private dynamic CreateArrayInstance(string TypeName, dynamic InitialLength) {/*
+        internal dynamic CreateArrayInstance(string TypeName, dynamic InitialLength) {/*
             switch (TypeName) {
                 case Const.INT8:
                     return new sbyte[InitialLength];
@@ -590,15 +616,21 @@ namespace AdvancedBinary {
             return Activator.CreateInstance(stringArrayType, new object[] { InitialLength });*/
         }
 
-        private dynamic ReadField(string Type, FieldInfo field, ref object Instance) {
+        internal dynamic ReadField(string Type, FieldInfo field, ref object Instance) {
             bool IsNumber = true;
             dynamic Value = null;
             switch (Type) {
+                case Const.BOOLEAN:
+                    Value = base.ReadBoolean();
+                    break;
                 case Const.INT8:
                     Value = base.ReadSByte();
                     break;
                 case Const.INT16:
                     Value = base.ReadInt16();
+                    break;
+                case Const.CHAR:
+                    Value = base.ReadChar();
                     break;
                 case Const.UINT16:
                     Value = base.ReadUInt16();
@@ -644,15 +676,17 @@ namespace AdvancedBinary {
                         byte[] Bffr = new byte[Tools.GetAttributePropertyValue(field, Const.FSTRING, "Length")];
                         if (Read(Bffr, 0, Bffr.Length) != Bffr.Length)
                             throw new Exception("Failed to Read a String");
-                        Value = Encoding.GetString(Bffr);
+                        bool TrimEnd = Tools.GetAttributePropertyValue(field, Const.FSTRING, "TrimNull");
+                        Value = TrimEnd ? Encoding.GetString(Bffr).TrimEnd('\x0') : Encoding.GetString(Bffr);
                         break;
                     }
                     throw new Exception("String Attribute Not Specified.");
                 default:
                     IsNumber = false;
                     if (Tools.HasAttribute(field, Const.STRUCT)) {
-                        Value = Activator.CreateInstance(field.FieldType);
-                        ReadStruct(field.FieldType, ref Value);
+                        Type FieldType = System.Type.GetType(Type);
+                        Value = Activator.CreateInstance(FieldType);
+                        ReadStruct(FieldType, ref Value);
                     } else {
                         if (field.FieldType.BaseType.ToString() == Const.DELEGATE) {
                             FieldInvoke Invoker = (FieldInvoke)field.GetValue(Instance);
@@ -768,6 +802,13 @@ namespace AdvancedBinary {
             int b = BaseStream.ReadByte();
             BaseStream.Position--;
             return b;
+        }
+
+        internal int PeekInt() {
+            byte[] Buff = new byte[4];
+            int i = BaseStream.Read(Buff, 0, Buff.Length);
+            BaseStream.Position -= i;
+            return BitConverter.ToInt32(Buff, 0);
         }
     }
 }

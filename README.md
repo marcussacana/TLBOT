@@ -1,13 +1,12 @@
-### TLBOT - In game Visual Novel Machine Translation
-[![Build Status](https://travis-ci.org/ForumHulp/pageaddon.svg?branch=master)](http://katawa.url.ph)
+## TLBOT 2
+### In game Visual Novel Machine Translation
+[![Build Status](https://travis-ci.org/ForumHulp/pageaddon.svg?branch=master)](http://vnx.uvnworks.com)
 
-This program translate all files of the game with the LEC PT 15 and save it.
+A Automatic Visual Novel Machine Translation Patch Creator
 
-####Compatible with:
-- SiglusEngine - in my git
+### API Supported:
+- Google 
+- Bing 
+- LEC
 
-- AgeGameEngine - in my git
-
-- KiriKiri (PSB) - in my git
- 
-This program needs the LEC Power Transaltor 15 installed to work.
+#### Uses the SacanaWrapper
