@@ -77,6 +77,7 @@
             this.TransCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.DBPageCounter = new System.Windows.Forms.Timer(this.components);
             this.CacheLoadedVerify = new System.Windows.Forms.Timer(this.components);
+            this.bntSearch = new System.Windows.Forms.Button();
             this.MainTabControl.SuspendLayout();
             this.ViewTab.SuspendLayout();
             this.OptionsTab.SuspendLayout();
@@ -181,6 +182,7 @@
             // 
             // OptionsTab
             // 
+            this.OptionsTab.Controls.Add(this.bntSearch);
             this.OptionsTab.Controls.Add(this.bntTestClient);
             this.OptionsTab.Controls.Add(this.SensentiveGB);
             this.OptionsTab.Controls.Add(this.ckTransTLBot);
@@ -209,7 +211,7 @@
             // bntTestClient
             // 
             this.bntTestClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntTestClient.Location = new System.Drawing.Point(598, 125);
+            this.bntTestClient.Location = new System.Drawing.Point(430, 125);
             this.bntTestClient.Name = "bntTestClient";
             this.bntTestClient.Size = new System.Drawing.Size(75, 23);
             this.bntTestClient.TabIndex = 17;
@@ -702,6 +704,17 @@
             this.CacheLoadedVerify.Interval = 200;
             this.CacheLoadedVerify.Tick += new System.EventHandler(this.CacheLoadedVerifier);
             // 
+            // bntSearch
+            // 
+            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntSearch.Location = new System.Drawing.Point(608, 123);
+            this.bntSearch.Name = "bntSearch";
+            this.bntSearch.Size = new System.Drawing.Size(75, 23);
+            this.bntSearch.TabIndex = 18;
+            this.bntSearch.Text = "Search";
+            this.bntSearch.UseVisualStyleBackColor = true;
+            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -784,5 +797,6 @@
         private System.Windows.Forms.Timer CacheLoadedVerify;
         private System.Windows.Forms.CheckBox ckUseDB;
         private System.Windows.Forms.Button bntTestClient;
+        private System.Windows.Forms.Button bntSearch;
     }
 }

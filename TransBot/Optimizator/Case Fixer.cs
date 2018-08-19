@@ -5,14 +5,9 @@ using System.Linq;
 namespace TLBOT.Optimizator {
     class CaseFixer : IOptimizator {
         Dictionary<uint, Case> CaseMap = new Dictionary<uint, Case>();
-        public void AfterTranslate(ref string Line, uint ID) {
-            if (GetLineCase(Line) != CaseMap[ID])
-                Line = SetCase(Line, CaseMap[ID]);
-        }
+        public void AfterTranslate(ref string Line, uint ID) {}
 
-        public void BeforeTranslate(ref string Line, uint ID) {
-            CaseMap[ID] = GetLineCase(Line);
-        }
+        public void BeforeTranslate(ref string Line, uint ID) {}
 
         public enum Case {
             Lower, Upper, Normal, Title
@@ -27,15 +22,24 @@ namespace TLBOT.Optimizator {
                 case Case.Normal:
                     string nResult = string.Empty;
                     string[] nWords = String.Split(' ');
+                    bool FirstUpper = false;
                     for (int x = 0; x < nWords.Length; x++) {
+                        bool DotUpper = false;
                         for (int i = 0; i < nWords[x].Length; i++) {
-                            bool Upper = i == 0;
-                            if (!Upper && char.IsPunctuation(nWords[i - 1].Last())) {
+                            bool Upper = !FirstUpper;
+                            if (!Upper && x != 0 && !DotUpper && char.IsPunctuation(nWords[x - 1].Last())) {
                                 Upper = true;
+                                DotUpper = true;
                             }
-                            
                             char c = nWords[x][i];
-                            nResult += Upper ? char.ToUpper(c) : c;
+                            if (!char.IsLetter(c))
+                                Upper = false;
+
+                            if (Upper) {
+                                FirstUpper = true;
+                            }
+
+                            nResult += Upper ? char.ToUpper(c) : char.ToLower(c);
                         }
                         nResult += ' ';
                     }
@@ -63,23 +67,43 @@ namespace TLBOT.Optimizator {
             Case[] WordsCase = new Case[Words.Length];
             for (int x = 0; x < Words.Length; x++) {
                 string Word = Words[x];
+                uint cLower = 0;
+                uint cUpper = 0;
+                uint cTitle = 0;
                 for (int i = 0; i < Word.Length; i++) {
                     char Char = Word[i];
                     if (Char > 0x8000)
                         return Case.Normal;
+                    if (!char.IsLetter(Char))
+                        continue;
 
                     if (i == 0) {
                         if (char.IsLetter(Char) && char.IsUpper(Char)) {
-                            WordsCase[x] = (x == 0 || (char.IsPunctuation(Words[x - 1].Last()))) ? Case.Normal : Case.Title;
+                            if (x == 0 || (char.IsPunctuation(Words[x - 1].Last())))
+                                cTitle++;
                         } else {
-                            WordsCase[x] = Case.Lower;
+                            cLower++;
                         }
                     } else {
                         if (char.IsUpper(Char))
-                            WordsCase[x] = Case.Upper;
+                            cUpper++;
                         break;
                     }
                 }
+                if (cLower == Word.Length)
+                    WordsCase[x] = Case.Lower;
+                else if (cUpper == Word.Length)
+                    WordsCase[x] = Case.Upper;
+                else if (cUpper + cLower == Word.Length)
+                    WordsCase[x] = Case.Normal;
+                else if (cUpper > cLower && cUpper > cTitle)
+                    WordsCase[x] = Case.Upper;
+                else if (cLower > cUpper && cLower > cTitle)
+                    WordsCase[x] = Case.Lower;
+                else if (cTitle >= Words.Length)
+                    WordsCase[x] = Case.Title;
+                else
+                    WordsCase[x] = Case.Normal;
             }
 
             int Titles = (from x in WordsCase where x == Case.Title  select x).Count();
@@ -98,9 +122,12 @@ namespace TLBOT.Optimizator {
         }
 
         public void AfterOpen(ref string Line, uint ID) {
+            CaseMap[ID] = GetLineCase(Line);
         }
 
         public void BeforeSave(ref string Line, uint ID) {
+            if (GetLineCase(Line) != CaseMap[ID])
+                Line = SetCase(Line, CaseMap[ID]);
         }
         public string GetName() {
             return "Case Fixer";

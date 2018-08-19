@@ -28,13 +28,16 @@ namespace TLBOT {
         public Task Build(Action OnFinish = null) {
             return new Task(() => {
                 TaskStatus = Status.PreProcessing;
-                for (uint i = 0; i < Lines.Length; i++) {
-                    Progress = i;
-                    foreach (IOptimizator Optimizator in Optimizators)
+
+                Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
+                    uint i = (uint)a;
+                    Progress++;
+                    foreach (IOptimizator Optimizator in Optimizators) {
                         try {
                             Optimizator.BeforeTranslate(ref Lines[i], i);
                         } catch { }
-                }
+                    }
+                }));
 
                 TaskStatus = Status.Translating;
                 switch (Program.TLMode) {
@@ -54,8 +57,10 @@ namespace TLBOT {
                 }
 
                 TaskStatus = Status.PostProcessing;
-                for (uint i = 0; i < Lines.Length; i++) {
-                    Progress = i;
+                Progress = 0;
+                Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
+                    Progress++;
+                    uint i = (uint)a;
                     foreach (IOptimizator Optimizator in Optimizators)
                         try {
 #if DEBUG
@@ -72,7 +77,8 @@ namespace TLBOT {
                             Optimizator.AfterTranslate(ref Lines[i], i);
 #endif
                         } catch { }
-                }
+
+                }));
 
 
                 TaskStatus = Status.Finished;

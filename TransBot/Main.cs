@@ -656,5 +656,9 @@ namespace TLBOT {
             MessageBox.Show(test.Translate("EN", "PT", Translator.Google) + " - google");
 
         }
+
+        private void bntSearch_Click(object sender, EventArgs e) {
+            new Search().Show();
+        }
     }
 }
