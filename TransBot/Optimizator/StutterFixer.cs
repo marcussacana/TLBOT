@@ -19,9 +19,9 @@ namespace TLBOT.Optimizator {
         public void AfterOpen(ref string Line, uint ID) { }
 
         public void AfterTranslate(ref string Line, uint ID) {
-            if (!EmptyPrefix[ID])
+            if (EmptyPrefix[ID])
                 Line = Line.TrimStart();
-            if (!EmptySufix[ID])
+            if (EmptySufix[ID])
                 Line = Line.TrimEnd();
             if ((!ContainsBadStuttered(Line) && !DB.ContainsKey(ID)) || !DB.ContainsKey(ID)) {
                 Line = RestoreQuotes(Line, ID);
@@ -59,15 +59,15 @@ namespace TLBOT.Optimizator {
                 RPharse += Prefix.TrimStart('-') + Word + " ";
             }
 
-            return RPharse.Substring(0, RPharse.Length);
+            return RPharse.Substring(0, RPharse.Length - 1);
         }
 
         public void BeforeSave(ref string Line, uint ID) { }
 
         public void BeforeTranslate(ref string Line, uint ID) {
             Line = TrimQuotes(Line, ID);
-            EmptyPrefix[ID] = Line.TrimStart() != Line;
-            EmptySufix[ID] = Line.TrimEnd() != Line;
+            EmptyPrefix[ID] = Line.TrimStart() == Line;
+            EmptySufix[ID] = Line.TrimEnd() == Line;
             if (!ContainsStuttered(Line))
                 return;
             DB.Add(ID, Line);

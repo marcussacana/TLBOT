@@ -21,7 +21,7 @@ namespace TLBOT.Optimizator {
                     return String.ToLower();
                 case Case.Normal:
                     string nResult = string.Empty;
-                    string[] nWords = String.Split(' ');
+                    string[] nWords = String.Trim().Split(' ');
                     bool FirstUpper = false;
                     for (int x = 0; x < nWords.Length; x++) {
                         bool DotUpper = false;
@@ -47,7 +47,7 @@ namespace TLBOT.Optimizator {
                     return nResult;
                 case Case.Title:
                     string tResult = string.Empty;
-                    string[] tWords = String.Split(' ');
+                    string[] tWords = String.Trim().Split(' ');
                     foreach (string Word in tWords) {
                         for (int i = 0; i < Word.Length; i++) {
                             tResult += i == 0 ? char.ToUpper(Word[i]) : Word[i];
