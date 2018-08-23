@@ -70,7 +70,7 @@ namespace TLBOT.Optimizator {
             EmptySufix[ID] = Line.TrimEnd() == Line;
             if (!ContainsStuttered(Line))
                 return;
-            DB.Add(ID, Line);
+            DB[ID] = Line;
         }
 
         private string RestoreQuotes(string Line, uint ID) {

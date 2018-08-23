@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -34,6 +35,8 @@ namespace TLBOT {
             ckBold.Checked = Program.WordwrapSettings.Bold;
 
             SensetiveBar.Value = Program.FilterSettings.Sensitivity;
+
+            ckUseDB.Checked = Program.FilterSettings.UseDB;
 
             string Float = Program.WordwrapSettings.FontSize.ToString().Replace(".", ",");
             if (Float.Length == 1)
@@ -309,8 +312,16 @@ namespace TLBOT {
 
             string[] Strs = new string[OriStrs.Length];
             OriStrs.CopyTo(Strs, 0);
-            if (IsEnabled(Filter))
-                Strs = (from x in Strs where x.IsDialogue() select x).ToArray();
+            if (IsEnabled(Filter)) {
+                bool[] ValidList = ValidDialogueList(OriStrs);
+                List<string> List = new List<string>();
+                for (uint i = 0; i < OriStrs.LongLength; i++)
+                    if (ValidList[i]) {
+                        List.Add(OriStrs[i]);
+                    }
+
+                Strs = List.ToArray();
+            }
 
             return Strs;
         }
@@ -321,16 +332,39 @@ namespace TLBOT {
             string[] Strs = new string[Strings.Length];
             Strings.CopyTo(Strs, 0);
             if (IsEnabled(Filter)) {
+                bool[] ValidList = ValidDialogueList(OriStrs);
                 Strs = new string[OriStrs.Length];
                 for (uint i = 0, x = 0; i < OriStrs.Length; i++)
-                    if (OriStrs[i].IsDialogue())
+                    if (ValidList[i])
                         Strs[i] = Strings[x++];
                     else
                         Strs[i] = OriStrs[i];
-
             }
 
             Wrapper.Export(Strs, SaveAs);
+        }
+
+        private bool[] ValidDialogueList(string[] Strings) {
+            bool[] Values = new bool[Strings.LongLength];
+            for (uint i = 0; i < Values.LongLength; i++)
+                Values[i] = Strings[i].IsDialogue();
+
+
+            if (Program.FilterSettings.UsePos)
+                for (uint i = 2; i < Strings.Length - 2; i++) {
+                    var BBefore = Values[i - 2];
+                    var Before = Values[i - 1];
+                    var Current = Values[i];
+                    var Next = Values[i + 1];
+                    var ANext = Values[i + 2];
+
+                    //Better missmatchs than crashes :V 
+                    if (BBefore == Before && Next == ANext && Next == Before && Before == false) {
+                        Values[i] = Before;
+                    }
+                }
+
+            return Values;
         }
 
         private string GetStateName(TranslationTask.Status Status) {
@@ -364,8 +398,9 @@ namespace TLBOT {
             } else {
                 StringList.Items.Clear();
                 StringList.Items.AddRange(Strings);
+                bool[] DialogueList = ValidDialogueList(Strings);
                 for (int i = Begin; i < LEnd; i++) {
-                    StringList.SetItemChecked(i, Strings[i].IsDialogue());
+                    StringList.SetItemChecked(i, DialogueList[i]);
                 }
             }
             ShowingStrings = false;
@@ -567,7 +602,14 @@ namespace TLBOT {
         }
 
         private void ClearDbBnt_Click(object sender, EventArgs e) {
-            Program.Cache = new System.Collections.Generic.Dictionary<string, string>();
+            if (Program.ForceDialogues.Count != 0) {
+                var Rst = MessageBox.Show("You want clear only the dialogues filter cache?", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                Program.ForceDialogues = new Dictionary<string, bool>();
+                if (Rst == DialogResult.Yes)
+                    return;
+            }
+
+            Program.Cache = new Dictionary<string, string>();
             DBPageCounter_Tick(null, null);
             ShowDBBnt_Click(null, null);
         }

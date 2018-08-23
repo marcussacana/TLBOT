@@ -274,6 +274,8 @@ namespace TLBOT {
         public int Sensitivity;
         [FieldParmaters(DefaultValue = false, Name = "UseDB")]
         public bool UseDB;
+        [FieldParmaters(DefaultValue = false, Name = "UsePos")]
+        public bool UsePos;
     }
 
     [FieldParmaters(Name = "WordWrap")]

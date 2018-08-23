@@ -319,7 +319,8 @@ namespace TLBOT.DataManager {
 
             string[] Words = Str.Split(' ');
 
-            char[] SpecialList = new char[] { '_', '=', '+', '#' };
+            char[] PontuationJapList = new char[] { '。', '？', '！', '…', '、', '―' };
+            char[] SpecialList = new char[] { '_', '=', '+', '#', ':', '$', '@' };
             char[] PontuationList = new char[] { '.', '?', '!', '…', ',' };
             int Spaces = Str.Where(x => x == ' ' || x == '\t').Count();
             int Pontuations = Str.Where(x => PontuationList.Contains(x)).Count();
@@ -331,12 +332,13 @@ namespace TLBOT.DataManager {
             int Uppers = Str.Where(x => char.IsUpper(x)).Count();
             int Latim = Str.Where(x => x >= 'A' && x <= 'z').Count();
             int Numbers = Str.Where(x => x >= '0' && x <= '9').Count();
+            int NumbersJap = Str.Where(x=> x >= '０' && x <= '９').Count();
             int JapChars = Str.Where(x => (x >= '、' && x <= 'ヿ') || (x >= '｡' && x <= 'ﾝ')).Count();
             int Kanjis = Str.Where(x => x >= '一' && x <= '龯').Count();
 
 
             bool IsCaps = Optimizator.CaseFixer.GetLineCase(Str) == Optimizator.CaseFixer.Case.Upper;
-            bool IsJap = JapChars + Kanjis > Latim;
+            bool IsJap = JapChars + Kanjis > Latim/2;
 
 
             //More Points = Don't Looks a Dialogue
@@ -368,10 +370,19 @@ namespace TLBOT.DataManager {
             }
             try {
                 char Last = (LineQuotes == null ? Str.Last() : Str.TrimEnd(LineQuotes.Value.End).Last());
-                if (IsJap && (new char[] { '。', '？', '！', '…', '、' }).Contains(Last))
+                if (IsJap && PontuationJapList.Contains(Last))
                     Points -= 3;
 
                 if (!IsJap && (PontuationList).Contains(Last))
+                    Points -= 3;
+
+            } catch { }
+            try {
+                char First = (LineQuotes == null ? Str.First() : Str.TrimEnd(LineQuotes.Value.Start).First());
+                if (IsJap && PontuationJapList.Contains(First))
+                    Points -= 3;
+
+                if (!IsJap && (PontuationList).Contains(First))
                     Points -= 3;
 
             } catch { }
@@ -420,13 +431,13 @@ namespace TLBOT.DataManager {
                 Points += 2;
 
             if (WordCount <= 2 && Numbers != 0)
-                Points++;
+                Points += (int)(Str.PercentOf(Numbers) / 10);
 
             if (Str.Length <= 3 && !IsJap)
                 Points++;
 
             if (Numbers >= Str.Length)
-                Points++;
+                Points += 3;
 
             if (IsJap && Kanjis / 2 > JapChars)
                 Points--;
@@ -435,16 +446,33 @@ namespace TLBOT.DataManager {
                 Points--;
 
             if (IsJap && Latim != 0)
-                Points += 2;
+                Points += (int)(Str.PercentOf(Latim) / 10) + 2;
+
+            if (IsJap && NumbersJap != 0)
+                Points += (int)(Str.PercentOf(NumbersJap) / 10) + 2;
+
+            if (IsJap && Numbers != 0)
+                Points += (int)(Str.PercentOf(Numbers) / 10) + 3;
 
             if (IsJap && Pontuations != 0)
-                Points++;
+                Points += (int)(Str.PercentOf(Pontuations) / 10) + 2;
+
+            if (Str.Trim() == string.Empty)
+                return false;
+
+            if (Str.Trim().Trim(Str.Trim().First()) == string.Empty)
+                Points += 2;
 
             if (IsJap != Program.FromAsian)
                 return false;
 
             VerifingDialog = false;
             return Points < Program.FilterSettings.Sensitivity;
+        }
+
+        internal static double PercentOf(this string String, int Value) {
+            var Result = Value / (double)String.Length;
+            return Result * 100;
         }
     }
 }
