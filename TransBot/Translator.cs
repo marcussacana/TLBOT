@@ -29,15 +29,35 @@ namespace TLBOT {
             return new Task(() => {
                 TaskStatus = Status.PreProcessing;
 
-                Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
-                    uint i = (uint)a;
-                    Progress++;
-                    foreach (IOptimizator Optimizator in Optimizators) {
-                        try {
-                            Optimizator.BeforeTranslate(ref Lines[i], i);
-                        } catch { }
+                if (Program.Settings.Multithread) {
+                    Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
+                        uint i = (uint)a;
+                        foreach (IOptimizator Optimizator in Optimizators) {
+#if !DEBUG
+                            try {
+#endif
+                                Optimizator.BeforeTranslate(ref Lines[i], i);
+#if !DEBUG
+                            } catch { }
+#endif
+                        }
+                        Progress++;
+                    }));
+                } else {
+                    for (uint i = 0; i < Lines.LongLength; i++) {
+                        foreach (IOptimizator Optimizator in Optimizators) {
+#if !DEBUG
+                            try {
+#endif
+                                Optimizator.BeforeTranslate(ref Lines[i], i);
+#if !DEBUG
+                            } catch { }
+#endif
+                            Progress++;
+                        }
+
                     }
-                }));
+                }
 
                 TaskStatus = Status.Translating;
                 switch (Program.TLMode) {
@@ -58,11 +78,13 @@ namespace TLBOT {
 
                 TaskStatus = Status.PostProcessing;
                 Progress = 0;
-                Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
-                    Progress++;
-                    uint i = (uint)a;
-                    foreach (IOptimizator Optimizator in Optimizators)
-                        try {
+
+                if (Program.Settings.Multithread) {
+                    Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
+                        Progress++;
+                        uint i = (uint)a;
+                        foreach (IOptimizator Optimizator in Optimizators)
+                            try {
 #if DEBUG
                             var Begin = DateTime.Now;
                             string Line = Lines[i];
@@ -74,12 +96,32 @@ namespace TLBOT {
                             }
                             Lines[i] = Line;
 #else
-                            Optimizator.AfterTranslate(ref Lines[i], i);
+                                Optimizator.AfterTranslate(ref Lines[i], i);
 #endif
-                        } catch { }
+                            } catch { }
 
-                }));
-
+                    }));
+                } else {
+                    for (uint i = 0; i < Lines.LongLength; i++) {
+                        foreach (IOptimizator Optimizator in Optimizators)
+                            try {
+#if DEBUG
+                            var Begin = DateTime.Now;
+                            string Line = Lines[i];
+                            Optimizator.AfterTranslate(ref Line, i);
+                            if (System.Diagnostics.Debugger.IsAttached) {
+                                var ElapsedTime = (DateTime.Now - Begin).TotalMilliseconds;
+                                if (ElapsedTime > 300 || Lines[i] != Line)
+                                    System.Diagnostics.Debugger.Break();
+                            }
+                            Lines[i] = Line;
+#else
+                                Optimizator.AfterTranslate(ref Lines[i], i);
+#endif
+                            } catch { }
+                        Progress++;
+                    }
+                }
 
                 TaskStatus = Status.Finished;
                 OnFinish?.Invoke();

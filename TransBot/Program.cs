@@ -239,6 +239,8 @@ namespace TLBOT {
         public bool TranslateWindow;
         [FieldParmaters(DefaultValue = 1000, Name = "DBViewPageLimit")]
         public int DBViewPageLimit;
+        [FieldParmaters(DefaultValue = false, Name = "Multithread")]
+        public bool Multithread;
     }
 
     [FieldParmaters(Name = "Optimizator")]

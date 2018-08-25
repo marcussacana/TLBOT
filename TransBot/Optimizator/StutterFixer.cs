@@ -19,6 +19,8 @@ namespace TLBOT.Optimizator {
         public void AfterOpen(ref string Line, uint ID) { }
 
         public void AfterTranslate(ref string Line, uint ID) {
+            if (!EmptyPrefix.ContainsKey(ID) || !EmptySufix.ContainsKey(ID) || !DB.ContainsKey(ID))
+                return;
             if (EmptyPrefix[ID])
                 Line = Line.TrimStart();
             if (EmptySufix[ID])

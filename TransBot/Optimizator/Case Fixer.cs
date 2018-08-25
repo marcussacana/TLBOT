@@ -122,6 +122,8 @@ namespace TLBOT.Optimizator {
         }
 
         public void AfterOpen(ref string Line, uint ID) {
+            if (!CaseMap.ContainsKey(ID))
+                return;
             CaseMap[ID] = GetLineCase(Line);
         }
 

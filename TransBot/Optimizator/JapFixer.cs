@@ -6,6 +6,8 @@ namespace TLBOT.Optimizator {
     class JapFixer : IOptimizator {
         Dictionary<uint, string> Minified = new Dictionary<uint, string>();
         public void AfterTranslate(ref string Line, uint ID) {
+            if (!Minified.ContainsKey(ID))
+                return;
             string MinifiedTL = Minify(Line);
 
             if (MinifiedTL == Minified[ID] && !string.IsNullOrEmpty(MinifiedTL)) {
