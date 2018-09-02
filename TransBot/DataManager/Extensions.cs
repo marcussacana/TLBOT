@@ -298,7 +298,7 @@ namespace TLBOT.DataManager {
                     return new Quote() { Start = x[0], End = x[1] };
                 }).ToArray();
 
-            string Str = String;
+            string Str = String.Trim();
             foreach (string Ignore in IgnoreList)
                 Str = Str.Replace(Ignore, "");
 
@@ -467,7 +467,8 @@ namespace TLBOT.DataManager {
                 return false;
 
             VerifingDialog = false;
-            return Points < Program.FilterSettings.Sensitivity;
+            bool Result = Points < Program.FilterSettings.Sensitivity;
+            return Result;
         }
 
         internal static double PercentOf(this string String, int Value) {
