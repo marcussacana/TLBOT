@@ -294,7 +294,14 @@ namespace TLBOT {
                                 Optimizator.BeforeSave(ref TaskCreator.Lines[i], i);
                             } catch { }
 
-                    Export(TaskCreator.Lines, FileName);
+                    bool Changed = false;
+                    for (uint i = 0; i < Strings.Length; i++)
+                        if (Strings[i] != TaskCreator.Lines[i]) {
+                            Changed = true;
+                            break;
+                        }
+                    if (Changed)
+                        Export(TaskCreator.Lines, FileName);
                 } catch { }
             }
 
