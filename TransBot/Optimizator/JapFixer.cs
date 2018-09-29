@@ -28,7 +28,7 @@ namespace TLBOT.Optimizator {
                     return Translator.Google;
                 case Translator.Google:
                     if (Program.LECPort == null)
-                        return Translator.Google;
+                        return Translator.Bing;
                     else
                         return Translator.LEC;
                 case Translator.CacheOnly:

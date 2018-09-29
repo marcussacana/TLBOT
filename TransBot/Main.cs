@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using SacanaWrapper;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
@@ -232,8 +233,12 @@ namespace TLBOT {
                         if (dr == DialogResult.Abort)
                             break;
                     }
-                    
-                    for (uint i = 0; i < Strings.LongLength; i++)
+
+                    for (uint i = 0; i < Strings.LongLength; i++) {
+                        if (i % 15 == 0) {
+                            lblState.Text = string.Format("Initializing... ({0}/{1} Lines)", i, Strings.LongLength);
+                            Application.DoEvents();
+                        }
                         foreach (IOptimizator Optimizator in EnabledOptimizators)
                             try {
                                 if (Optimizator is DialogueFilter)
@@ -241,6 +246,7 @@ namespace TLBOT {
 
                                 Optimizator.AfterOpen(ref Strings[i], i);
                             } catch { }
+                    }
                     ShowStrings(Strings, NewFile: true);
 
                     var TaskCreator = new TranslationTask(Strings, Program.Settings.SourceLang, Program.Settings.TargetLang, EnabledOptimizators);
@@ -248,7 +254,7 @@ namespace TLBOT {
                     Task Translate = TaskCreator.Build();
 
                     Translate.Start();
-
+                    Text = $"TLBOT 2 - {Path.GetFileName(FileName)}";
                     int DL = 0;
                     int LP = 0;
                     while (TaskCreator.TaskStatus != TranslationTask.Status.Finished) {
@@ -285,7 +291,12 @@ namespace TLBOT {
                     }
 
 
-                    for (uint i = 0; i < TaskCreator.Lines.LongLength; i++)
+                    for (uint i = 0; i < TaskCreator.Lines.LongLength; i++) {
+                        if (i % 15 == 0) {
+                            lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Strings.LongLength);
+                            Application.DoEvents();
+                        }
+
                         foreach (IOptimizator Optimizator in EnabledOptimizators)
                             try {
                                 if (Optimizator is DialogueFilter)
@@ -293,6 +304,7 @@ namespace TLBOT {
 
                                 Optimizator.BeforeSave(ref TaskCreator.Lines[i], i);
                             } catch { }
+                    }
 
                     bool Changed = false;
                     for (uint i = 0; i < Strings.Length; i++)
@@ -306,6 +318,7 @@ namespace TLBOT {
             }
 
             TaskProgress.Value = TaskProgress.Maximum;
+            Text = "TLBOT 2";
             lblState.Text = "IDLE";
             Program.TaskInfo = new TaskInfo();
         }
@@ -399,7 +412,7 @@ namespace TLBOT {
             if (Strings.Length == StringList.Items.Count) {
                 for (int i = Begin; i < LEnd; i++) {
                     StringList.Items[i] = Strings[i];
-                    if (i % 10 == 0)
+                    if (i % (Strings.Length > 5000 ? 50 : 10) == 0)
                         StringList.SelectedIndex = i;
                 }
             } else {
@@ -520,16 +533,28 @@ namespace TLBOT {
             Wrapper Wrapper = new Wrapper();
             var Content = Wrapper.Import(fd.FileName, TryLastPluginFirst: true);
 
-            for (uint i = 0; i < Content.LongLength; i++)
-                foreach (IOptimizator Optimizator in EnabledOptimizators)
-                    Optimizator.AfterOpen(ref Content[i], i);
+            for (uint i = 0; i < Content.LongLength; i++) {
+                if (i % 15 == 0) {
+                    lblState.Text = string.Format("Initializing... ({0}/{1} Lines)", i, Content.LongLength);
+                    Application.DoEvents();
+                }
+                foreach (IOptimizator Optimizator in EnabledOptimizators) try {
+                        Optimizator.AfterOpen(ref Content[i], i);
+                } catch { }
+            }
 
-            for (uint i = 0; i < Content.LongLength; i++)
-                foreach (IOptimizator Optimizator in EnabledOptimizators)
-                    Optimizator.BeforeTranslate(ref Content[i], i);
-
+            for (uint i = 0; i < Content.LongLength; i++) {
+                if (i % 15 == 0) {
+                    lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Content.LongLength);
+                    Application.DoEvents();
+                }
+                foreach (IOptimizator Optimizator in EnabledOptimizators) try {
+                        Optimizator.BeforeTranslate(ref Content[i], i);
+                } catch { }
+            }
 
             ShowStrings(Content, NewFile: true);
+            lblState.Text = "IDLE";
         }
 
         private void StringListClicked(object sender, EventArgs e) {
@@ -708,6 +733,59 @@ namespace TLBOT {
 
         private void bntSearch_Click(object sender, EventArgs e) {
             new Search().Show();
+        }
+
+        private void GenDBBnt_Click(object sender, EventArgs e) {
+            MessageBox.Show("Select all original scripts", "TLBOT 2", MessageBoxButtons.OK);
+            FilesSelector Selector = new FilesSelector();
+            if (Selector.ShowDialog() != DialogResult.OK)
+                return;
+            MessageBox.Show("Select the directory with your translated scripts", "TLBOT 2", MessageBoxButtons.OK);
+            CommonOpenFileDialog OFD = new CommonOpenFileDialog();
+            OFD.IsFolderPicker = true;
+            OFD.Multiselect = false;
+            OFD.Title = "Select the directory with translated scripts";
+            if (OFD.ShowDialog() != CommonFileDialogResult.Ok)
+                return;
+
+            string[] Scripts = Selector.SelectedFiles;
+            string Directory = OFD.FileName;
+            if (!Directory.EndsWith("\\"))
+                Directory += "\\";
+
+            string LOG = string.Empty;
+            uint Lines = 0;
+
+            Wrapper Wrapper = new Wrapper();
+            foreach (string Script in Scripts) {
+                string TLFile = Directory + Path.GetFileName(Script);
+                if (!File.Exists(TLFile)) {
+                    LOG += $"\n{Path.GetFileName(Script)} Not Found";
+                    continue;
+                }
+                string[] OStrings = Wrapper.Import(Script);
+                string[] TStrings = Wrapper.Import(TLFile);
+                if (OStrings.Length != TStrings.Length) {
+                    LOG += $"\n{Path.GetFileName(Script)} Isn't the same script";
+                    continue;
+                }
+                for (uint i = 0; i < OStrings.Length; i++) {
+                    if (OStrings[i] == TStrings[i])
+                        continue;
+                    Program.Cache[OStrings[i]] = TStrings[i];
+                    Lines++;
+                }
+            }
+
+            if (LOG != string.Empty && Lines == 0) {
+                MessageBox.Show("Failed to generate the DB" + LOG, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else if (LOG != string.Empty) {
+                MessageBox.Show($"\"{Lines}\" Entrys Imported, but...{LOG}", "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            } else if (Lines == 0) {
+                MessageBox.Show("Something is wrong...", "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else {
+                MessageBox.Show($"\"{Lines}\" Entrys Imported", "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

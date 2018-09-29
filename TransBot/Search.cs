@@ -1,11 +1,7 @@
 ﻿using SacanaWrapper;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using TLBOT.DataManager;
 
@@ -13,6 +9,10 @@ namespace TLBOT {
     public partial class Search : Form {
         public Search() {
             InitializeComponent();
+
+
+            if (Program.Settings.TranslateWindow)
+                new Thread(() => this.Translate(Program.Settings.TargetLang, Program.TLClient)).Start();
         }
 
         private void button1_Click(object sender, EventArgs e) {

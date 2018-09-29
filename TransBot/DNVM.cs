@@ -29,7 +29,16 @@ class DotNetVM {
     private void DllInitialize(string Dll) {
         Assembly = Assembly.LoadFrom(Dll);
     }
-     public Assembly Assembly { get; private set; }
+    public Assembly Assembly { get; private set; }
+
+
+    Assembly Engine;
+    string DLL;
+    public string AssemblyPath {
+        get {
+            return DLL;
+        }
+    }
     internal static void Crash() {
         Crash();
     }
@@ -43,6 +52,10 @@ class DotNetVM {
     /// <returns></returns>
     internal dynamic Call(string ClassName, string FunctionName, params object[] Arguments) {       
         return exec(Arguments, ClassName, FunctionName, Assembly);
+    }
+    internal void StartInstance(string Class, params object[] Arguments) {
+        Type fooType = Engine.GetType(Class);
+        Instance = Activator.CreateInstance(fooType, Arguments);
     }
 
     private string LastClass;
@@ -102,32 +115,16 @@ class DotNetVM {
             throw new Exception(Log);
         }
 
+        DLL = cr.PathToAssembly;
         return cr.CompiledAssembly;
     }
 
-    /*internal string CreateExe(string Source, string MainClass) {
-        CodeDomProvider cpd = new CSharpCodeProvider();
-        var cp = new CompilerParameters();
-        cp.GenerateExecutable = true;
-        cp.GenerateInMemory = false;
-        cp.MainClass = MainClass;
-        cp.IncludeDebugInformation = true;
-        cp.OutputAssembly = MainClass;
-        string sourceCode = string.Empty;
-        System.IO.StringReader Sr = new System.IO.StringReader(Source);
-        string[] Lines = new string[0];
-        while (Sr.Peek() != -1) {
-            string[] tmp = new string[Lines.Length + 1];
-            Lines.CopyTo(tmp, 0);
-            tmp[Lines.Length] = Sr.ReadLine();
-            Lines = tmp;
+    public static string AssemblyDirectory {
+        get {
+            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            string path = Uri.UnescapeDataString(uri.Path);
+            return System.IO.Path.GetDirectoryName(path).TrimEnd('\\', '/');
         }
-        foreach (string line in Lines) {
-            if (line.StartsWith("using ") && line.EndsWith(";"))
-                cp.ReferencedAssemblies.Add(line.Substring(6, line.Length - 7) + ".dll");
-            sourceCode += line.Replace("\t", "") + '\n';
-        }
-        CompilerResults cr = cpd.CompileAssemblyFromSource(cp, sourceCode);
-        return cr.PathToAssembly;
-    }*/
+    }
 }

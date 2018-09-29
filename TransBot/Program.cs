@@ -74,6 +74,8 @@ namespace TLBOT {
             }
         }
 
+        public static bool ProxyInitialized = false;
+
         public static Dictionary<string, bool> ForceDialogues = new Dictionary<string, bool>();
         public static Dictionary<string, string> Cache = new Dictionary<string, string>();
 

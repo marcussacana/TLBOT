@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TLBOT</RootNamespace>
     <AssemblyName>TLBOT 2</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AssemblyVersion>1.14.0.0</AssemblyVersion>
     <TargetFrameworkProfile />
@@ -36,6 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack.1.1.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -119,6 +122,9 @@
       <DependentUpon>Search.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -139,7 +145,7 @@
       <Name>SacanaWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\TLIB\TLIB.csproj">
-      <Project>{b7489af3-fad2-4d45-9746-cd72d9f22bff}</Project>
+      <Project>{d5db2d24-05cd-46f1-a62f-c6f5474fdcb4}</Project>
       <Name>TLIB</Name>
     </ProjectReference>
   </ItemGroup>

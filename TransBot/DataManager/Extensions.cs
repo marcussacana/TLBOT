@@ -28,18 +28,29 @@ namespace TLBOT.DataManager {
             for (int i = 0; i < 3; i++) {
                 try {
                     string Result = string.Empty;
-                    switch (Client) {
-                        case Translator.Bing:
-                        case Translator.BingNeural:
-                            Result = Bing.Translate(String, SourceLanguage, TargetLanguage);
-                            break;
-                        case Translator.Google:
-                            Result = Google.Translate(String, SourceLanguage, TargetLanguage);
-                            break;
-                        case Translator.LEC:
-                            Result = LEC.Translate(String, SourceLanguage, TargetLanguage, LEC.Gender.Male, LEC.Formality.Informal, Program.LECPort);
-                            break;
+                    var Thread = new Thread(() => {
+                        switch (Client) {
+                            case Translator.Bing:
+                            case Translator.BingNeural:
+                                Result = Bing.Translate(String, SourceLanguage, TargetLanguage);
+                                break;
+                            case Translator.Google:
+                                Result = Google.Translate(String, SourceLanguage, TargetLanguage);
+                                break;
+                            case Translator.LEC:
+                                Result = LEC.Translate(String, SourceLanguage, TargetLanguage, LEC.Gender.Male, LEC.Formality.Informal, Program.LECPort);
+                                break;
+                        }
+                    });
+
+                    if (Program.ProxyInitialized) {
+                        Thread.TimeoutStart(20000);
+                    } else {
+                        Thread.Start();
+                        Thread.WaitForExit();
+                        Program.ProxyInitialized = true;
                     }
+
 
                     if (string.IsNullOrWhiteSpace(Result))
                         continue;
@@ -61,6 +72,7 @@ namespace TLBOT.DataManager {
             string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).ToArray();
             string[] Result;
 
+            bool Error = false;
             for (int i = 0; i < 5; i++) {
                 try {
                     if (NoCached?.Length == 0)
@@ -75,7 +87,14 @@ namespace TLBOT.DataManager {
 
                         case Translator.LEC:
                         case Translator.Google:
-                            Result = Google.Translate(NoCached, SourceLanguage, TargetLanguage, 300);
+                            try {
+                                Result = Google.Translate(NoCached, SourceLanguage, TargetLanguage);
+                            } catch (Exception ex) {
+                                if (!Error && i + 1 >= 4)
+                                    MessageBox.Show(ex.Message, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                Error = true;
+
+                            }
                             break;
                     }
 
@@ -98,7 +117,7 @@ namespace TLBOT.DataManager {
 #else
                 } catch { 
 #endif
-                    Thread.Sleep(100);
+                    Task.Delay(200).Wait();
                 }
             }
 
@@ -182,6 +201,23 @@ namespace TLBOT.DataManager {
                     } catch { }
                 }));
             } catch { }
+        }
+
+        public static void TimeoutStart(this Thread Thread, int Milliseconds) {
+            DateTime Begin = DateTime.Now;
+            Thread.Start();
+
+            while (Thread.IsRunning() && ((DateTime.Now - Begin).TotalMilliseconds < Milliseconds)) {
+                Task.Delay(100).Wait();
+            }
+            if (Thread.IsRunning())
+                Thread.Abort();
+        }
+
+        public static void WaitForExit(this Thread Thread) {
+            while (Thread.IsRunning()) {
+                Task.Delay(100).Wait();
+            }
         }
 
         public static void Translate(this Form Form, string TargetLanguage, Translator Client) {

@@ -33,6 +33,7 @@
             this.lblInfoPrefix = new System.Windows.Forms.Label();
             this.TaskProgress = new System.Windows.Forms.ProgressBar();
             this.OptionsTab = new System.Windows.Forms.TabPage();
+            this.bntSearch = new System.Windows.Forms.Button();
             this.bntTestClient = new System.Windows.Forms.Button();
             this.SensentiveGB = new System.Windows.Forms.GroupBox();
             this.ckUseDB = new System.Windows.Forms.CheckBox();
@@ -77,7 +78,7 @@
             this.TransCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.DBPageCounter = new System.Windows.Forms.Timer(this.components);
             this.CacheLoadedVerify = new System.Windows.Forms.Timer(this.components);
-            this.bntSearch = new System.Windows.Forms.Button();
+            this.GenDBBnt = new System.Windows.Forms.Button();
             this.MainTabControl.SuspendLayout();
             this.ViewTab.SuspendLayout();
             this.OptionsTab.SuspendLayout();
@@ -96,6 +97,7 @@
             this.MainTabControl.Controls.Add(this.TranslationDB);
             this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainTabControl.Location = new System.Drawing.Point(0, 0);
+            this.MainTabControl.MinimumSize = new System.Drawing.Size(815, 495);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
             this.MainTabControl.Size = new System.Drawing.Size(816, 496);
@@ -208,6 +210,17 @@
             this.OptionsTab.Text = "Opções";
             this.OptionsTab.UseVisualStyleBackColor = true;
             // 
+            // bntSearch
+            // 
+            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntSearch.Location = new System.Drawing.Point(608, 123);
+            this.bntSearch.Name = "bntSearch";
+            this.bntSearch.Size = new System.Drawing.Size(75, 23);
+            this.bntSearch.TabIndex = 18;
+            this.bntSearch.Text = "Search";
+            this.bntSearch.UseVisualStyleBackColor = true;
+            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
+            // 
             // bntTestClient
             // 
             this.bntTestClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -304,8 +317,6 @@
             // 
             // LineBreaker
             // 
-            this.LineBreaker.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.LineBreaker.Location = new System.Drawing.Point(309, 44);
             this.LineBreaker.Name = "LineBreaker";
             this.LineBreaker.Size = new System.Drawing.Size(115, 20);
@@ -438,8 +449,6 @@
             // 
             // TargetStepMode
             // 
-            this.TargetStepMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.TargetStepMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.TargetStepMode.FormattingEnabled = true;
             this.TargetStepMode.Items.AddRange(new object[] {
@@ -578,6 +587,7 @@
             // 
             // TranslationDB
             // 
+            this.TranslationDB.Controls.Add(this.GenDBBnt);
             this.TranslationDB.Controls.Add(this.OptimizeDbBnt);
             this.TranslationDB.Controls.Add(this.label5);
             this.TranslationDB.Controls.Add(this.DBPageSelector);
@@ -610,7 +620,7 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.Location = new System.Drawing.Point(117, 439);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(79, 23);
+            this.label5.Size = new System.Drawing.Size(68, 23);
             this.label5.TabIndex = 6;
             this.label5.Text = "Página:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -618,7 +628,7 @@
             // DBPageSelector
             // 
             this.DBPageSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.DBPageSelector.Location = new System.Drawing.Point(202, 442);
+            this.DBPageSelector.Location = new System.Drawing.Point(191, 442);
             this.DBPageSelector.Name = "DBPageSelector";
             this.DBPageSelector.Size = new System.Drawing.Size(55, 20);
             this.DBPageSelector.TabIndex = 5;
@@ -704,16 +714,16 @@
             this.CacheLoadedVerify.Interval = 200;
             this.CacheLoadedVerify.Tick += new System.EventHandler(this.CacheLoadedVerifier);
             // 
-            // bntSearch
+            // GenDBBnt
             // 
-            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntSearch.Location = new System.Drawing.Point(608, 123);
-            this.bntSearch.Name = "bntSearch";
-            this.bntSearch.Size = new System.Drawing.Size(75, 23);
-            this.bntSearch.TabIndex = 18;
-            this.bntSearch.Text = "Search";
-            this.bntSearch.UseVisualStyleBackColor = true;
-            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
+            this.GenDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.GenDBBnt.Location = new System.Drawing.Point(261, 439);
+            this.GenDBBnt.Name = "GenDBBnt";
+            this.GenDBBnt.Size = new System.Drawing.Size(103, 23);
+            this.GenDBBnt.TabIndex = 8;
+            this.GenDBBnt.Text = "Gerar Database";
+            this.GenDBBnt.UseVisualStyleBackColor = true;
+            this.GenDBBnt.Click += new System.EventHandler(this.GenDBBnt_Click);
             // 
             // Main
             // 
@@ -722,6 +732,7 @@
             this.ClientSize = new System.Drawing.Size(816, 496);
             this.Controls.Add(this.MainTabControl);
             this.Enabled = false;
+            this.MinimumSize = new System.Drawing.Size(832, 535);
             this.Name = "Main";
             this.Text = "TLBOT 2";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TLBClosing);
@@ -798,5 +809,6 @@
         private System.Windows.Forms.CheckBox ckUseDB;
         private System.Windows.Forms.Button bntTestClient;
         private System.Windows.Forms.Button bntSearch;
+        private System.Windows.Forms.Button GenDBBnt;
     }
 }
