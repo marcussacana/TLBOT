@@ -37,9 +37,9 @@ namespace TLBOT.DataManager {
         /// <returns>The Result</returns>
         public static string MergeLines(this string String) {
             string Rst = String.Replace(" " + GameLineBreaker + " ", "  ");
-            Rst = String.Replace(GameLineBreaker + " ", " ");
-            Rst = String.Replace(" " + GameLineBreaker, " ");
-            Rst = String.Replace(GameLineBreaker, " ");
+            Rst = Rst.Replace(GameLineBreaker + " ", " ");
+            Rst = Rst.Replace(" " + GameLineBreaker, " ");
+            Rst = Rst.Replace(GameLineBreaker, " ");
             return Rst;
         }
 
