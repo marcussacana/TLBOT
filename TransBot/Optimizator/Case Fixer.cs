@@ -63,62 +63,66 @@ namespace TLBOT.Optimizator {
         }
 
         public static Case GetLineCase(string String) {
-            string[] Words = String.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-            Case[] WordsCase = new Case[Words.Length];
-            for (int x = 0; x < Words.Length; x++) {
-                string Word = Words[x];
-                uint cLower = 0;
-                uint cUpper = 0;
-                uint cTitle = 0;
-                for (int i = 0; i < Word.Length; i++) {
-                    char Char = Word[i];
-                    if (Char > 0x8000)
-                        return Case.Normal;
-                    if (!char.IsLetter(Char))
-                        continue;
+            try {
+                string[] Words = String.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+                Case[] WordsCase = new Case[Words.Length];
+                for (int x = 0; x < Words.Length; x++) {
+                    string Word = Words[x];
+                    uint cLower = 0;
+                    uint cUpper = 0;
+                    uint cTitle = 0;
+                    for (int i = 0; i < Word.Length; i++) {
+                        char Char = Word[i];
+                        if (Char > 0x8000)
+                            return Case.Normal;
+                        if (!char.IsLetter(Char))
+                            continue;
 
-                    if (i == 0) {
-                        if (char.IsLetter(Char) && char.IsUpper(Char)) {
-                            if (x == 0 || (char.IsPunctuation(Words[x - 1].Last())))
-                                cTitle++;
+                        if (i == 0) {
+                            if (char.IsLetter(Char) && char.IsUpper(Char)) {
+                                if (x == 0 || (char.IsPunctuation(Words[x - 1].Last())))
+                                    cTitle++;
+                            } else {
+                                cLower++;
+                            }
                         } else {
-                            cLower++;
+                            if (char.IsUpper(Char))
+                                cUpper++;
+                            break;
                         }
-                    } else {
-                        if (char.IsUpper(Char))
-                            cUpper++;
-                        break;
                     }
+                    if (cLower == Word.Length)
+                        WordsCase[x] = Case.Lower;
+                    else if (cUpper == Word.Length)
+                        WordsCase[x] = Case.Upper;
+                    else if (cUpper + cLower == Word.Length)
+                        WordsCase[x] = Case.Normal;
+                    else if (cUpper > cLower && cUpper > cTitle)
+                        WordsCase[x] = Case.Upper;
+                    else if (cLower > cUpper && cLower > cTitle)
+                        WordsCase[x] = Case.Lower;
+                    else if (cTitle >= Words.Length)
+                        WordsCase[x] = Case.Title;
+                    else
+                        WordsCase[x] = Case.Normal;
                 }
-                if (cLower == Word.Length)
-                    WordsCase[x] = Case.Lower;
-                else if (cUpper == Word.Length)
-                    WordsCase[x] = Case.Upper;
-                else if (cUpper + cLower == Word.Length)
-                    WordsCase[x] = Case.Normal;
-                else if (cUpper > cLower && cUpper > cTitle)
-                    WordsCase[x] = Case.Upper;
-                else if (cLower > cUpper && cLower > cTitle)
-                    WordsCase[x] = Case.Lower;
-                else if (cTitle >= Words.Length)
-                    WordsCase[x] = Case.Title;
-                else
-                    WordsCase[x] = Case.Normal;
-            }
 
-            int Titles = (from x in WordsCase where x == Case.Title  select x).Count();
-            int Upper  = (from x in WordsCase where x == Case.Upper  select x).Count();
-            int Normal = (from x in WordsCase where x == Case.Normal select x).Count();
-            int Lower  = (from x in WordsCase where x == Case.Lower  select x).Count();
+                int Titles = (from x in WordsCase where x == Case.Title select x).Count();
+                int Upper = (from x in WordsCase where x == Case.Upper select x).Count();
+                int Normal = (from x in WordsCase where x == Case.Normal select x).Count();
+                int Lower = (from x in WordsCase where x == Case.Lower select x).Count();
 
-            if (Titles > Normal && Titles > Upper && Titles > Lower)
-                return Case.Title;
-            if (Upper > Titles && Upper > Normal && Upper > Lower)
-                return Case.Upper;
-            if (Lower > Titles && Lower > Upper && Lower > Normal)
+                if (Titles > Normal && Titles > Upper && Titles > Lower)
+                    return Case.Title;
+                if (Upper > Titles && Upper > Normal && Upper > Lower)
+                    return Case.Upper;
+                if (Lower > Titles && Lower > Upper && Lower > Normal)
+                    return Case.Normal;
+
                 return Case.Normal;
-
-            return Case.Normal;
+            } catch {
+                return Case.Normal;
+            }
         }
 
         public void AfterOpen(ref string Line, uint ID) {
@@ -128,6 +132,8 @@ namespace TLBOT.Optimizator {
         }
 
         public void BeforeSave(ref string Line, uint ID) {
+            if (!CaseMap.ContainsKey(ID))
+                return;
             if (GetLineCase(Line) != CaseMap[ID])
                 Line = SetCase(Line, CaseMap[ID]);
         }

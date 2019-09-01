@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -82,6 +82,7 @@
     <Compile Include="Optimizator\Escape.cs" />
     <Compile Include="Optimizator\IOptimizator.cs" />
     <Compile Include="Optimizator\JapFixer.cs" />
+    <Compile Include="Optimizator\Quote Trim.cs" />
     <Compile Include="Optimizator\Replaces.cs" />
     <Compile Include="Optimizator\StutterFixer.cs" />
     <Compile Include="Optimizator\WordWraper.cs" />

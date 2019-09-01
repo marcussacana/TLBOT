@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SacanaWrapper", "SacanaWrap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLIB", "TLIB\TLIB.csproj", "{D5DB2D24-05CD-46F1-A62F-C6F5474FDCB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin", "Plugin\Plugin.csproj", "{FE94AFD1-31A0-40EC-93B4-C23384DAD6DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D5DB2D24-05CD-46F1-A62F-C6F5474FDCB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5DB2D24-05CD-46F1-A62F-C6F5474FDCB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5DB2D24-05CD-46F1-A62F-C6F5474FDCB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE94AFD1-31A0-40EC-93B4-C23384DAD6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE94AFD1-31A0-40EC-93B4-C23384DAD6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE94AFD1-31A0-40EC-93B4-C23384DAD6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE94AFD1-31A0-40EC-93B4-C23384DAD6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
