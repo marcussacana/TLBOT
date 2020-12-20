@@ -33,9 +33,11 @@
             this.lblInfoPrefix = new System.Windows.Forms.Label();
             this.TaskProgress = new System.Windows.Forms.ProgressBar();
             this.OptionsTab = new System.Windows.Forms.TabPage();
+            this.ckLstMode = new System.Windows.Forms.CheckBox();
             this.bntSearch = new System.Windows.Forms.Button();
             this.bntTestClient = new System.Windows.Forms.Button();
             this.SensentiveGB = new System.Windows.Forms.GroupBox();
+            this.ckUsePos = new System.Windows.Forms.CheckBox();
             this.ckUseDB = new System.Windows.Forms.CheckBox();
             this.lblBarVal = new System.Windows.Forms.Label();
             this.lblMoreSensetive = new System.Windows.Forms.Label();
@@ -66,6 +68,7 @@
             this.TLCLientMenu = new System.Windows.Forms.ComboBox();
             this.lblClientPrefix = new System.Windows.Forms.Label();
             this.TranslationDB = new System.Windows.Forms.TabPage();
+            this.GenDBBnt = new System.Windows.Forms.Button();
             this.OptimizeDbBnt = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.DBPageSelector = new System.Windows.Forms.NumericUpDown();
@@ -78,7 +81,6 @@
             this.TransCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.DBPageCounter = new System.Windows.Forms.Timer(this.components);
             this.CacheLoadedVerify = new System.Windows.Forms.Timer(this.components);
-            this.GenDBBnt = new System.Windows.Forms.Button();
             this.MainTabControl.SuspendLayout();
             this.ViewTab.SuspendLayout();
             this.OptionsTab.SuspendLayout();
@@ -184,6 +186,7 @@
             // 
             // OptionsTab
             // 
+            this.OptionsTab.Controls.Add(this.ckLstMode);
             this.OptionsTab.Controls.Add(this.bntSearch);
             this.OptionsTab.Controls.Add(this.bntTestClient);
             this.OptionsTab.Controls.Add(this.SensentiveGB);
@@ -210,10 +213,22 @@
             this.OptionsTab.Text = "Opções";
             this.OptionsTab.UseVisualStyleBackColor = true;
             // 
+            // ckLstMode
+            // 
+            this.ckLstMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ckLstMode.AutoSize = true;
+            this.ckLstMode.Location = new System.Drawing.Point(607, 127);
+            this.ckLstMode.Name = "ckLstMode";
+            this.ckLstMode.Size = new System.Drawing.Size(76, 17);
+            this.ckLstMode.TabIndex = 19;
+            this.ckLstMode.Text = "LST Mode";
+            this.ckLstMode.UseVisualStyleBackColor = true;
+            this.ckLstMode.CheckedChanged += new System.EventHandler(this.LstModeCheckedChanged);
+            // 
             // bntSearch
             // 
             this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntSearch.Location = new System.Drawing.Point(608, 123);
+            this.bntSearch.Location = new System.Drawing.Point(526, 123);
             this.bntSearch.Name = "bntSearch";
             this.bntSearch.Size = new System.Drawing.Size(75, 23);
             this.bntSearch.TabIndex = 18;
@@ -224,9 +239,10 @@
             // bntTestClient
             // 
             this.bntTestClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntTestClient.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.bntTestClient.Location = new System.Drawing.Point(430, 125);
             this.bntTestClient.Name = "bntTestClient";
-            this.bntTestClient.Size = new System.Drawing.Size(75, 23);
+            this.bntTestClient.Size = new System.Drawing.Size(42, 23);
             this.bntTestClient.TabIndex = 17;
             this.bntTestClient.Text = "Test Client";
             this.bntTestClient.UseVisualStyleBackColor = true;
@@ -234,6 +250,7 @@
             // 
             // SensentiveGB
             // 
+            this.SensentiveGB.Controls.Add(this.ckUsePos);
             this.SensentiveGB.Controls.Add(this.ckUseDB);
             this.SensentiveGB.Controls.Add(this.lblBarVal);
             this.SensentiveGB.Controls.Add(this.lblMoreSensetive);
@@ -245,6 +262,21 @@
             this.SensentiveGB.TabIndex = 16;
             this.SensentiveGB.TabStop = false;
             this.SensentiveGB.Text = "Sensibilidade do Filtro";
+            // 
+            // ckUsePos
+            // 
+            this.ckUsePos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ckUsePos.AutoSize = true;
+            this.ckUsePos.Checked = true;
+            this.ckUsePos.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.ckUsePos.Location = new System.Drawing.Point(141, 55);
+            this.ckUsePos.Name = "ckUsePos";
+            this.ckUsePos.Size = new System.Drawing.Size(80, 17);
+            this.ckUsePos.TabIndex = 21;
+            this.ckUsePos.Text = "Usar Índice";
+            this.ckUsePos.ThreeState = true;
+            this.ckUsePos.UseVisualStyleBackColor = true;
+            this.ckUsePos.CheckStateChanged += new System.EventHandler(this.UsePosCheckedChanged);
             // 
             // ckUseDB
             // 
@@ -422,6 +454,11 @@
             0,
             0,
             0});
+            this.LineLimit.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
             this.LineLimit.Name = "LineLimit";
             this.LineLimit.Size = new System.Drawing.Size(128, 20);
             this.LineLimit.TabIndex = 3;
@@ -491,7 +528,11 @@
             "CH",
             "RU",
             "PT",
-            "ES"});
+            "ES",
+            "IT",
+            "FR",
+            "PL",
+            "DE"});
             this.TargetLangSelector.Location = new System.Drawing.Point(128, 100);
             this.TargetLangSelector.Name = "TargetLangSelector";
             this.TargetLangSelector.Size = new System.Drawing.Size(63, 21);
@@ -510,6 +551,10 @@
             "RU",
             "PT",
             "ES",
+            "IT",
+            "FR",
+            "PL",
+            "DE",
             "AUTO"});
             this.SourceLangSelector.Location = new System.Drawing.Point(128, 73);
             this.SourceLangSelector.Name = "SourceLangSelector";
@@ -603,6 +648,17 @@
             this.TranslationDB.TabIndex = 2;
             this.TranslationDB.Text = "Banco de Dados";
             this.TranslationDB.UseVisualStyleBackColor = true;
+            // 
+            // GenDBBnt
+            // 
+            this.GenDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.GenDBBnt.Location = new System.Drawing.Point(261, 439);
+            this.GenDBBnt.Name = "GenDBBnt";
+            this.GenDBBnt.Size = new System.Drawing.Size(103, 23);
+            this.GenDBBnt.TabIndex = 8;
+            this.GenDBBnt.Text = "Gerar Database";
+            this.GenDBBnt.UseVisualStyleBackColor = true;
+            this.GenDBBnt.Click += new System.EventHandler(this.GenDBBnt_Click);
             // 
             // OptimizeDbBnt
             // 
@@ -714,17 +770,6 @@
             this.CacheLoadedVerify.Interval = 200;
             this.CacheLoadedVerify.Tick += new System.EventHandler(this.CacheLoadedVerifier);
             // 
-            // GenDBBnt
-            // 
-            this.GenDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.GenDBBnt.Location = new System.Drawing.Point(261, 439);
-            this.GenDBBnt.Name = "GenDBBnt";
-            this.GenDBBnt.Size = new System.Drawing.Size(103, 23);
-            this.GenDBBnt.TabIndex = 8;
-            this.GenDBBnt.Text = "Gerar Database";
-            this.GenDBBnt.UseVisualStyleBackColor = true;
-            this.GenDBBnt.Click += new System.EventHandler(this.GenDBBnt_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -810,5 +855,7 @@
         private System.Windows.Forms.Button bntTestClient;
         private System.Windows.Forms.Button bntSearch;
         private System.Windows.Forms.Button GenDBBnt;
+        private System.Windows.Forms.CheckBox ckLstMode;
+        private System.Windows.Forms.CheckBox ckUsePos;
     }
 }

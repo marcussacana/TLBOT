@@ -22,6 +22,10 @@ namespace TLBOT.DataManager {
         }
 #if SINGLE
         internal static string Translate(this string String, string SourceLanguage, string TargetLanguage, Translator Client) {
+            if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
+                return String;
+
+
             if (Program.Cache.ContainsKey(String))
                 return Program.Cache[String];
 
@@ -29,17 +33,27 @@ namespace TLBOT.DataManager {
                 try {
                     string Result = string.Empty;
                     var Thread = new Thread(() => {
-                        switch (Client) {
-                            case Translator.Bing:
-                            case Translator.BingNeural:
-                                Result = Bing.Translate(String, SourceLanguage, TargetLanguage);
-                                break;
-                            case Translator.Google:
-                                Result = Google.Translate(String, SourceLanguage, TargetLanguage);
-                                break;
-                            case Translator.LEC:
-                                Result = LEC.Translate(String, SourceLanguage, TargetLanguage, LEC.Gender.Male, LEC.Formality.Informal, Program.LECPort);
-                                break;
+                        try {
+                            switch (Client) {
+                                case Translator.CacheOnly:
+                                    if (Program.Cache.ContainsKey(String))
+                                        Result = Program.Cache[String];
+                                    else
+                                        Result = String;
+                                    break;
+                                case Translator.Bing:
+                                case Translator.BingNeural:
+                                    Result = Bing.Translate(String, SourceLanguage, TargetLanguage);
+                                    break;
+                                case Translator.Google:
+                                    Result = Google.Translate(String, SourceLanguage, TargetLanguage);
+                                    break;
+                                case Translator.LEC:
+                                    Result = LEC.Translate(String, SourceLanguage, TargetLanguage, LEC.Gender.Male, LEC.Formality.Informal, Program.LECPort);
+                                    break;
+                            }
+                        } catch {
+                            Result = null;
                         }
                     });
 
@@ -69,9 +83,12 @@ namespace TLBOT.DataManager {
 #endif
 
         internal static string[] TranslateMassive(this string[] Strings, string SourceLanguage, string TargetLanguage, Translator Client) {
+            if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
+                return Strings;
+
             string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).ToArray();
             string[] Result;
-
+        
             bool Error = false;
             for (int i = 0; i < 5; i++) {
                 try {
@@ -133,6 +150,9 @@ namespace TLBOT.DataManager {
         }
 
         internal static string[] TranslateMultithread(this string[] Strings, string SourceLanguage, string TargetLanguage, Translator Client, Action<uint> ProgressChanged = null) {
+            if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
+                return Strings;
+
             string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).ToArray();
             string[] Result;
 
@@ -314,197 +334,210 @@ namespace TLBOT.DataManager {
         }
 
         private static bool VerifingDialog = false;
-        public static bool IsDialogue(this string String) {
-            if (string.IsNullOrWhiteSpace(String))
-                return false;
-
-            if (Program.ForceDialogues.ContainsKey(String))
-                return Program.ForceDialogues[String];
-
-            if (Program.FilterSettings.UseDB && Program.Cache.ContainsKey(String))
-                return true;
-
-
-            string[] DenyList = Program.FilterSettings.DenyList.Unescape().Split('\n').Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            string[] IgnoreList = Program.FilterSettings.IgnoreList.Unescape().Split('\n').Where(x => !string.IsNullOrEmpty(x)).ToArray();
-
-            Quote[] Quotes = Program.FilterSettings.QuoteList.Unescape().Split('\n')
-                .Where(x => x.Length == 2)
-                .Select(x => {
-                    return new Quote() { Start = x[0], End = x[1] };
-                }).ToArray();
-
-            string Str = String.Trim();
-            foreach (string Ignore in IgnoreList)
-                Str = Str.Replace(Ignore, "");
-
-            if (!VerifingDialog)
-                foreach (var Otimizator in Program.ExternalPlugins) {
-                    Otimizator.BeforeTranslate(ref Str, uint.MaxValue);
-                }
-
-            VerifingDialog = true;
-            foreach (string Deny in DenyList)
-                if (Str.ToLower().Contains(Deny.ToLower())) {
-                    VerifingDialog = false;
+        public static bool IsDialogue(this string String, int? Caution = null) {
+            try {
+                if (string.IsNullOrWhiteSpace(String))
                     return false;
+
+                if (Program.ForceDialogues.ContainsKey(String))
+                    return Program.ForceDialogues[String];
+
+                if (Program.FilterSettings.UseDB && Program.Cache.ContainsKey(String))
+                    return true;
+
+
+                string[] DenyList = Program.FilterSettings.DenyList.Unescape().Split('\n').Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                string[] IgnoreList = Program.FilterSettings.IgnoreList.Unescape().Split('\n').Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
+                Quote[] Quotes = Program.FilterSettings.QuoteList.Unescape().Split('\n')
+                    .Where(x => x.Length == 2)
+                    .Select(x => {
+                        return new Quote() { Start = x[0], End = x[1] };
+                    }).ToArray();
+
+                string Str = String.Trim();
+                foreach (string Ignore in IgnoreList)
+                    Str = Str.Replace(Ignore, "");
+
+                if (!VerifingDialog)
+                    foreach (var Otimizator in Program.ExternalPlugins) {
+                        try {
+                            Otimizator.BeforeTranslate(ref Str, uint.MaxValue);
+                        } catch { }
+                    }
+
+                VerifingDialog = true;
+                foreach (string Deny in DenyList)
+                    if (Str.ToLower().Contains(Deny.ToLower())) {
+                        VerifingDialog = false;
+                        return false;
+                    }
+
+                Str = Str.Replace(Program.WordwrapSettings.LineBreaker, "\n");
+
+
+                if (string.IsNullOrWhiteSpace(Str))
+                    return false;
+
+                string[] Words = Str.Split(' ');
+
+                char[] PontuationJapList = new char[] { '。', '？', '！', '…', '、', '―' };
+                char[] SpecialList = new char[] { '_', '=', '+', '#', ':', '$', '@' };
+                char[] PontuationList = new char[] { '.', '?', '!', '…', ',' };
+                int Spaces = Str.Where(x => x == ' ' || x == '\t').Count();
+                int Pontuations = Str.Where(x => PontuationList.Contains(x)).Count();
+                int WordCount = Words.Where(x => x.Length >= 2 && !string.IsNullOrWhiteSpace(x)).Count();
+                int Specials = Str.Where(x => char.IsSymbol(x)).Count();
+                Specials += Str.Where(x => char.IsPunctuation(x)).Count() - Pontuations;
+                int SpecialsStranges = Str.Where(x => SpecialList.Contains(x)).Count();
+
+                int Uppers = Str.Where(x => char.IsUpper(x)).Count();
+                int Latim = Str.Where(x => x >= 'A' && x <= 'z').Count();
+                int Numbers = Str.Where(x => x >= '0' && x <= '9').Count();
+                int NumbersJap = Str.Where(x => x >= '０' && x <= '９').Count();
+                int JapChars = Str.Where(x => (x >= '、' && x <= 'ヿ') || (x >= '｡' && x <= 'ﾝ')).Count();
+                int Kanjis = Str.Where(x => x >= '一' && x <= '龯').Count();
+
+
+                bool IsCaps = Optimizator.CaseFixer.GetLineCase(Str) == Optimizator.CaseFixer.Case.Upper;
+                bool IsJap = JapChars + Kanjis > Latim / 2;
+
+
+                //More Points = Don't Looks a Dialogue
+                //Less Points = Looks a Dialogue
+                int Points = 0;
+
+                if (Str.Length > 4) {
+                    string ext = Str.Substring(Str.Length - 4, 4);
+                    try {
+                        if (System.IO.Path.GetExtension(ext).Trim('.').Length == 3)
+                            Points += 2;
+                    } catch { }
                 }
 
-            Str = Str.Replace(Program.WordwrapSettings.LineBreaker, "\n");
+                bool BeginQuote = false;
+                Quote? LineQuotes = null;
+                foreach (Quote Quote in Quotes) {
+                    BeginQuote |= Str.StartsWith(Quote.Start.ToString());
 
-
-            string[] Words = Str.Split(' ');
-
-            char[] PontuationJapList = new char[] { '。', '？', '！', '…', '、', '―' };
-            char[] SpecialList = new char[] { '_', '=', '+', '#', ':', '$', '@' };
-            char[] PontuationList = new char[] { '.', '?', '!', '…', ',' };
-            int Spaces = Str.Where(x => x == ' ' || x == '\t').Count();
-            int Pontuations = Str.Where(x => PontuationList.Contains(x)).Count();
-            int WordCount = Words.Where(x => x.Length >= 2 && !string.IsNullOrWhiteSpace(x)).Count();
-            int Specials = Str.Where(x => char.IsSymbol(x)).Count();
-            Specials += Str.Where(x => char.IsPunctuation(x)).Count() - Pontuations;
-            int SpecialsStranges = Str.Where(x => SpecialList.Contains(x)).Count();
-
-            int Uppers = Str.Where(x => char.IsUpper(x)).Count();
-            int Latim = Str.Where(x => x >= 'A' && x <= 'z').Count();
-            int Numbers = Str.Where(x => x >= '0' && x <= '9').Count();
-            int NumbersJap = Str.Where(x=> x >= '０' && x <= '９').Count();
-            int JapChars = Str.Where(x => (x >= '、' && x <= 'ヿ') || (x >= '｡' && x <= 'ﾝ')).Count();
-            int Kanjis = Str.Where(x => x >= '一' && x <= '龯').Count();
-
-
-            bool IsCaps = Optimizator.CaseFixer.GetLineCase(Str) == Optimizator.CaseFixer.Case.Upper;
-            bool IsJap = JapChars + Kanjis > Latim/2;
-
-
-            //More Points = Don't Looks a Dialogue
-            //Less Points = Looks a Dialogue
-            int Points = 0;
-
-            if (Str.Length > 4) {
-                string ext = Str.Substring(Str.Length - 4, 4);
+                    if (Str.StartsWith(Quote.Start.ToString()) && Str.EndsWith(Quote.End.ToString())) {
+                        Points -= 3;
+                        LineQuotes = Quote;
+                        break;
+                    } else if (Str.StartsWith(Quote.Start.ToString()) || Str.EndsWith(Quote.End.ToString())) {
+                        Points--;
+                        LineQuotes = Quote;
+                        break;
+                    }
+                }
                 try {
-                    if (System.IO.Path.GetExtension(ext).Trim('.').Length == 3)
-                        Points += 2;
+                    char Last = (LineQuotes == null ? Str.Last() : Str.TrimEnd(LineQuotes.Value.End).Last());
+                    if (IsJap && PontuationJapList.Contains(Last))
+                        Points -= 3;
+
+                    if (!IsJap && (PontuationList).Contains(Last))
+                        Points -= 3;
+
                 } catch { }
-            }
+                try {
+                    char First = (LineQuotes == null ? Str.First() : Str.TrimEnd(LineQuotes.Value.Start).First());
+                    if (IsJap && PontuationJapList.Contains(First))
+                        Points -= 3;
 
-            bool BeginQuote = false;
-            Quote? LineQuotes = null;
-            foreach (Quote Quote in Quotes) {
-                BeginQuote |= Str.StartsWith(Quote.Start.ToString());
+                    if (!IsJap && (PontuationList).Contains(First))
+                        Points -= 3;
 
-                if (Str.StartsWith(Quote.Start.ToString()) && Str.EndsWith(Quote.End.ToString())) {
-                    Points -= 3;
-                    LineQuotes = Quote;
-                    break;
-                } else if (Str.StartsWith(Quote.Start.ToString()) || Str.EndsWith(Quote.End.ToString())) {
+                } catch { }
+
+                if (!IsJap) {
+                    foreach (string Word in Words) {
+                        int WNumbers = Word.Where(c => char.IsNumber(c)).Count();
+                        int WLetters = Word.Where(c => char.IsLetter(c)).Count();
+                        if (WLetters > 0 && WNumbers > 0) {
+                            Points += 2;
+                        }
+                        if (Word.Trim(PontuationList).Where(c => PontuationList.Contains(c)).Count() != 0) {
+                            Points += 2;
+                        }
+                    }
+                }
+
+                if (!BeginQuote && !char.IsLetter(Str.First()))
+                    Points += 2;
+
+                if (Specials > WordCount)
+                    Points++;
+
+                if (Specials > Latim + JapChars)
+                    Points += 2;
+
+                if (SpecialsStranges > 0)
+                    Points += 2;
+
+                if (SpecialsStranges > 3)
+                    Points++;
+
+                if ((Pontuations == 0) && (WordCount <= 2) && !IsJap)
+                    Points++;
+
+                if (Uppers > Pontuations + 2 && !IsCaps)
+                    Points++;
+
+                if (Spaces > WordCount * 2)
+                    Points++;
+
+                if (IsJap && Spaces == 0)
                     Points--;
-                    LineQuotes = Quote;
-                    break;
-                }
-            }
-            try {
-                char Last = (LineQuotes == null ? Str.Last() : Str.TrimEnd(LineQuotes.Value.End).Last());
-                if (IsJap && PontuationJapList.Contains(Last))
-                    Points -= 3;
 
-                if (!IsJap && (PontuationList).Contains(Last))
-                    Points -= 3;
+                if (!IsJap && Spaces == 0)
+                    Points += 2;
 
-            } catch { }
-            try {
-                char First = (LineQuotes == null ? Str.First() : Str.TrimEnd(LineQuotes.Value.Start).First());
-                if (IsJap && PontuationJapList.Contains(First))
-                    Points -= 3;
+                if (WordCount <= 2 && Numbers != 0)
+                    Points += (int)(Str.PercentOf(Numbers) / 10);
 
-                if (!IsJap && (PontuationList).Contains(First))
-                    Points -= 3;
+                if (Str.Length <= 3 && !IsJap)
+                    Points++;
 
-            } catch { }
+                if (Numbers >= Str.Length)
+                    Points += 3;
 
-            if (!IsJap) {
-                foreach (string Word in Words) {
-                    int WNumbers = Word.Where(c => char.IsNumber(c)).Count();
-                    int WLetters = Word.Where(c => char.IsLetter(c)).Count();
-                    if (WLetters > 0 && WNumbers > 0) {
-                        Points += 2;
-                    }
-                    if (Word.Trim(PontuationList).Where(c => PontuationList.Contains(c)).Count() != 0) {
-                        Points += 2;
-                    }
-                }
-            }
+                if (IsJap && Kanjis / 2 > JapChars)
+                    Points--;
 
-            if (!BeginQuote && !char.IsLetter(Str.First()))
-                Points += 2;
+                if (IsJap && JapChars > Kanjis)
+                    Points--;
 
-            if (Specials > WordCount)
-                Points++;
+                if (IsJap && Latim != 0)
+                    Points += (int)(Str.PercentOf(Latim) / 10) + 2;
 
-            if (Specials > Latim + JapChars)
-                Points += 2;
+                if (IsJap && NumbersJap != 0)
+                    Points += (int)(Str.PercentOf(NumbersJap) / 10) + 2;
 
-            if (SpecialsStranges > 0)
-                Points += 2;
+                if (IsJap && Numbers != 0)
+                    Points += (int)(Str.PercentOf(Numbers) / 10) + 3;
 
-            if (SpecialsStranges > 3)
-                Points++;
+                if (IsJap && Pontuations != 0)
+                    Points += (int)(Str.PercentOf(Pontuations) / 10) + 2;
 
-            if ((Pontuations == 0) && (WordCount <= 2) && !IsJap)
-                Points++;
+                if (Str.Trim() == string.Empty)
+                    return false;
 
-            if (Uppers > Pontuations + 2 && !IsCaps)
-                Points++;
+                if (Str.Trim().Trim(Str.Trim().First()) == string.Empty)
+                    Points += 2;
 
-            if (Spaces > WordCount * 2)
-                Points++;
+                if (IsJap != Program.FromAsian)
+                    return false;
 
-            if (IsJap && Spaces == 0)
-                Points--;
-
-            if (!IsJap && Spaces == 0)
-                Points += 2;
-
-            if (WordCount <= 2 && Numbers != 0)
-                Points += (int)(Str.PercentOf(Numbers) / 10);
-
-            if (Str.Length <= 3 && !IsJap)
-                Points++;
-
-            if (Numbers >= Str.Length)
-                Points += 3;
-
-            if (IsJap && Kanjis / 2 > JapChars)
-                Points--;
-
-            if (IsJap && JapChars > Kanjis)
-                Points--;
-
-            if (IsJap && Latim != 0)
-                Points += (int)(Str.PercentOf(Latim) / 10) + 2;
-
-            if (IsJap && NumbersJap != 0)
-                Points += (int)(Str.PercentOf(NumbersJap) / 10) + 2;
-
-            if (IsJap && Numbers != 0)
-                Points += (int)(Str.PercentOf(Numbers) / 10) + 3;
-
-            if (IsJap && Pontuations != 0)
-                Points += (int)(Str.PercentOf(Pontuations) / 10) + 2;
-
-            if (Str.Trim() == string.Empty)
+                VerifingDialog = false;
+                bool Result = Points < (Caution ?? Program.FilterSettings.Sensitivity);
+                return Result;
+            } catch (Exception ex){
+#if DEBUG
+                throw ex;
+#else
                 return false;
-
-            if (Str.Trim().Trim(Str.Trim().First()) == string.Empty)
-                Points += 2;
-
-            if (IsJap != Program.FromAsian)
-                return false;
-
-            VerifingDialog = false;
-            bool Result = Points < Program.FilterSettings.Sensitivity;
-            return Result;
+#endif
+            }
         }
 
         internal static double PercentOf(this string String, int Value) {

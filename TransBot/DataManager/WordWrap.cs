@@ -17,16 +17,16 @@ namespace TLBOT.DataManager {
         /// </summary>
         /// <param name="Input">The string to wordwrap</param>
         /// <returns>The Result String</returns>        
-        public static string WordWrap(this string Input) {
+        public static string WordWrap(this string Input, int? Width = null) {
             if (Program.WordwrapSettings.FakeBreakLine) {
                 while (Input.Contains(@"  "))
                     Input = Input.Replace(@"  ", @" ");
             }
 
             if (Program.WordwrapSettings.Monospaced) {
-                return MonospacedWordWrap(MergeLines(Input));
+                return MonospacedWordWrap(MergeLines(Input), Width);
             } else {
-                return MultispacedWordWrap(MergeLines(Input));
+                return MultispacedWordWrap(MergeLines(Input), Width);
             }
         }
 
@@ -44,20 +44,23 @@ namespace TLBOT.DataManager {
         }
 
         #region WordWrap
-        private static string MultispacedWordWrap(string String) {
-            Font Font = new Font(Program.WordwrapSettings.FontName, Program.WordwrapSettings.FontSize, Program.WordwrapSettings.Bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
+        private static string MultispacedWordWrap(string String, int? Width = null) {
+            Font Font = Program.WordwrapFont;
+            if (Width == null)
+                Width = Program.WordwrapSettings.MaxWidth;
+
 
             StringBuilder sb = new StringBuilder();
-            if (Program.WordwrapSettings.MaxWidth == 0)
+            if (Width == 0)
                 return String;
             string[] Words = String.Split(' ');
             string Line = string.Empty;
             foreach (string Word in Words) {
-                if (GetTextWidth(Font, Line + Word) > Program.WordwrapSettings.MaxWidth) {
+                if (GetTextWidth(Font, Line + Word) > Width) {
                     if (Line == string.Empty) {
                         string Overload = string.Empty;
                         int Cnt = 0;
-                        while (GetTextWidth(Font, Word.Substring(0, Word.Length - Cnt)) > Program.WordwrapSettings.MaxWidth)
+                        while (GetTextWidth(Font, Word.Substring(0, Word.Length - Cnt)) > Width)
                             Cnt++;
                         sb.AppendLine(Word.Substring(0, Word.Length - Cnt));
                         Line = Word.Substring(Word.Length - Cnt, Cnt);
@@ -85,7 +88,7 @@ namespace TLBOT.DataManager {
                     string tmp = Splited[i];
                     bool Last = i + 1 >= Splited.Length;
                     if (!Last)
-                        while (GetTextWidth(Font, tmp) < Program.WordwrapSettings.MaxWidth)
+                        while (GetTextWidth(Font, tmp) < Width)
                             tmp += ' ';
 
                     NewRst += tmp;
@@ -103,10 +106,13 @@ namespace TLBOT.DataManager {
             //return System.Windows.Forms.TextRenderer.MeasureText(Text, Font).Width;
         }
 
-        internal static string MonospacedWordWrap(string String) {
+        internal static string MonospacedWordWrap(string String, int? Width = null) {
+            if (Width == null)
+                Width = Program.WordwrapSettings.MaxWidth;
+
             int pos, next;
             StringBuilder sb = new StringBuilder();
-            if (Program.WordwrapSettings.MaxWidth < 1)
+            if (Width < 1)
                 return String;
             for (pos = 0; pos < String.Length; pos = next) {
                 int eol = String.IndexOf(GameLineBreaker, pos);
@@ -117,8 +123,8 @@ namespace TLBOT.DataManager {
                 if (eol > pos) {
                     do {
                         int len = eol - pos;
-                        if (len > Program.WordwrapSettings.MaxWidth)
-                            len = BreakLine(String, pos, Program.WordwrapSettings.MaxWidth);
+                        if (len > Width)
+                            len = BreakLine(String, pos, Width.Value);
                         sb.Append(String, pos, len);
                         sb.Append(GameLineBreaker);
                         pos += len;
@@ -140,7 +146,7 @@ namespace TLBOT.DataManager {
                     string tmp = Splited[i];
                     bool Last = i + 1 >= Splited.Length;
                     if (!Last)
-                        while (tmp.Length < Program.WordwrapSettings.MaxWidth)
+                        while (tmp.Length < Width)
                             tmp += ' ';
                     NewRst += tmp;
                 }

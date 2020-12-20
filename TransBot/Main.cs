@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define DEBUG
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,6 +39,16 @@ namespace TLBOT {
             SensetiveBar.Value = Program.FilterSettings.Sensitivity;
 
             ckUseDB.Checked = Program.FilterSettings.UseDB;
+            ckLstMode.Checked = Program.Settings.LSTMode;
+            ckTransTLBot.Checked = Program.Settings.TranslateWindow;
+
+            if (Program.FilterSettings.UsePos)
+                ckUsePos.Checked = true;
+            else if (Program.FilterSettings.UsePosCaution)
+                ckUsePos.CheckState = CheckState.Indeterminate;
+            else
+                ckUsePos.Checked = false;
+
 
             string Float = Program.WordwrapSettings.FontSize.ToString().Replace(".", ",");
             if (Float.Length == 1)
@@ -93,7 +104,8 @@ namespace TLBOT {
                     new JapFixer(),
                     new DialogueFilter(),
                     new Escape(),
-                    new StutterFixer()
+                    new StutterFixer(),
+                    new QuoteTrim()
                 }.Concat(Program.ExternalPlugins).ToArray();
             }
         }
@@ -127,11 +139,11 @@ namespace TLBOT {
                 },
                 new ToolTipInfo() {
                     Control = LineLimit,
-                    Text = "Define o espaço limite de uma única linha.\nQuando modo monospaced estiver ligado informe aqui o numero máximo de letras de uma linha.\nCaso o modo monospaced esteja desligado, informe o numero de pixels de uma linha."
+                    Text = "Define o espaço limite de uma única linha.\nQuando modo monospaced estiver ligado informe aqui o numero máximo de letras de uma linha.\nCaso o modo monospaced esteja desligado, informe o numero de pixels de uma linha.\n\nPS: Caso o valor dado seja zero, ele irá assumir um limite dinamico tendo como base o comprimento de cada linha de forma individual,\nisto é, o comprimento máximo de uma linha original dita o limite da linha de saída,\ne caso seja menor que zero ele tornará esse valor padrão para diálogos que não tem nenhuma quebra de linha."
                 },
                 new ToolTipInfo() {
                     Control = SensetiveBar,
-                    Text = "Define a sensibilidade do filtro de comandos.\nQuanto maior mais texto será traduzido.\nQuanto menor menos texto será traduzido.\nMas como nada é de graça nessa vida, com maioes valores aumenta-se as chances se traduzir uma linha indevida\n(comando, nome de arquivos e etc) podendo então causar erros no script.\nPor outro lado reduzindo este valor fará o filtro tomar mais precaução contra comandos evitando possíveis erros no script gerado."
+                    Text = "Define a sensibilidade do filtro de comandos.\nQuanto maior mais texto será traduzido.\nQuanto menor menos texto será traduzido.\nMas como nada é de graça nessa vida, com maiores valores aumenta-se as chances se traduzir uma linha indevida\n(comando, nome de arquivos e etc) podendo então causar erros no script.\nPor outro lado reduzindo este valor fará o filtro tomar mais precaução contra comandos evitando possíveis erros no script gerado."
                 },
                 new ToolTipInfo(){
                     Control = TargetStepMode,
@@ -214,13 +226,16 @@ namespace TLBOT {
             };
 
             DialogResult? dr = null;
+            long TotalCount = 0;
             Wrapper Wrapper = new Wrapper();
             for (uint x = Begin; x < Files.LongLength; x++) {
                 Program.TaskInfo.LastTaskPos = x;
                 Program.SaveTask();
 
                 string FileName = Files[x];
+#if !DEBUG
                 try {
+#endif
                     var Strings = Import(FileName);
 
                     if (Strings.Length == 0) {
@@ -234,19 +249,8 @@ namespace TLBOT {
                             break;
                     }
 
-                    for (uint i = 0; i < Strings.LongLength; i++) {
-                        if (i % 15 == 0) {
-                            lblState.Text = string.Format("Initializing... ({0}/{1} Lines)", i, Strings.LongLength);
-                            Application.DoEvents();
-                        }
-                        foreach (IOptimizator Optimizator in EnabledOptimizators)
-                            try {
-                                if (Optimizator is DialogueFilter)
-                                    continue;
+                    TotalCount += (from z in Strings select (long)z.Length).Sum();
 
-                                Optimizator.AfterOpen(ref Strings[i], i);
-                            } catch { }
-                    }
                     ShowStrings(Strings, NewFile: true);
 
                     var TaskCreator = new TranslationTask(Strings, Program.Settings.SourceLang, Program.Settings.TargetLang, EnabledOptimizators);
@@ -258,41 +262,42 @@ namespace TLBOT {
                     int DL = 0;
                     int LP = 0;
                     while (TaskCreator.TaskStatus != TranslationTask.Status.Finished) {
-                        if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread) {
-                            lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)", TaskCreator.Progress, Strings.LongLength, x, Files.LongLength, GetStateName(TaskCreator.TaskStatus));
-                            TaskProgress.Maximum = Strings.Length;
-                            TaskProgress.Value = (int)TaskCreator.Progress;
-                            StringList.SelectedIndex = (int)TaskCreator.Progress;
+                        try {
+                            if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread) {
+                                lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)", TaskCreator.Progress, Strings.LongLength, x, Files.LongLength, GetStateName(TaskCreator.TaskStatus));
+                                TaskProgress.Maximum = Strings.Length;
+                                TaskProgress.Value = (int)TaskCreator.Progress;
+                                StringList.SelectedIndex = (int)TaskCreator.Progress;
 
-                            if (++DL == 20) {
-                                DL = 0;
-                                int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
-                                ShowStrings(TaskCreator.Lines, LP, Progress);
-                                LP = Progress;
-                            }
-                        } else {
-                            if (TaskCreator.TaskStatus == TranslationTask.Status.Translating)
-                                lblState.Text = string.Format("Translating... ({0}/{1} Files)", x, Files.LongLength);
-                            else {
-                                lblState.Text = string.Format("{4}...  ({2}/{3} Lines) ({0}/{1} Files)", x, Files.LongLength, TaskCreator.Progress, Strings.LongLength, GetStateName(TaskCreator.TaskStatus));
                                 if (++DL == 20) {
                                     DL = 0;
-                                    int Progress = (int)TaskCreator.Progress;
+                                    int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
                                     ShowStrings(TaskCreator.Lines, LP, Progress);
                                     LP = Progress;
                                 }
+                            } else {
+                                if (TaskCreator.TaskStatus == TranslationTask.Status.Translating)
+                                    lblState.Text = string.Format("Translating... ({0}/{1} Files)", x, Files.LongLength);
+                                else {
+                                    lblState.Text = string.Format("{4}...  ({2}/{3} Lines) ({0}/{1} Files)", x, Files.LongLength, TaskCreator.Progress, Strings.LongLength, GetStateName(TaskCreator.TaskStatus));
+                                    if (++DL == 20) {
+                                        DL = 0;
+                                        int Progress = (int)TaskCreator.Progress;
+                                        ShowStrings(TaskCreator.Lines, LP, Progress);
+                                        LP = Progress;
+                                    }
+                                }
+                                TaskProgress.Maximum = Files.Length;
+                                TaskProgress.Value = (int)x;
                             }
-                            TaskProgress.Maximum = Files.Length;
-                            TaskProgress.Value = (int)x;
-                        }
-
+                        } catch { }
                         Application.DoEvents();
                         Thread.Sleep(100);
                     }
 
 
                     for (uint i = 0; i < TaskCreator.Lines.LongLength; i++) {
-                        if (i % 15 == 0) {
+                        if (i % (Strings.LongLength > 5000 ? 55 : 15) == 0) {
                             lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Strings.LongLength);
                             Application.DoEvents();
                         }
@@ -312,47 +317,106 @@ namespace TLBOT {
                             Changed = true;
                             break;
                         }
-                    if (Changed)
-                        Export(TaskCreator.Lines, FileName);
-                } catch { }
+                    if (Changed) {
+                        if (Program.Settings.LSTMode) {
+                            string LstPath = Path.GetDirectoryName(FileName) + "\\Strings-" + Path.GetFileNameWithoutExtension(FileName) + ".lst";
+                            Dump(TaskCreator.Lines, LstPath);
+                        } else
+                            Export(TaskCreator.Lines, FileName);
+                    }
+#if !DEBUG
+            } catch { }
+#endif
             }
 
             TaskProgress.Value = TaskProgress.Maximum;
             Text = "TLBOT 2";
             lblState.Text = "IDLE";
             Program.TaskInfo = new TaskInfo();
+
+            MessageBox.Show($"Task Finished:\n{TotalCount:N0} letters in this game.\nwith ${20 * (TotalCount / 1000000.00):N} of cost", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
 
         string[] OriStrs;
+        bool[] ValidList;
         Wrapper Wrapper = new Wrapper();
-        private string[] Import(string File) { 
-            OriStrs = Wrapper.Import(File);
+        private string[] Import(string File) {
+            var Ori = Wrapper.Import(File);
+            OriStrs = new string[Ori.LongLength];
+            Ori.CopyTo(OriStrs, 0);
+
+            for (uint i = 0; i < Ori.LongLength; i++) {
+                if (i % (Ori.LongLength > 5000 ? 55 : 15 ) == 0) {
+                    lblState.Text = string.Format("Initializing... ({0}/{1} Lines)", i, Ori.LongLength);
+                    Application.DoEvents();
+                }
+                foreach (IOptimizator Optimizator in EnabledOptimizators)
+                    try {
+                        if (Optimizator is DialogueFilter)
+                            continue;
+
+                        Optimizator.AfterOpen(ref Ori[i], i);
+                    } catch { }
+            }
+
             var Filter = new DialogueFilter();
 
-            string[] Strs = new string[OriStrs.Length];
-            OriStrs.CopyTo(Strs, 0);
+            string[] Strs = null;
             if (IsEnabled(Filter)) {
-                bool[] ValidList = ValidDialogueList(OriStrs);
+                ValidList = ValidDialogueList(Ori);
                 List<string> List = new List<string>();
-                for (uint i = 0; i < OriStrs.LongLength; i++)
+                for (uint i = 0; i < Ori.LongLength; i++)
                     if (ValidList[i]) {
-                        List.Add(OriStrs[i]);
+                        List.Add(Ori[i]);
                     }
 
                 Strs = List.ToArray();
             }
 
-            return Strs;
+            return Strs ?? Ori;
         }
+        const string BreakLineFlag = "::BREAKLINE::";
+        const string ReturnLineFlag = "::RETURNLINE::";
 
+        private bool Dump(string[] Translation, string SaveAs) {
+            var Filter = new DialogueFilter();
+            var Strs = Translation;
+            if (IsEnabled(Filter)) {
+                Strs = new string[OriStrs.Length];
+                for (uint i = 0, x = 0; i < OriStrs.Length; i++)
+                    if (ValidList[i])
+                        Strs[i] = Translation[x++];
+                    else
+                        Strs[i] = OriStrs[i];
+            }
+
+            if (OriStrs.Length != Strs.Length)
+                return false;
+            if (OriStrs.Length == 0)
+                return true;
+
+            using (StreamWriter Writer = new StreamWriter(SaveAs)) {
+                for (uint i = 0; i < OriStrs.Length; i++) {
+                    if (OriStrs[i] == Strs[i])
+                        continue;
+                    if (string.IsNullOrWhiteSpace(OriStrs[i]))
+                        continue;
+
+                    Writer.WriteLine(OriStrs[i].Replace("\n", BreakLineFlag).Replace("\r", ReturnLineFlag));
+                    Writer.WriteLine(Strs[i].Replace("\n", BreakLineFlag).Replace("\r", ReturnLineFlag));
+                }
+                Writer.Close();
+            }
+
+            return true;
+        }
         private void Export(string[] Strings, string SaveAs) {
             var Filter = new DialogueFilter();
 
             string[] Strs = new string[Strings.Length];
             Strings.CopyTo(Strs, 0);
             if (IsEnabled(Filter)) {
-                bool[] ValidList = ValidDialogueList(OriStrs);
                 Strs = new string[OriStrs.Length];
                 for (uint i = 0, x = 0; i < OriStrs.Length; i++)
                     if (ValidList[i])
@@ -370,18 +434,25 @@ namespace TLBOT {
                 Values[i] = Strings[i].IsDialogue();
 
 
-            if (Program.FilterSettings.UsePos)
+            if (Program.FilterSettings.UsePos || Program.FilterSettings.UsePosCaution)
                 for (uint i = 2; i < Strings.Length - 2; i++) {
                     var BBefore = Values[i - 2];
                     var Before = Values[i - 1];
                     var Current = Values[i];
                     var Next = Values[i + 1];
                     var ANext = Values[i + 2];
+                    if (BBefore != Before)
+                        continue;
+                    if (Next != ANext)
+                        continue;
+                    if (Next != Before)
+                        continue;
+                    if (Current == Before)
+                        continue;
+                    if (!Current)
+                        continue;
 
-                    //Better missmatchs than crashes :V 
-                    if (BBefore == Before && Next == ANext && Next == Before && Before == false) {
-                        Values[i] = Before;
-                    }
+                    Values[i] = Program.FilterSettings.UsePosCaution ? Strings[i - 1].IsDialogue(-2) : Before;
                 }
 
             return Values;
@@ -534,7 +605,7 @@ namespace TLBOT {
             var Content = Wrapper.Import(fd.FileName, TryLastPluginFirst: true);
 
             for (uint i = 0; i < Content.LongLength; i++) {
-                if (i % 15 == 0) {
+                if (i % (Content.LongLength > 5000 ? 55 : 15) == 0) {
                     lblState.Text = string.Format("Initializing... ({0}/{1} Lines)", i, Content.LongLength);
                     Application.DoEvents();
                 }
@@ -544,7 +615,7 @@ namespace TLBOT {
             }
 
             for (uint i = 0; i < Content.LongLength; i++) {
-                if (i % 15 == 0) {
+                if (i % (Content.LongLength > 5000 ? 55 : 15) == 0) {
                     lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Content.LongLength);
                     Application.DoEvents();
                 }
@@ -786,6 +857,15 @@ namespace TLBOT {
             } else {
                 MessageBox.Show($"\"{Lines}\" Entrys Imported", "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void LstModeCheckedChanged(object sender, EventArgs e) {
+            Program.Settings.LSTMode = ckLstMode.Checked;
+        }
+
+        private void UsePosCheckedChanged(object sender, EventArgs e) {
+            Program.FilterSettings.UsePos = ckUsePos.CheckState == CheckState.Checked;
+            Program.FilterSettings.UsePosCaution = ckUsePos.CheckState == CheckState.Indeterminate;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AdvancedBinary;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,10 +9,12 @@ using System.Windows.Forms;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
 using TLIB;
+using TLIB.CEF;
 
 namespace TLBOT {
     static class Program {
 
+        internal static Font WordwrapFont => new Font(WordwrapSettings.FontName, WordwrapSettings.FontSize, WordwrapSettings.Bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
         internal static string TaskPath => AppDomain.CurrentDomain.BaseDirectory + "Task.tbt";
         internal static string INIPath => AppDomain.CurrentDomain.BaseDirectory + "TLBOT.ini";
         private static string CachePath => AppDomain.CurrentDomain.BaseDirectory + string.Format("TLBOT-{0}.tbc", Settings.TargetLang);
@@ -92,15 +95,23 @@ namespace TLBOT {
         /// </summary>
         [STAThread]
         static void Main() {
+            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
             LoadSettings();
             LoadCache(new Action(() => { CacheReady = true; }));
             ExternalPlugins = SearchOptimizators("*-TBPlugin.cs");
+            Initializer.Initialize();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
         }
 
+
+        private static void UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+            var Exception = e.ExceptionObject as Exception;
+            if (e.IsTerminating)
+                MessageBox.Show("A unhandled Excpetion has occured\n" + Exception.Message + "\nCall Stack:\n\n" + Exception.StackTrace, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
         public static void LoadSettings() {
             try {
@@ -243,6 +254,8 @@ namespace TLBOT {
         public int DBViewPageLimit;
         [FieldParmaters(DefaultValue = false, Name = "Multithread")]
         public bool Multithread;
+        [FieldParmaters(DefaultValue = false, Name = "LSTMode")]
+        public bool LSTMode;
     }
 
     [FieldParmaters(Name = "Optimizator")]
@@ -280,6 +293,8 @@ namespace TLBOT {
         public bool UseDB;
         [FieldParmaters(DefaultValue = false, Name = "UsePos")]
         public bool UsePos;
+        [FieldParmaters(DefaultValue = false, Name = "UsePosCaution")]
+        public bool UsePosCaution;
     }
 
     [FieldParmaters(Name = "WordWrap")]

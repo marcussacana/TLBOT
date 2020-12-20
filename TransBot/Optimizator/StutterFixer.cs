@@ -19,16 +19,21 @@ namespace TLBOT.Optimizator {
         public void AfterOpen(ref string Line, uint ID) { }
 
         public void AfterTranslate(ref string Line, uint ID) {
-            if (!EmptyPrefix.ContainsKey(ID) || !EmptySufix.ContainsKey(ID) || !DB.ContainsKey(ID))
+            if (!EmptyPrefix.ContainsKey(ID) || !EmptySufix.ContainsKey(ID) || !DB.ContainsKey(ID)) {
+                Line = RestoreQuotes(Line, ID);
                 return;
+            }
+
             if (EmptyPrefix[ID])
                 Line = Line.TrimStart();
             if (EmptySufix[ID])
                 Line = Line.TrimEnd();
+
             if ((!ContainsBadStuttered(Line) && !DB.ContainsKey(ID)) || !DB.ContainsKey(ID)) {
                 Line = RestoreQuotes(Line, ID);
                 return;
             }
+
             Line = FixPharseStutter(Line, DB[ID]);
             Line = RestoreQuotes(Line, ID);
         }
@@ -149,6 +154,12 @@ namespace TLBOT.Optimizator {
             return false;
         }
         private bool IsBadStuttered(string Word) {
+            string CWord = RemoveRepeat(Word).ToLower();
+            string[] AllowList = new string[] { "-chan", "-san", "-sama", "-kun", "-tan", "-dono", "-sensei", "-senpai" };
+            foreach (string Allow in AllowList)
+                if (CWord.EndsWith(Allow))
+                    return false;
+
             int Matchs = 0;
             string[] Parts = Word.ToLower().Replace("ー", "-").Split('-');
             for (int i = 0; i < Parts.Length; i++) {
@@ -179,6 +190,19 @@ namespace TLBOT.Optimizator {
                 Matchs--;
             }
             return false;
+        }
+
+        private string RemoveRepeat(string Line) {
+            string Rst = string.Empty;
+            char Lst = '\x0';
+            foreach (char c in Line) {
+                if (c == Lst)
+                    continue;
+                Lst = c;
+                Rst += c;
+            }
+
+            return Rst.Trim('.', ',', '!', '?');
         }
         public string GetName() {
             return "Stutter Fixer";

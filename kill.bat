@@ -1,0 +1,1 @@
+taskkill /pid "TLBOT 2.exe" /f
