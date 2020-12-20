@@ -132,7 +132,7 @@ namespace TLBOT.DataManager {
                     if (System.Diagnostics.Debugger.IsAttached)
                         System.Diagnostics.Debugger.Break();
 #else
-                } catch { 
+                } catch {
 #endif
                     Task.Delay(200).Wait();
                 }
@@ -212,16 +212,6 @@ namespace TLBOT.DataManager {
             return Result;
         }
 
-        public static void Translate(this Control Control, string TargetLanguage, Translator Client) {
-            try {
-                string TL = Control.Text.Translate("PT", TargetLanguage, Client);
-                Control.Invoke(new MethodInvoker(() => {
-                    try {
-                        Control.Text = TL;
-                    } catch { }
-                }));
-            } catch { }
-        }
 
         public static void TimeoutStart(this Thread Thread, int Milliseconds) {
             DateTime Begin = DateTime.Now;
@@ -241,11 +231,37 @@ namespace TLBOT.DataManager {
         }
 
         public static void Translate(this Form Form, string TargetLanguage, Translator Client) {
-            foreach (Control Control in GetControlHierarchy(Form)) {
+            try
+            {
+                List<string> Strings = new List<string>();
+                foreach (Control Control in GetControlHierarchy(Form))
+                {
+                    if (Control is TextBox || Control is RichTextBox || Control is ComboBox)
+                        continue;
+
+                    Strings.Add(Control.Text);
+                }
+                string[] Translation = Strings.ToArray().TranslateMassive("PT", TargetLanguage, Client);
+
+                for (int i = 0; i < Strings.Count; i++)
+                    Program.Cache[Strings[i]] = Translation[i];
+            }
+            catch { }
+
+            foreach (Control Control in GetControlHierarchy(Form))
+            {
                 if (Control is TextBox || Control is RichTextBox || Control is ComboBox)
                     continue;
 
-                Control.Translate(TargetLanguage, Client);
+                try
+                {
+                    Control.Invoke(new MethodInvoker(() =>
+                    {
+                        if (Program.Cache.ContainsKey(Control.Text))
+                            Control.Text = Program.Cache[Control.Text];
+                    }));
+                }
+                catch { }
             }
         }
 
