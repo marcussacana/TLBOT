@@ -86,7 +86,7 @@ namespace TLBOT.DataManager {
             if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
                 return Strings;
 
-            string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).ToArray();
+            string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).Distinct().ToArray();
             string[] Result;
         
             bool Error = false;
@@ -124,7 +124,7 @@ namespace TLBOT.DataManager {
                     }
 
                     int Misseds = NoCached.Length;
-                    NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).ToArray();
+                    NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).Distinct().ToArray();
                     if (Misseds == NoCached.Length)
                         break;
 #if DEBUG
