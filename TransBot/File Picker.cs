@@ -2,8 +2,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using TLBOT.DataManager;
 
 namespace TLBOT {
@@ -28,7 +30,7 @@ namespace TLBOT {
             };
             FileDialog.Multiselect = true;
 
-            if (FileDialog.ShowDialog() != CommonFileDialogResult.Ok)
+            if (FileDialog.ShowDialog(Handle) != CommonFileDialogResult.Ok)
                 return;
 
             Program.Settings.LastSelectedPath = Path.GetDirectoryName(FileDialog.FileNames.First());
@@ -46,7 +48,7 @@ namespace TLBOT {
             };
             FileDialog.Multiselect = true;
 
-            if (FileDialog.ShowDialog() != CommonFileDialogResult.Ok)
+            if (FileDialog.ShowDialog(Handle) != CommonFileDialogResult.Ok)
                 return;
 
             Program.Settings.LastSelectedPath = Path.GetDirectoryName(FileDialog.FileNames.First());
@@ -83,6 +85,24 @@ namespace TLBOT {
                 DialogResult = DialogResult.Cancel;
             else
                 SelectedFiles = FileList.CheckedItems.OfType<string>().ToArray();            
+        }
+
+        private void btnRegex_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Regex Regex = new Regex(tbRegex.Text);
+                for (int i = 0; i < FileList.Items.Count; i++)
+                {
+                    string FilePath = FileList.Items[i].ToString();
+                    string FileName = Path.GetFileName(FilePath);
+                    bool Match = Regex.IsMatch(FilePath) || Regex.IsMatch(FileName);
+                    FileList.SetItemChecked(i, Match);
+                }
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Falha no Regex", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

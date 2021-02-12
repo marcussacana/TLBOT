@@ -227,7 +227,7 @@
             // 
             // bntSearch
             // 
-            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bntSearch.Location = new System.Drawing.Point(526, 123);
             this.bntSearch.Name = "bntSearch";
             this.bntSearch.Size = new System.Drawing.Size(75, 23);
@@ -238,7 +238,7 @@
             // 
             // bntTestClient
             // 
-            this.bntTestClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntTestClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bntTestClient.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.bntTestClient.Location = new System.Drawing.Point(430, 125);
             this.bntTestClient.Name = "bntTestClient";
@@ -741,6 +741,7 @@
             this.DBStrList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.OriCol,
             this.TransCol});
+            this.DBStrList.HideSelection = false;
             this.DBStrList.Location = new System.Drawing.Point(6, 3);
             this.DBStrList.Name = "DBStrList";
             this.DBStrList.Size = new System.Drawing.Size(794, 427);
@@ -779,7 +780,7 @@
             this.Enabled = false;
             this.MinimumSize = new System.Drawing.Size(832, 535);
             this.Name = "Main";
-            this.Text = "TLBOT 2";
+            this.Text = "TLBOT 2021";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TLBClosing);
             this.MainTabControl.ResumeLayout(false);
             this.ViewTab.ResumeLayout(false);

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TLBOT 2")]
-[assembly: AssemblyDescription("Translation Bot 2")]
+[assembly: AssemblyTitle("TLBOT 2021")]
+[assembly: AssemblyDescription("Translation Bot 2021 version")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("VNX+")]
-[assembly: AssemblyProduct("TLBOT 2")]
-[assembly: AssemblyCopyright("Copyright © TLBOT 2016-2018")]
+[assembly: AssemblyProduct("TLBOT 2021")]
+[assembly: AssemblyCopyright("Copyright © TLBOT 2016-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
