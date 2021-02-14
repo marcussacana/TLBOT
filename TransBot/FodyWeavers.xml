@@ -3,6 +3,7 @@
 		<ExcludeAssemblies>
 			TLIB
 			SacanaWrapper
+			Microsoft.CodeAnalysis
 		</ExcludeAssemblies>
 	</Costura>
 </Weavers>
