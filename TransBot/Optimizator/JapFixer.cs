@@ -43,7 +43,7 @@ namespace TLBOT.Optimizator {
             string Minified = string.Empty;
             foreach (char c in String)
                 if (char.IsLetter(c) && Minified.LastOrDefault() != c)
-                    Minified += c;
+                    Minified += c;            
 
             return Minified.ToLower();
         }

@@ -5,7 +5,7 @@ using TLBOT.DataManager;
 namespace TLBOT.Optimizator {
     class QuoteTrim : IOptimizator {
 
-        static Quote[] Quotes = Program.FilterSettings.QuoteList.Unescape().Split('\n')
+        public static Quote[] Quotes = Program.FilterSettings.QuoteList.Unescape().Split('\n')
                     .Where(x => x.Length == 2)
                     .Select(x => {
                         return new Quote() { Start = x[0], End = x[1] };
@@ -20,7 +20,7 @@ namespace TLBOT.Optimizator {
         public void AfterTranslate(ref string Line, uint ID) {
             if (!QuoteMap.ContainsKey(ID) || !QuoteMap[ID].HasValue)
                 return;
-            Line = QuoteMap[ID]?.Start + Line + QuoteMap[ID]?.End;
+            Line = QuoteMap[ID]?.Start + Line.Trim() + QuoteMap[ID]?.End;
         }
 
         public void BeforeSave(ref string Line, uint ID) {
@@ -29,9 +29,30 @@ namespace TLBOT.Optimizator {
 
         public void BeforeTranslate(ref string Line, uint ID) {
             QuoteMap[ID] = null;
-            foreach (Quote Quote in Quotes) {
-                if (Line.StartsWith(Quote.Start.ToString()) && Line.EndsWith(Quote.End.ToString())) {
-                    Line = Line.Substring(1, Line.Length - 2);
+            Line = Line.Trim();
+            foreach (Quote LQuote in Quotes) {
+                var Quote = new Quote() {
+                    Start = LQuote.Start,
+                    End = LQuote.End
+                };
+
+                if (Line.StartsWith(Quote.Start.ToString()))
+                {
+                    Line = Line.Substring(1).Trim();
+
+                    if (Line.EndsWith(Quote.End.ToString())) {
+                        Line = Line.Substring(0, Line.Length - 1).Trim();
+                    }
+                    else Quote.End = null;
+
+                    QuoteMap[ID] = Quote;
+                    break;
+                }
+                else Quote.Start = null;
+
+                if (Line.EndsWith(Quote.End.ToString()))
+                {
+                    Line = Line.Substring(0, Line.Length - 1).Trim();
                     QuoteMap[ID] = Quote;
                     break;
                 }

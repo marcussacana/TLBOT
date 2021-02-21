@@ -769,9 +769,38 @@ namespace TLBOT {
             if (Program.Cache?.Count == 0)
                 return;
 
-            var ToRemove = (from x in Program.Cache where !x.Key.IsDialogue() || JapFixer.Minify(x.Key.Trim()) == JapFixer.Minify(x.Value.Trim()) select x.Key).ToArray();
+            var ToRemove = (from x in Program.Cache where 
+                            !x.Key.IsDialogue() || 
+                            JapFixer.Minify(x.Key.Trim()) == JapFixer.Minify(x.Value.Trim())
+                            select x.Key).ToArray();
             foreach (string Element in ToRemove) {
                 Program.Cache.Remove(Element);
+            }
+
+            if (MessageBox.Show("Do you wanna trim the quotes?", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                var Pairs = Program.Cache.ToList();
+                Program.Cache = new Dictionary<string, string>();
+                foreach (var Pair in Pairs)
+                {
+                    string Key = Pair.Key;
+                    string Value = Pair.Value;
+
+                    foreach (var Quote in QuoteTrim.Quotes)
+                    {
+                        if (Key.First() == Quote.Start.Value)
+                            Key = Key.Substring(1);
+                        if (Key.Last() == Quote.End.Value)
+                            Key = Key.Substring(0, Key.Length - 1);
+
+                        if (Value.First() == Quote.Start.Value)
+                            Value = Value.Substring(1);
+                        if (Value.Last() == Quote.End.Value)
+                            Value = Value.Substring(0, Value.Length - 1);
+                    }
+
+                    Program.Cache[Key] = Value;
+                }
             }
 
             MessageBox.Show($"Database Optimized, {ToRemove.Count()} Entries Removed.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);

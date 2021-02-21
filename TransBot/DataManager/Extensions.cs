@@ -46,7 +46,7 @@ namespace TLBOT.DataManager {
                                     Result = Bing.Translate(String, SourceLanguage, TargetLanguage);
                                     break;
                                 case Translator.Google:
-                                    Result = Google.Translate(String, SourceLanguage, TargetLanguage);
+                                    Result = Google.Default.Translate(String, SourceLanguage, TargetLanguage);
                                     break;
                                 case Translator.LEC:
                                     Result = LEC.Translate(String, SourceLanguage, TargetLanguage, LEC.Gender.Male, LEC.Formality.Informal, Program.LECPort);
@@ -105,7 +105,7 @@ namespace TLBOT.DataManager {
                         case Translator.LEC:
                         case Translator.Google:
                             try {
-                                Result = Google.Translate(NoCached, SourceLanguage, TargetLanguage);
+                                Result = Google.Default.Translate(NoCached, SourceLanguage, TargetLanguage);
                             } catch (Exception ex) {
                                 if (!Error && i + 1 >= 4)
                                     MessageBox.Show(ex.Message, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -447,7 +447,7 @@ namespace TLBOT.DataManager {
                     }
                 }
                 try {
-                    char Last = (LineQuotes == null ? Str.Last() : Str.TrimEnd(LineQuotes.Value.End).Last());
+                    char Last = (LineQuotes == null ? Str.Last() : Str.TrimEnd(LineQuotes?.End ?? ' ').Last());
                     if (IsJap && PontuationJapList.Contains(Last))
                         Points -= 3;
 
@@ -456,7 +456,7 @@ namespace TLBOT.DataManager {
 
                 } catch { }
                 try {
-                    char First = (LineQuotes == null ? Str.First() : Str.TrimEnd(LineQuotes.Value.Start).First());
+                    char First = (LineQuotes == null ? Str.First() : Str.TrimEnd(LineQuotes?.Start ?? ' ').First());
                     if (IsJap && PontuationJapList.Contains(First))
                         Points -= 3;
 

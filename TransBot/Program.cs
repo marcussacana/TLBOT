@@ -334,8 +334,8 @@ namespace TLBOT {
     }
 
     internal struct Quote {
-        public char Start;
-        public char End;
+        public char? Start;
+        public char? End;
     }
 #pragma warning restore 649
 }
