@@ -76,6 +76,9 @@ namespace TLBOT {
                 if (Program.OptimizatorSettings.DialogueFilter) {
                     Optimizators = Optimizators.AppendArray(new DialogueFilter());
                 }
+                if (Program.OptimizatorSettings.MassiveFixer) {
+                    Optimizators = Optimizators.AppendArray(new MassiveFix());
+                }
 
                 if (Program.OptimizatorSettings.EnableWordWrap) {
                     Optimizators = Optimizators.AppendArray(new WordWraper());
@@ -105,7 +108,8 @@ namespace TLBOT {
                     new DialogueFilter(),
                     new Escape(),
                     new StutterFixer(),
-                    new QuoteTrim()
+                    new QuoteTrim(),
+                    new MassiveFix()
                 }.Concat(Program.ExternalPlugins).ToArray();
             }
         }
@@ -659,6 +663,8 @@ namespace TLBOT {
                 Program.OptimizatorSettings.JapaneseFixer = Enabled;
             } else if (Optimizator is DialogueFilter) {
                 Program.OptimizatorSettings.DialogueFilter = Enabled;
+            } else if (Optimizator is MassiveFix) {
+                Program.OptimizatorSettings.MassiveFixer = Enabled;
             } else {
                 foreach (IOptimizator EOptimizator in AllOptimizators) {
                     if (EOptimizator.GetName() != Optimizator.GetName())

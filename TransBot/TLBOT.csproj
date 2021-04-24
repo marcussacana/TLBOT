@@ -269,6 +269,7 @@
     <Compile Include="Optimizator\Escape.cs" />
     <Compile Include="Optimizator\IOptimizator.cs" />
     <Compile Include="Optimizator\JapFixer.cs" />
+    <Compile Include="Optimizator\MassiveFix.cs" />
     <Compile Include="Optimizator\Quote Trim.cs" />
     <Compile Include="Optimizator\Replaces.cs" />
     <Compile Include="Optimizator\StutterFixer.cs" />

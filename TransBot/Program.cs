@@ -270,6 +270,8 @@ namespace TLBOT {
         public bool JapaneseFixer;
         [FieldParmaters(DefaultValue = false, Name = "DialogueFilter")]
         public bool DialogueFilter;
+        [FieldParmaters(DefaultValue = false, Name = "MassiveFixer")]
+        public bool MassiveFixer;
     }
     
     internal struct TaskInfo {
