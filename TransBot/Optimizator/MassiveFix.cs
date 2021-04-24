@@ -6,6 +6,7 @@ namespace TLBOT.Optimizator
 {
     class MassiveFix : IOptimizator
     {
+        static Dictionary<string, string> Cache = new Dictionary<string, string>();
         static Dictionary<uint, string> StrMap = new Dictionary<uint, string>();
         public void AfterOpen(ref string Line, uint ID) { }
 
@@ -15,15 +16,19 @@ namespace TLBOT.Optimizator
             if (Line.Length >= OriLine.Length - (OriLine.Length / 3))
                 return;
 
-            Line = new string[] { OriLine }.TranslateMassive(Program.Settings.SourceLang, Program.Settings.TargetLang, Program.TLClient).First();
+            if (Cache.ContainsKey(OriLine))
+            {
+                Line = Cache[OriLine];
+                return;
+            }
+
+            var Result = new string[] { OriLine }.TranslateMassive(Program.Settings.SourceLang, Program.Settings.TargetLang, Program.TLClient).First();
+            Cache[OriLine] = Result;
         }
 
-        public void BeforeSave(ref string Line, uint ID)
-        {
-            StrMap[ID] = Line;
-        }
+        public void BeforeSave(ref string Line, uint ID) { }
 
-        public void BeforeTranslate(ref string Line, uint ID) { }
+        public void BeforeTranslate(ref string Line, uint ID) { StrMap[ID] = Line; }
 
         public string GetName()
         {

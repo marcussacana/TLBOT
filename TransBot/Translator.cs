@@ -1,4 +1,4 @@
-﻿//#define DEBUG
+﻿#define NODEBUG
 using System;
 using System.Threading.Tasks;
 using TLBOT.DataManager;
@@ -85,7 +85,7 @@ namespace TLBOT {
                         uint i = (uint)a;
                         foreach (IOptimizator Optimizator in Optimizators)
                             try {
-#if DEBUG
+#if DEBUG && !NODEBUG
                             var Begin = DateTime.Now;
                             string Line = Lines[i];
                             Optimizator.AfterTranslate(ref Line, i);
@@ -105,7 +105,7 @@ namespace TLBOT {
                     for (uint i = 0; i < Lines.LongLength; i++) {
                         foreach (IOptimizator Optimizator in Optimizators)
                             try {
-#if DEBUG
+#if DEBUG && !NODEBUG
                             var Begin = DateTime.Now;
                             string Line = Lines[i];
                             Optimizator.AfterTranslate(ref Line, i);

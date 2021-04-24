@@ -30,7 +30,7 @@ namespace TLBOT.Optimizator {
             
             if (Program.WordwrapSettings.DynamicWidthDiscardSetenceEnd)
                 Lines = Lines.Where(x => !string.IsNullOrEmpty(x.TrimEnd()) && 
-                                         !new char[] { '.', ',', '｡', '，', '．' }
+                                         !new char[] { '.', ',', '｡', '，', '．', '!', '?', ':' }
                                          .Contains(x.TrimEnd().Last())).ToArray();
             
             if (Lines.Length <= 1 && MaxWidth != 0)
