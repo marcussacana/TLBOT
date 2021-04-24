@@ -29,7 +29,9 @@ namespace TLBOT.Optimizator {
             string[] Lines = String.Replace(Program.WordwrapSettings.LineBreaker, "\n").Split('\n');
             
             if (Program.WordwrapSettings.DynamicWidthDiscardSetenceEnd)
-                Lines = Lines.Where(x => !new char[] { '.', ',', '｡', '，', '．' }.Contains(x.TrimEnd().Last())).ToArray();
+                Lines = Lines.Where(x => !string.IsNullOrEmpty(x) && 
+                                         !new char[] { '.', ',', '｡', '，', '．' }
+                                         .Contains(x.TrimEnd().Last())).ToArray();
             
             if (Lines.Length <= 1 && MaxWidth != 0)
                 return MaxWidth;
