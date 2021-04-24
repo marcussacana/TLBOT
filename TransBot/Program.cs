@@ -313,6 +313,8 @@ namespace TLBOT {
         public float FontSize;
         [FieldParmaters(DefaultValue = "\\n", Name = "LineBreaker")]
         public string LineBreaker;
+        [FieldParmaters(DefaultValue = false, Name = "DynamicWidthDiscardSetenceEnd")]
+        public bool DynamicWidthDiscardSetenceEnd;
     }
 
     internal struct TLBCache {
