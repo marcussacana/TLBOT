@@ -155,6 +155,9 @@ namespace TLBOT.DataManager {
 
             return rst;
         }
+        public static string[] SplitLines(this string Text) {
+            return Text.Replace(GameLineBreaker, "\n").Split('\n');
+        }
         private static int BreakLine(string text, int pos, int max) {
             int i = max - 1;
             while (i >= 0 && !char.IsWhiteSpace(text[pos + i]))

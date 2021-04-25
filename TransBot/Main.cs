@@ -33,6 +33,7 @@ namespace TLBOT {
             LineBreaker.Text = Program.WordwrapSettings.LineBreaker;
             ckFakeBreakLine.Checked = Program.WordwrapSettings.FakeBreakLine;
             LineLimit.Value = Program.WordwrapSettings.MaxWidth;
+            MaxLines.Value = Program.WordwrapSettings.MaxLines;
             FaceName.Text = Program.WordwrapSettings.FontName;
             ckBold.Checked = Program.WordwrapSettings.Bold;
 
@@ -144,6 +145,10 @@ namespace TLBOT {
                 new ToolTipInfo() {
                     Control = LineLimit,
                     Text = "Define o espaço limite de uma única linha.\nQuando modo monospaced estiver ligado informe aqui o numero máximo de letras de uma linha.\nCaso o modo monospaced esteja desligado, informe o numero de pixels de uma linha.\n\nPS: Caso o valor dado seja zero, ele irá assumir um limite dinamico tendo como base o comprimento de cada linha de forma individual,\nisto é, o comprimento máximo de uma linha original dita o limite da linha de saída,\ne caso seja menor que zero ele tornará esse valor padrão para diálogos que não tem nenhuma quebra de linha."
+                },
+                new ToolTipInfo() {
+                    Control = MaxLines,
+                    Text = "Define o numero de linhas limite a ser almejado.\nSe esse limite for estrapolado o limite por linha, o limite irá ser expandido na medida do possível.\nQuando o valor for zero, o limite de linhas será desconsiderado, quando o limite for menor que zero, ele se tornará um limite padrão,\nque se refere ao máximo de linhas utilizadas no script atual como um todo."
                 },
                 new ToolTipInfo() {
                     Control = SensetiveBar,
@@ -563,6 +568,9 @@ namespace TLBOT {
         
         private void MaxWidthChanged(object sender, EventArgs e) {
             Program.WordwrapSettings.MaxWidth = (int)LineLimit.Value;
+        }
+        private void MaxLinesChanged(object sender, EventArgs e) {
+            Program.WordwrapSettings.MaxLines = (int)MaxLines.Value;
         }
 
         private void LineBreakerChanged(object sender, EventArgs e) {

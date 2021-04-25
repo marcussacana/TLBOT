@@ -309,6 +309,8 @@ namespace TLBOT {
         public bool Bold;
         [FieldParmaters(DefaultValue = 0, Name = "MaxWidth")]
         public int MaxWidth;
+        [FieldParmaters(DefaultValue = 0, Name = "MaxLines")]
+        public int MaxLines;
         [FieldParmaters(DefaultValue = "Consolas", Name = "FaceName")]
         public string FontName;
         [FieldParmaters(DefaultValue = 12.0f, Name = "FontSize")]
@@ -317,6 +319,8 @@ namespace TLBOT {
         public string LineBreaker;
         [FieldParmaters(DefaultValue = false, Name = "DynamicWidthDiscardSetenceEnd")]
         public bool DynamicWidthDiscardSetenceEnd;
+        [FieldParmaters(DefaultValue = false, Name = "DynamicWidthPerScript")]
+        public bool DynamicWidthPerScript;
     }
 
     internal struct TLBCache {

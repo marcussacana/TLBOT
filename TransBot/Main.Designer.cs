@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.ViewTab = new System.Windows.Forms.TabPage();
+            this.bntSearch = new System.Windows.Forms.Button();
             this.bntViewScript = new System.Windows.Forms.Button();
             this.StringList = new System.Windows.Forms.CheckedListBox();
             this.bntNewTask = new System.Windows.Forms.Button();
@@ -34,7 +35,6 @@
             this.TaskProgress = new System.Windows.Forms.ProgressBar();
             this.OptionsTab = new System.Windows.Forms.TabPage();
             this.ckLstMode = new System.Windows.Forms.CheckBox();
-            this.bntSearch = new System.Windows.Forms.Button();
             this.bntTestClient = new System.Windows.Forms.Button();
             this.SensentiveGB = new System.Windows.Forms.GroupBox();
             this.ckUsePos = new System.Windows.Forms.CheckBox();
@@ -46,7 +46,9 @@
             this.ckTransTLBot = new System.Windows.Forms.CheckBox();
             this.LineBreaker = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblMaxLines = new System.Windows.Forms.GroupBox();
+            this.MaxLines = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             this.ckBold = new System.Windows.Forms.CheckBox();
             this.FontSize = new System.Windows.Forms.MaskedTextBox();
             this.lblFontSize = new System.Windows.Forms.Label();
@@ -86,7 +88,8 @@
             this.OptionsTab.SuspendLayout();
             this.SensentiveGB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SensetiveBar)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.lblMaxLines.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxLines)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LineLimit)).BeginInit();
             this.TranslationDB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DBPageSelector)).BeginInit();
@@ -107,6 +110,7 @@
             // 
             // ViewTab
             // 
+            this.ViewTab.Controls.Add(this.bntSearch);
             this.ViewTab.Controls.Add(this.bntViewScript);
             this.ViewTab.Controls.Add(this.StringList);
             this.ViewTab.Controls.Add(this.bntNewTask);
@@ -120,6 +124,17 @@
             this.ViewTab.TabIndex = 0;
             this.ViewTab.Text = "Visualização";
             this.ViewTab.UseVisualStyleBackColor = true;
+            // 
+            // bntSearch
+            // 
+            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntSearch.Location = new System.Drawing.Point(540, 439);
+            this.bntSearch.Name = "bntSearch";
+            this.bntSearch.Size = new System.Drawing.Size(75, 23);
+            this.bntSearch.TabIndex = 19;
+            this.bntSearch.Text = "Pesquisar";
+            this.bntSearch.UseVisualStyleBackColor = true;
+            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
             // 
             // bntViewScript
             // 
@@ -160,9 +175,9 @@
             // 
             this.lblState.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblState.Location = new System.Drawing.Point(382, 444);
+            this.lblState.Location = new System.Drawing.Point(360, 444);
             this.lblState.Name = "lblState";
-            this.lblState.Size = new System.Drawing.Size(233, 13);
+            this.lblState.Size = new System.Drawing.Size(174, 13);
             this.lblState.TabIndex = 3;
             this.lblState.Text = "Loading Cache...";
             // 
@@ -170,7 +185,7 @@
             // 
             this.lblInfoPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblInfoPrefix.AutoSize = true;
-            this.lblInfoPrefix.Location = new System.Drawing.Point(333, 444);
+            this.lblInfoPrefix.Location = new System.Drawing.Point(311, 444);
             this.lblInfoPrefix.Name = "lblInfoPrefix";
             this.lblInfoPrefix.Size = new System.Drawing.Size(43, 13);
             this.lblInfoPrefix.TabIndex = 2;
@@ -181,19 +196,18 @@
             this.TaskProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.TaskProgress.Location = new System.Drawing.Point(8, 439);
             this.TaskProgress.Name = "TaskProgress";
-            this.TaskProgress.Size = new System.Drawing.Size(319, 23);
+            this.TaskProgress.Size = new System.Drawing.Size(297, 23);
             this.TaskProgress.TabIndex = 1;
             // 
             // OptionsTab
             // 
             this.OptionsTab.Controls.Add(this.ckLstMode);
-            this.OptionsTab.Controls.Add(this.bntSearch);
             this.OptionsTab.Controls.Add(this.bntTestClient);
             this.OptionsTab.Controls.Add(this.SensentiveGB);
             this.OptionsTab.Controls.Add(this.ckTransTLBot);
             this.OptionsTab.Controls.Add(this.LineBreaker);
             this.OptionsTab.Controls.Add(this.label4);
-            this.OptionsTab.Controls.Add(this.groupBox1);
+            this.OptionsTab.Controls.Add(this.lblMaxLines);
             this.OptionsTab.Controls.Add(this.TargetStepMode);
             this.OptionsTab.Controls.Add(this.lblTargetSteps);
             this.OptionsTab.Controls.Add(this.OptimizatorList);
@@ -217,30 +231,19 @@
             // 
             this.ckLstMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ckLstMode.AutoSize = true;
-            this.ckLstMode.Location = new System.Drawing.Point(607, 127);
+            this.ckLstMode.Location = new System.Drawing.Point(128, 128);
             this.ckLstMode.Name = "ckLstMode";
-            this.ckLstMode.Size = new System.Drawing.Size(76, 17);
+            this.ckLstMode.Size = new System.Drawing.Size(46, 17);
             this.ckLstMode.TabIndex = 19;
-            this.ckLstMode.Text = "LST Mode";
+            this.ckLstMode.Text = "LST";
             this.ckLstMode.UseVisualStyleBackColor = true;
             this.ckLstMode.CheckedChanged += new System.EventHandler(this.LstModeCheckedChanged);
-            // 
-            // bntSearch
-            // 
-            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntSearch.Location = new System.Drawing.Point(526, 123);
-            this.bntSearch.Name = "bntSearch";
-            this.bntSearch.Size = new System.Drawing.Size(75, 23);
-            this.bntSearch.TabIndex = 18;
-            this.bntSearch.Text = "Search";
-            this.bntSearch.UseVisualStyleBackColor = true;
-            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
             // 
             // bntTestClient
             // 
             this.bntTestClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bntTestClient.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.bntTestClient.Location = new System.Drawing.Point(430, 125);
+            this.bntTestClient.Location = new System.Drawing.Point(14, 125);
             this.bntTestClient.Name = "bntTestClient";
             this.bntTestClient.Size = new System.Drawing.Size(42, 23);
             this.bntTestClient.TabIndex = 17;
@@ -256,7 +259,7 @@
             this.SensentiveGB.Controls.Add(this.lblMoreSensetive);
             this.SensentiveGB.Controls.Add(this.lblLessSensentive);
             this.SensentiveGB.Controls.Add(this.SensetiveBar);
-            this.SensentiveGB.Location = new System.Drawing.Point(197, 70);
+            this.SensentiveGB.Location = new System.Drawing.Point(185, 70);
             this.SensentiveGB.Name = "SensentiveGB";
             this.SensentiveGB.Size = new System.Drawing.Size(227, 78);
             this.SensentiveGB.TabIndex = 16;
@@ -339,17 +342,17 @@
             // 
             this.ckTransTLBot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ckTransTLBot.AutoSize = true;
-            this.ckTransTLBot.Location = new System.Drawing.Point(689, 127);
+            this.ckTransTLBot.Location = new System.Drawing.Point(62, 128);
             this.ckTransTLBot.Name = "ckTransTLBot";
-            this.ckTransTLBot.Size = new System.Drawing.Size(111, 17);
+            this.ckTransTLBot.Size = new System.Drawing.Size(60, 17);
             this.ckTransTLBot.TabIndex = 14;
-            this.ckTransTLBot.Text = "Traduzir o TLBOT";
+            this.ckTransTLBot.Text = "Self TL";
             this.ckTransTLBot.UseVisualStyleBackColor = true;
             this.ckTransTLBot.CheckedChanged += new System.EventHandler(this.TransWindowChanged);
             // 
             // LineBreaker
             // 
-            this.LineBreaker.Location = new System.Drawing.Point(309, 44);
+            this.LineBreaker.Location = new System.Drawing.Point(280, 44);
             this.LineBreaker.Name = "LineBreaker";
             this.LineBreaker.Size = new System.Drawing.Size(115, 20);
             this.LineBreaker.TabIndex = 13;
@@ -358,31 +361,65 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(211, 47);
+            this.label4.Location = new System.Drawing.Point(182, 47);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(92, 13);
             this.label4.TabIndex = 12;
             this.label4.Text = "Quebra de linha:";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // groupBox1
+            // lblMaxLines
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.ckBold);
-            this.groupBox1.Controls.Add(this.FontSize);
-            this.groupBox1.Controls.Add(this.lblFontSize);
-            this.groupBox1.Controls.Add(this.FaceName);
-            this.groupBox1.Controls.Add(this.lblFaceName);
-            this.groupBox1.Controls.Add(this.ckMonospaced);
-            this.groupBox1.Controls.Add(this.LineLimit);
-            this.groupBox1.Controls.Add(this.lblLineLimit);
-            this.groupBox1.Controls.Add(this.ckFakeBreakLine);
-            this.groupBox1.Location = new System.Drawing.Point(430, 14);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(370, 107);
-            this.groupBox1.TabIndex = 11;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Word Wrap";
+            this.lblMaxLines.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblMaxLines.Controls.Add(this.MaxLines);
+            this.lblMaxLines.Controls.Add(this.label6);
+            this.lblMaxLines.Controls.Add(this.ckBold);
+            this.lblMaxLines.Controls.Add(this.FontSize);
+            this.lblMaxLines.Controls.Add(this.lblFontSize);
+            this.lblMaxLines.Controls.Add(this.FaceName);
+            this.lblMaxLines.Controls.Add(this.lblFaceName);
+            this.lblMaxLines.Controls.Add(this.ckMonospaced);
+            this.lblMaxLines.Controls.Add(this.LineLimit);
+            this.lblMaxLines.Controls.Add(this.lblLineLimit);
+            this.lblMaxLines.Controls.Add(this.ckFakeBreakLine);
+            this.lblMaxLines.Location = new System.Drawing.Point(418, 14);
+            this.lblMaxLines.Name = "lblMaxLines";
+            this.lblMaxLines.Size = new System.Drawing.Size(382, 134);
+            this.lblMaxLines.TabIndex = 11;
+            this.lblMaxLines.TabStop = false;
+            this.lblMaxLines.Text = "Word Wrap";
+            // 
+            // MaxLines
+            // 
+            this.MaxLines.Location = new System.Drawing.Point(233, 46);
+            this.MaxLines.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.MaxLines.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.MaxLines.Name = "MaxLines";
+            this.MaxLines.Size = new System.Drawing.Size(128, 20);
+            this.MaxLines.TabIndex = 11;
+            this.MaxLines.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.MaxLines.ValueChanged += new System.EventHandler(this.MaxLinesChanged);
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(127, 46);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(100, 16);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Max. de Linhas";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // ckBold
             // 
@@ -398,7 +435,7 @@
             // FontSize
             // 
             this.FontSize.Enabled = false;
-            this.FontSize.Location = new System.Drawing.Point(233, 39);
+            this.FontSize.Location = new System.Drawing.Point(233, 74);
             this.FontSize.Mask = "00.0";
             this.FontSize.Name = "FontSize";
             this.FontSize.Size = new System.Drawing.Size(128, 20);
@@ -408,7 +445,7 @@
             // 
             // lblFontSize
             // 
-            this.lblFontSize.Location = new System.Drawing.Point(127, 42);
+            this.lblFontSize.Location = new System.Drawing.Point(127, 77);
             this.lblFontSize.Name = "lblFontSize";
             this.lblFontSize.Size = new System.Drawing.Size(100, 16);
             this.lblFontSize.TabIndex = 7;
@@ -417,7 +454,7 @@
             // 
             // FaceName
             // 
-            this.FaceName.Location = new System.Drawing.Point(233, 65);
+            this.FaceName.Location = new System.Drawing.Point(233, 100);
             this.FaceName.Name = "FaceName";
             this.FaceName.Size = new System.Drawing.Size(128, 20);
             this.FaceName.TabIndex = 6;
@@ -426,7 +463,7 @@
             // 
             // lblFaceName
             // 
-            this.lblFaceName.Location = new System.Drawing.Point(127, 66);
+            this.lblFaceName.Location = new System.Drawing.Point(127, 101);
             this.lblFaceName.Name = "lblFaceName";
             this.lblFaceName.Size = new System.Drawing.Size(100, 16);
             this.lblFaceName.TabIndex = 5;
@@ -491,7 +528,7 @@
             this.TargetStepMode.Items.AddRange(new object[] {
             "Single Step",
             "Double Step"});
-            this.TargetStepMode.Location = new System.Drawing.Point(309, 17);
+            this.TargetStepMode.Location = new System.Drawing.Point(280, 17);
             this.TargetStepMode.Name = "TargetStepMode";
             this.TargetStepMode.Size = new System.Drawing.Size(115, 21);
             this.TargetStepMode.TabIndex = 10;
@@ -499,7 +536,7 @@
             // 
             // lblTargetSteps
             // 
-            this.lblTargetSteps.Location = new System.Drawing.Point(211, 17);
+            this.lblTargetSteps.Location = new System.Drawing.Point(182, 17);
             this.lblTargetSteps.Name = "lblTargetSteps";
             this.lblTargetSteps.Size = new System.Drawing.Size(92, 18);
             this.lblTargetSteps.TabIndex = 9;
@@ -533,7 +570,7 @@
             "FR",
             "PL",
             "DE"});
-            this.TargetLangSelector.Location = new System.Drawing.Point(128, 100);
+            this.TargetLangSelector.Location = new System.Drawing.Point(112, 100);
             this.TargetLangSelector.Name = "TargetLangSelector";
             this.TargetLangSelector.Size = new System.Drawing.Size(63, 21);
             this.TargetLangSelector.TabIndex = 7;
@@ -556,7 +593,7 @@
             "PL",
             "DE",
             "AUTO"});
-            this.SourceLangSelector.Location = new System.Drawing.Point(128, 73);
+            this.SourceLangSelector.Location = new System.Drawing.Point(112, 73);
             this.SourceLangSelector.Name = "SourceLangSelector";
             this.SourceLangSelector.Size = new System.Drawing.Size(63, 21);
             this.SourceLangSelector.TabIndex = 6;
@@ -568,7 +605,7 @@
             // 
             this.label3.Location = new System.Drawing.Point(11, 100);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(111, 18);
+            this.label3.Size = new System.Drawing.Size(95, 18);
             this.label3.TabIndex = 5;
             this.label3.Text = "Língua Alvo:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -577,7 +614,7 @@
             // 
             this.label2.Location = new System.Drawing.Point(11, 73);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(111, 18);
+            this.label2.Size = new System.Drawing.Size(95, 18);
             this.label2.TabIndex = 4;
             this.label2.Text = "Língua de Origem:";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -590,7 +627,7 @@
             "Massive",
             "Multithread",
             "Normal"});
-            this.TransModeMenu.Location = new System.Drawing.Point(87, 41);
+            this.TransModeMenu.Location = new System.Drawing.Point(71, 41);
             this.TransModeMenu.Name = "TransModeMenu";
             this.TransModeMenu.Size = new System.Drawing.Size(104, 21);
             this.TransModeMenu.TabIndex = 3;
@@ -600,7 +637,7 @@
             // 
             this.label1.Location = new System.Drawing.Point(8, 44);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(73, 18);
+            this.label1.Size = new System.Drawing.Size(57, 18);
             this.label1.TabIndex = 2;
             this.label1.Text = "Modo:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -615,7 +652,7 @@
             "Bing Neural",
             "LEC",
             "Cache Only"});
-            this.TLCLientMenu.Location = new System.Drawing.Point(87, 14);
+            this.TLCLientMenu.Location = new System.Drawing.Point(71, 14);
             this.TLCLientMenu.Name = "TLCLientMenu";
             this.TLCLientMenu.Size = new System.Drawing.Size(104, 21);
             this.TLCLientMenu.TabIndex = 1;
@@ -625,7 +662,7 @@
             // 
             this.lblClientPrefix.Location = new System.Drawing.Point(8, 17);
             this.lblClientPrefix.Name = "lblClientPrefix";
-            this.lblClientPrefix.Size = new System.Drawing.Size(73, 18);
+            this.lblClientPrefix.Size = new System.Drawing.Size(57, 18);
             this.lblClientPrefix.TabIndex = 0;
             this.lblClientPrefix.Text = "Cliente:";
             this.lblClientPrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -790,8 +827,9 @@
             this.SensentiveGB.ResumeLayout(false);
             this.SensentiveGB.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SensetiveBar)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.lblMaxLines.ResumeLayout(false);
+            this.lblMaxLines.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxLines)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LineLimit)).EndInit();
             this.TranslationDB.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DBPageSelector)).EndInit();
@@ -819,7 +857,7 @@
         private System.Windows.Forms.ComboBox TargetStepMode;
         private System.Windows.Forms.Label lblTargetSteps;
         private System.Windows.Forms.CheckedListBox OptimizatorList;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox lblMaxLines;
         private System.Windows.Forms.CheckBox ckMonospaced;
         private System.Windows.Forms.NumericUpDown LineLimit;
         private System.Windows.Forms.Label lblLineLimit;
@@ -854,9 +892,11 @@
         private System.Windows.Forms.Timer CacheLoadedVerify;
         private System.Windows.Forms.CheckBox ckUseDB;
         private System.Windows.Forms.Button bntTestClient;
-        private System.Windows.Forms.Button bntSearch;
         private System.Windows.Forms.Button GenDBBnt;
         private System.Windows.Forms.CheckBox ckLstMode;
         private System.Windows.Forms.CheckBox ckUsePos;
+        private System.Windows.Forms.Button bntSearch;
+        private System.Windows.Forms.NumericUpDown MaxLines;
+        private System.Windows.Forms.Label label6;
     }
 }
