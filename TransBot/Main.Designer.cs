@@ -648,9 +648,6 @@
             this.TLCLientMenu.FormattingEnabled = true;
             this.TLCLientMenu.Items.AddRange(new object[] {
             "Google",
-            "Bing",
-            "Bing Neural",
-            "LEC",
             "Cache Only"});
             this.TLCLientMenu.Location = new System.Drawing.Point(71, 14);
             this.TLCLientMenu.Name = "TLCLientMenu";

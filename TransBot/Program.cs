@@ -8,8 +8,6 @@ using System.Threading;
 using System.Windows.Forms;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
-using TLIB;
-using TLIB.CEF;
 
 namespace TLBOT {
     static class Program {
@@ -18,7 +16,6 @@ namespace TLBOT {
         internal static string TaskPath => AppDomain.CurrentDomain.BaseDirectory + "Task.tbt";
         internal static string INIPath => AppDomain.CurrentDomain.BaseDirectory + "TLBOT.ini";
         private static string CachePath => AppDomain.CurrentDomain.BaseDirectory + string.Format("TLBOT-{0}.tbc", Settings.TargetLang);
-        public static string LECPort => LEC.TryDiscoveryPort();
 
         public static bool CacheReady = false;
 
@@ -99,7 +96,6 @@ namespace TLBOT {
             LoadSettings();
             LoadCache(new Action(() => { CacheReady = true; }));
             ExternalPlugins = SearchOptimizators("*-TBPlugin.cs");
-            Initializer.Initialize();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

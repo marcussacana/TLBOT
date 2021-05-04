@@ -336,6 +336,10 @@
       <Project>{66c4fb33-9701-4bb2-82b0-b9ad4f807dfa}</Project>
       <Name>SacanaWrapper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SocketClient\SocketClient.csproj">
+      <Project>{C4FC5414-7973-499E-86C5-8B3BC2D8F34D}</Project>
+      <Name>SocketClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SacanaWrapper;
+using SocketClient;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
 
@@ -60,6 +61,15 @@ namespace TLBOT {
             
             ShowOptimizators();
             InitializeToolTips();
+            InitializeService();
+        }
+
+        private void InitializeService()
+        {
+            API.ConnectionFailed += (sender, args) => {
+                MessageBox.Show("Failed to Connect to the Translation API,\nMaybe the server is offline?", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(-1);
+            };
         }
 
         IOptimizator[] EnabledOptimizators {

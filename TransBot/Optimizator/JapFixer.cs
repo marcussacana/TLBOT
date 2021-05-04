@@ -23,17 +23,6 @@ namespace TLBOT.Optimizator {
         }
         private Translator AlternativeClient(Translator Client) {
             switch (Client) {
-                case Translator.BingNeural:
-                case Translator.Bing:
-                    return Translator.Google;
-                case Translator.Google:
-                    if (Program.LECPort == null)
-                        return Translator.Bing;
-                    else
-                        return Translator.LEC;
-                case Translator.CacheOnly:
-                    return Translator.CacheOnly;
-
                 default:
                     return Translator.Google;
             }

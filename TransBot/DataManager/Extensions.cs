@@ -1,11 +1,11 @@
 ﻿#define SINGLE
+using SocketClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TLIB;
 
 namespace TLBOT.DataManager {
     public static partial class Extensions {
@@ -41,15 +41,8 @@ namespace TLBOT.DataManager {
                                     else
                                         Result = String;
                                     break;
-                                case Translator.Bing:
-                                case Translator.BingNeural:
-                                    Result = Bing.Translate(String, SourceLanguage, TargetLanguage);
-                                    break;
-                                case Translator.Google:
-                                    Result = Google.Default.Translate(String, SourceLanguage, TargetLanguage);
-                                    break;
-                                case Translator.LEC:
-                                    Result = LEC.Translate(String, SourceLanguage, TargetLanguage, LEC.Gender.Male, LEC.Formality.Informal, Program.LECPort);
+                                default:
+                                    Result = API.Translate(String, SourceLanguage, TargetLanguage);
                                     break;
                             }
                         } catch {
@@ -97,15 +90,9 @@ namespace TLBOT.DataManager {
 
                     Result = new string[0];
                     switch (Client) {
-                        case Translator.Bing:
-                        case Translator.BingNeural:
-                            Result = Bing.Translate(NoCached, SourceLanguage, TargetLanguage, 300);
-                            break;
-
-                        case Translator.LEC:
-                        case Translator.Google:
+                        default:
                             try {
-                                Result = Google.Default.Translate(NoCached, SourceLanguage, TargetLanguage);
+                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage);
                             } catch (Exception ex) {
                                 if (!Error && i + 1 >= 4)
                                     MessageBox.Show(ex.Message, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
