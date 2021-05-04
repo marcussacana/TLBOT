@@ -517,6 +517,22 @@ namespace TLBOT.DataManager {
                 if (Numbers >= Str.Length)
                     Points += 3;
 
+                if (!IsJap && WordCount == 1 && char.IsUpper(Str.First()) && !char.IsPunctuation(Str.TrimEnd().Last()))
+                    Points++;
+
+                if (!IsJap && WordCount == 1 && !char.IsUpper(Str.First()))
+                    Points++;
+
+                if (Words.Where(x => x.Where(y => char.IsUpper(y)).Count() > 1
+                                  && x.Where(y => char.IsLower(y)).Count() > 1).Any())
+                    Points += 2;
+
+                if (!IsJap && char.IsUpper(Str.TrimStart().First()) && char.IsPunctuation(Str.TrimEnd().Last()))
+                    Points--;
+
+                if (!char.IsPunctuation(Str.TrimEnd().Last()))
+                    Points++;
+
                 if (IsJap && Kanjis / 2 > JapChars)
                     Points--;
 

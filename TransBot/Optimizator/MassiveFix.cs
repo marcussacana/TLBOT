@@ -13,7 +13,7 @@ namespace TLBOT.Optimizator
         public void AfterTranslate(ref string Line, uint ID)
         {
             var OriLine = StrMap[ID];
-            if (Line.Length >= OriLine.Length - (OriLine.Length / 3))
+            if (CountWords(Line) >= CountWords(OriLine) - (CountWords(OriLine) / 3))
                 return;
 
             if (Cache.ContainsKey(OriLine))
@@ -25,6 +25,8 @@ namespace TLBOT.Optimizator
             var Result = new string[] { OriLine }.TranslateMassive(Program.Settings.SourceLang, Program.Settings.TargetLang, Program.TLClient).First();
             Cache[OriLine] = Result;
         }
+
+        private int CountWords(string Line) => Line.Trim().Split(' ').Length;
 
         public void BeforeSave(ref string Line, uint ID) { }
 

@@ -846,7 +846,8 @@ namespace TLBOT {
         }
 
         private void bntSearch_Click(object sender, EventArgs e) {
-            new Search().Show();
+            var Searcher = new Search();
+            Searcher.ShowDialog();
         }
 
         private void GenDBBnt_Click(object sender, EventArgs e) {
