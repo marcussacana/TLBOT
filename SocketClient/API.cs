@@ -14,7 +14,7 @@ namespace SocketClient
     {
         public static EventHandler ConnectionFailed;
 
-        const int Version = 1;
+        const int Version = 2;
 
         internal static byte[] Key = new byte[0x20];
 
@@ -37,6 +37,8 @@ namespace SocketClient
                     ConnectionFailed?.Invoke(null, new EventArgs());
                     return null;
                 }
+
+                Connected = true;
 
                 Session = new Session("ws://marcussacanawan.dynv6.net:5525");
                 
