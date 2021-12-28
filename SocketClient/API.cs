@@ -23,13 +23,13 @@ namespace SocketClient
         static Translation Translator;
         static Session Session;
 
-        public static string Translate(string Line, string SourceLanguage, string TargetLanguage) {
-            return Translate(new string[] { Line }, SourceLanguage, TargetLanguage).First();
+        public static string Translate(string Line, string SourceLanguage, string TargetLanguage, bool Local = false) {
+            return Translate(new string[] { Line }, SourceLanguage, TargetLanguage, Local).First();
         }
 
-        public static string[] Translate(string[] Lines, string SourceLanguage, string TargetLanguage) {
+        public static string[] Translate(string[] Lines, string SourceLanguage, string TargetLanguage, bool Local = false) {
             if (!Connected) {
-                var Connection = BeginConnection();
+                var Connection = BeginConnection(Local);
                 Connection.Wait();
 
                 if (!Connection.Result)
@@ -40,7 +40,7 @@ namespace SocketClient
 
                 Connected = true;
 
-                Session = new Session("ws://marcussacanawan.dynv6.net:5525");
+                Session = new Session($"ws://{(Local ? "127.0.0.1" : "marcussacanawan.dynv6.net")}:5525");
                 
                 Translator = Session.OpenTranslator();
                 Translator.Initializer.Wait();
@@ -51,7 +51,7 @@ namespace SocketClient
 
             return TK.Result;
         }
-        static async Task<bool> BeginConnection()
+        static async Task<bool> BeginConnection(bool Local)
         {
             TaskCompletionSource<CloseEventArgs> Connection = new TaskCompletionSource<CloseEventArgs>();
 
@@ -62,7 +62,7 @@ namespace SocketClient
             Data = Data.Concat(Key.ParseToBytes()).ToArray();
             Data = Data.Encrypt(SeedKey, new byte[16]);
 
-            var Socket = new WebSocket("ws://marcussacanawan.dynv6.net:5525/Connection");
+            var Socket = new WebSocket($"ws://{(Local ? "127.0.0.1" : "marcussacanawan.dynv6.net")}:5525/Connection");
 
             Socket.Compression = CompressionMethod.Deflate;
 

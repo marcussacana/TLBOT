@@ -67,6 +67,12 @@ namespace TLBOT {
         private void InitializeService()
         {
             API.ConnectionFailed += (sender, args) => {
+                if (!Extensions.Local)
+                {
+                    Extensions.Local = true;
+                    return;
+                }
+
                 MessageBox.Show("Failed to Connect to the Translation API,\nMaybe the server is offline?", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             };

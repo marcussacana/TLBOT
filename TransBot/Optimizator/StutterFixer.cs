@@ -100,7 +100,7 @@ namespace TLBOT.Optimizator {
             while (Result != bak) {
                 bak = Result;
                 foreach (Quote Quote in Quotes) {
-                    if (Line.StartsWith(Quote.Start.ToString()) && Result.EndsWith(Quote.End.ToString())) {
+                    if (Line.StartsWith(Quote.Start.ToString()) && Result.EndsWith(Quote.End.ToString()) && Line.Length >= 2) {
                         QuoteDB[ID].Add(Quote);
                         Result = Result.Substring(1, Result.Length - 2);
                     }

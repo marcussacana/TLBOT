@@ -42,7 +42,7 @@ namespace TLBOT.DataManager {
                                         Result = String;
                                     break;
                                 default:
-                                    Result = API.Translate(String, SourceLanguage, TargetLanguage);
+                                    Result = API.Translate(String, SourceLanguage, TargetLanguage, Local);
                                     break;
                             }
                         } catch {
@@ -74,7 +74,7 @@ namespace TLBOT.DataManager {
 #else
         internal static string Translate(this string String, string SourceLang, string TargetLang, Translator Client) => TranslateMassive(new string[] { String }, SourceLang, TargetLang, Client).First();
 #endif
-
+        internal static bool Local = false;
         internal static string[] TranslateMassive(this string[] Strings, string SourceLanguage, string TargetLanguage, Translator Client) {
             if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
                 return Strings;
@@ -92,7 +92,9 @@ namespace TLBOT.DataManager {
                     switch (Client) {
                         default:
                             try {
-                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage);
+                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage, Local);
+                                if (Result == null)
+                                    throw new Exception();
                             } catch (Exception ex) {
                                 if (!Error && i + 1 >= 4)
                                     MessageBox.Show(ex.Message, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
