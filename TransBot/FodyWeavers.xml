@@ -2,11 +2,6 @@
 	<Costura>
 		<ExcludeAssemblies>
 			TLIB
-			cef.redist.x64
-			cef.redist.x86
-			CefSharp.Core
-			CefSharp.Common
-			CefSharp.OffScreen
 			SacanaWrapper
 			Microsoft.CodeAnalysis
 		</ExcludeAssemblies>

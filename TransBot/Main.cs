@@ -13,6 +13,7 @@ using TLBOT.Optimizator;
 
 namespace TLBOT {
     public partial class Main : Form {
+
         private string AtualLang = "PT";
         private bool ShowingStrings = false;
 
@@ -61,6 +62,7 @@ namespace TLBOT {
             ShowOptimizators();
             InitializeToolTips();
         }
+
         IOptimizator[] EnabledOptimizators {
             get {
                 var Optimizators = new IOptimizator[0];
@@ -236,108 +238,148 @@ namespace TLBOT {
             DialogResult? dr = null;
             long TotalCount = 0;
             Wrapper Wrapper = new Wrapper();
-            for (uint x = Begin; x < Files.LongLength; x++) {
+            for (uint x = Begin; x < Files.LongLength; x++)
+            {
                 Program.TaskInfo.LastTaskPos = x;
                 Program.SaveTask();
 
                 string FileName = Files[x];
 #if !DEBUG
-                try {
+                try
+                {
 #endif
                     var Strings = Import(FileName);
 
-                    if (Strings.Length == 0) {
+                    if (Strings.Length == 0)
+                    {
                         if (dr == null || dr == DialogResult.Retry)
-                            dr = MessageBox.Show($"Failed to Open the Script \"{Path.GetFileName(FileName)}\"", "TLBOT 2", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+                            dr = MessageBox.Show($"Failed to Open the Script \"{Path.GetFileName(FileName)}\"",
+                                "TLBOT 2", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
                         if (dr == DialogResult.Retry)
-                            x--;                        
+                            x--;
                         if (dr == DialogResult.Ignore || dr == DialogResult.Retry)
                             continue;
                         if (dr == DialogResult.Abort)
                             break;
                     }
 
-                    TotalCount += (from z in Strings select (long)z.Length).Sum();
+                    TotalCount += (from z in Strings select (long) z.Length).Sum();
 
                     ShowStrings(Strings, NewFile: true);
 
-                    var TaskCreator = new TranslationTask(Strings, Program.Settings.SourceLang, Program.Settings.TargetLang, EnabledOptimizators);
-                    
+                    var TaskCreator = new TranslationTask(Strings, Program.Settings.SourceLang,
+                        Program.Settings.TargetLang, EnabledOptimizators);
+
                     Task Translate = TaskCreator.Build();
 
                     Translate.Start();
                     Text = $"TLBOT 2 - {Path.GetFileName(FileName)}";
                     int DL = 0;
                     int LP = 0;
-                    while (TaskCreator.TaskStatus != TranslationTask.Status.Finished) {
-                        try {
-                            if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread) {
-                                lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)", TaskCreator.Progress, Strings.LongLength, x, Files.LongLength, GetStateName(TaskCreator.TaskStatus));
+                    while (TaskCreator.TaskStatus != TranslationTask.Status.Finished)
+                    {
+                        try
+                        {
+                            if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread)
+                            {
+                                lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)",
+                                    TaskCreator.Progress, Strings.LongLength, x, Files.LongLength,
+                                    GetStateName(TaskCreator.TaskStatus));
                                 TaskProgress.Maximum = Strings.Length;
-                                TaskProgress.Value = (int)TaskCreator.Progress;
-                                StringList.SelectedIndex = (int)TaskCreator.Progress;
+                                TaskProgress.Value = (int) TaskCreator.Progress;
+                                StringList.SelectedIndex = (int) TaskCreator.Progress;
 
-                                if (++DL == 20) {
+                                if (++DL == 20)
+                                {
                                     DL = 0;
-                                    int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
+                                    int Progress =
+                                        (int) (Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
                                     ShowStrings(TaskCreator.Lines, LP, Progress);
                                     LP = Progress;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 if (TaskCreator.TaskStatus == TranslationTask.Status.Translating)
-                                    lblState.Text = string.Format("Translating... ({0}/{1} Files)", x, Files.LongLength);
-                                else {
-                                    lblState.Text = string.Format("{4}...  ({2}/{3} Lines) ({0}/{1} Files)", x, Files.LongLength, TaskCreator.Progress, Strings.LongLength, GetStateName(TaskCreator.TaskStatus));
-                                    if (++DL == 20) {
+                                    lblState.Text = string.Format("Translating... ({0}/{1} Files)", x,
+                                        Files.LongLength);
+                                else
+                                {
+                                    lblState.Text = string.Format("{4}...  ({2}/{3} Lines) ({0}/{1} Files)", x,
+                                        Files.LongLength, TaskCreator.Progress, Strings.LongLength,
+                                        GetStateName(TaskCreator.TaskStatus));
+                                    if (++DL == 20)
+                                    {
                                         DL = 0;
-                                        int Progress = (int)TaskCreator.Progress;
+                                        int Progress = (int) TaskCreator.Progress;
                                         ShowStrings(TaskCreator.Lines, LP, Progress);
                                         LP = Progress;
                                     }
                                 }
+
                                 TaskProgress.Maximum = Files.Length;
-                                TaskProgress.Value = (int)x;
+                                TaskProgress.Value = (int) x;
                             }
-                        } catch { }
+                        }
+                        catch
+                        {
+                        }
+
                         Application.DoEvents();
                         Thread.Sleep(100);
                     }
 
+                    var Filtering = IsEnabled(new DialogueFilter());
 
-                    for (uint i = 0, z = 0; i < TaskCreator.Lines.LongLength; i++) {
-                        if (i % (Strings.LongLength > 5000 ? 55 : 15) == 0) {
+                    for (uint i = 0, z = 0; i < TaskCreator.Lines.LongLength; i++)
+                    {
+                        if (i % (Strings.LongLength > 5000 ? 55 : 15) == 0)
+                        {
                             lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Strings.LongLength);
                             Application.DoEvents();
                         }
 
+                        while (!ValidList[i + z] && Filtering)
+                            z++;
+
                         uint RealIndex = i + z;
                         foreach (IOptimizator Optimizator in EnabledOptimizators)
-                            try {
+                            try
+                            {
                                 if (Optimizator is DialogueFilter)
                                     continue;
 
                                 Optimizator.BeforeSave(ref TaskCreator.Lines[i], RealIndex);
-                            } catch { }
-                        
-                        if (ValidList[RealIndex])
-                            z++;
+                            }
+                            catch
+                            {
+                            }
                     }
 
                     bool Changed = false;
                     for (uint i = 0; i < Strings.Length; i++)
-                        if (Strings[i] != TaskCreator.Lines[i]) {
+                        if (Strings[i] != TaskCreator.Lines[i])
+                        {
                             Changed = true;
                             break;
                         }
-                    if (Changed) {
-                        if (Program.Settings.LSTMode) {
-                            string LstPath = Path.GetDirectoryName(FileName) + "\\Strings-" + Path.GetFileNameWithoutExtension(FileName) + ".lst";
+
+                    if (Changed)
+                    {
+                        if (Program.Settings.LSTMode)
+                        {
+                            string LstPath = Path.GetDirectoryName(FileName) + "\\Strings-" +
+                                             Path.GetFileNameWithoutExtension(FileName) + ".lst";
                             Dump(TaskCreator.Lines, LstPath);
-                        } else
+                        }
+                        else
                             Export(TaskCreator.Lines, FileName);
                     }
 #if !DEBUG
-            } catch { }
+                }
+                catch
+                {
+                }
 #endif
             }
 

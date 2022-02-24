@@ -93,11 +93,12 @@ namespace TLBOT {
         [STAThread]
         static void Main() {
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+
+            TLIB.CEF.Initializer.Initialize();
+
             LoadSettings();
             LoadCache(new Action(() => { CacheReady = true; }));
             ExternalPlugins = SearchOptimizators("*-TBPlugin.cs");
-            
-            TLIB.CEF.Initializer.Initialize();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
