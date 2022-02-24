@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SacanaWrapper;
-using SocketClient;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
 
@@ -61,23 +60,7 @@ namespace TLBOT {
             
             ShowOptimizators();
             InitializeToolTips();
-            InitializeService();
         }
-
-        private void InitializeService()
-        {
-            API.ConnectionFailed += (sender, args) => {
-                if (!Extensions.Local)
-                {
-                    Extensions.Local = true;
-                    return;
-                }
-
-                MessageBox.Show("Failed to Connect to the Translation API,\nMaybe the server is offline?", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(-1);
-            };
-        }
-
         IOptimizator[] EnabledOptimizators {
             get {
                 var Optimizators = new IOptimizator[0];
@@ -321,19 +304,23 @@ namespace TLBOT {
                     }
 
 
-                    for (uint i = 0; i < TaskCreator.Lines.LongLength; i++) {
+                    for (uint i = 0, z = 0; i < TaskCreator.Lines.LongLength; i++) {
                         if (i % (Strings.LongLength > 5000 ? 55 : 15) == 0) {
                             lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Strings.LongLength);
                             Application.DoEvents();
                         }
 
+                        uint RealIndex = i + z;
                         foreach (IOptimizator Optimizator in EnabledOptimizators)
                             try {
                                 if (Optimizator is DialogueFilter)
                                     continue;
 
-                                Optimizator.BeforeSave(ref TaskCreator.Lines[i], i);
+                                Optimizator.BeforeSave(ref TaskCreator.Lines[i], RealIndex);
                             } catch { }
+                        
+                        if (ValidList[RealIndex])
+                            z++;
                     }
 
                     bool Changed = false;
@@ -359,7 +346,7 @@ namespace TLBOT {
             lblState.Text = "IDLE";
             Program.TaskInfo = new TaskInfo();
 
-            MessageBox.Show($"Task Finished:\n{TotalCount:N0} letters in this game.\nwith ${20 * (TotalCount / 1000000.00):N} of cost", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"Task Finished:\n{TotalCount:N0} characters in this game.\nwith ${20 * (TotalCount / 1000000.00):N} of cost", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
 
@@ -401,6 +388,7 @@ namespace TLBOT {
 
             return Strs ?? Ori;
         }
+        
         const string BreakLineFlag = "::BREAKLINE::";
         const string ReturnLineFlag = "::RETURNLINE::";
 
@@ -436,6 +424,7 @@ namespace TLBOT {
 
             return true;
         }
+        
         private void Export(string[] Strings, string SaveAs) {
             var Filter = new DialogueFilter();
 

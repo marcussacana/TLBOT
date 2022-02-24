@@ -1,15 +1,15 @@
 ﻿#define SINGLE
-using SocketClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TLIB;
 
 namespace TLBOT.DataManager {
     public static partial class Extensions {
-
+        public  static  Google API = new Google();
         internal static T[] AppendArray<T>(this T[] Array, T Item) =>
             Array.AppendArray(new T[] { Item });
 
@@ -42,7 +42,7 @@ namespace TLBOT.DataManager {
                                         Result = String;
                                     break;
                                 default:
-                                    Result = API.Translate(String, SourceLanguage, TargetLanguage, Local);
+                                    Result = API.Translate(String, SourceLanguage, TargetLanguage);
                                     break;
                             }
                         } catch {
@@ -92,7 +92,7 @@ namespace TLBOT.DataManager {
                     switch (Client) {
                         default:
                             try {
-                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage, Local);
+                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage);
                                 if (Result == null)
                                     throw new Exception();
                             } catch (Exception ex) {

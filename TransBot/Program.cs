@@ -96,6 +96,8 @@ namespace TLBOT {
             LoadSettings();
             LoadCache(new Action(() => { CacheReady = true; }));
             ExternalPlugins = SearchOptimizators("*-TBPlugin.cs");
+            
+            TLIB.CEF.Initializer.Initialize();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

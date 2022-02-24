@@ -84,41 +84,25 @@ namespace TLBOT {
                         Progress++;
                         uint i = (uint)a;
                         foreach (IOptimizator Optimizator in Optimizators)
+#if !DEBUG
                             try {
-#if DEBUG && !NODEBUG
-                            var Begin = DateTime.Now;
-                            string Line = Lines[i];
-                            Optimizator.AfterTranslate(ref Line, i);
-                            if (System.Diagnostics.Debugger.IsAttached) {
-                                var ElapsedTime = (DateTime.Now - Begin).TotalMilliseconds;
-                                if (ElapsedTime > 300 || Lines[i] != Line)
-                                    System.Diagnostics.Debugger.Break();
-                            }
-                            Lines[i] = Line;
-#else
-                                Optimizator.AfterTranslate(ref Lines[i], i);
 #endif
+                                Optimizator.AfterTranslate(ref Lines[i], i);
+#if !DEBUG
                             } catch { }
+#endif
 
                     }));
                 } else {
                     for (uint i = 0; i < Lines.LongLength; i++) {
                         foreach (IOptimizator Optimizator in Optimizators)
+#if !DEBUG
                             try {
-#if DEBUG && !NODEBUG
-                            var Begin = DateTime.Now;
-                            string Line = Lines[i];
-                            Optimizator.AfterTranslate(ref Line, i);
-                            if (System.Diagnostics.Debugger.IsAttached) {
-                                var ElapsedTime = (DateTime.Now - Begin).TotalMilliseconds;
-                                if (ElapsedTime > 300 || Lines[i] != Line)
-                                    System.Diagnostics.Debugger.Break();
-                            }
-                            Lines[i] = Line;
-#else
-                                Optimizator.AfterTranslate(ref Lines[i], i);
 #endif
+                                Optimizator.AfterTranslate(ref Lines[i], i);
+#if !DEBUG
                             } catch { }
+#endif
                         Progress++;
                     }
                 }
