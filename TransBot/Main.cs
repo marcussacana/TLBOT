@@ -53,10 +53,13 @@ namespace TLBOT {
 
 
             string Float = Program.WordwrapSettings.FontSize.ToString().Replace(".", ",");
+            
             if (Float.Length == 1)
                 Float = '0' + Float;
+            
             if (!Float.Contains(","))
                 Float += '0';
+            
             FontSize.Text = Float.Replace(",", "");
             
             ShowOptimizators();
@@ -257,6 +260,9 @@ namespace TLBOT {
                                 "TLBOT 2", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
                         if (dr == DialogResult.Retry)
                             x--;
+                        if (ckDelEmpty.Checked) {
+                            try { File.Delete(FileName); } catch { }
+                        }
                         if (dr == DialogResult.Ignore || dr == DialogResult.Retry)
                             continue;
                         if (dr == DialogResult.Abort)
@@ -339,7 +345,7 @@ namespace TLBOT {
                             Application.DoEvents();
                         }
 
-                        while (!ValidList[i + z] && Filtering)
+                        while (ValidList != null && !ValidList[i + z] && Filtering)
                             z++;
 
                         uint RealIndex = i + z;
@@ -446,9 +452,7 @@ namespace TLBOT {
                         Strs[i] = OriStrs[i];
             }
 
-            if (OriStrs.Length != Strs.Length)
-                return false;
-            if (OriStrs.Length == 0)
+            if (Strs.Length == 0)
                 return true;
 
             using (StreamWriter Writer = new StreamWriter(SaveAs)) {

@@ -334,9 +334,6 @@
       <DependentUpon>Search.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="app.manifest">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>

@@ -83,6 +83,7 @@
             this.TransCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.DBPageCounter = new System.Windows.Forms.Timer(this.components);
             this.CacheLoadedVerify = new System.Windows.Forms.Timer(this.components);
+            this.ckDelEmpty = new System.Windows.Forms.CheckBox();
             this.MainTabControl.SuspendLayout();
             this.ViewTab.SuspendLayout();
             this.OptionsTab.SuspendLayout();
@@ -102,7 +103,7 @@
             this.MainTabControl.Controls.Add(this.TranslationDB);
             this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.MainTabControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MainTabControl.Margin = new System.Windows.Forms.Padding(4);
             this.MainTabControl.MinimumSize = new System.Drawing.Size(1087, 609);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
@@ -119,9 +120,9 @@
             this.ViewTab.Controls.Add(this.lblInfoPrefix);
             this.ViewTab.Controls.Add(this.TaskProgress);
             this.ViewTab.Location = new System.Drawing.Point(4, 25);
-            this.ViewTab.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ViewTab.Margin = new System.Windows.Forms.Padding(4);
             this.ViewTab.Name = "ViewTab";
-            this.ViewTab.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ViewTab.Padding = new System.Windows.Forms.Padding(4);
             this.ViewTab.Size = new System.Drawing.Size(1080, 581);
             this.ViewTab.TabIndex = 0;
             this.ViewTab.Text = "Visualização";
@@ -131,7 +132,7 @@
             // 
             this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.bntSearch.Location = new System.Drawing.Point(720, 540);
-            this.bntSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bntSearch.Margin = new System.Windows.Forms.Padding(4);
             this.bntSearch.Name = "bntSearch";
             this.bntSearch.Size = new System.Drawing.Size(100, 28);
             this.bntSearch.TabIndex = 19;
@@ -143,7 +144,7 @@
             // 
             this.bntViewScript.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.bntViewScript.Location = new System.Drawing.Point(828, 540);
-            this.bntViewScript.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bntViewScript.Margin = new System.Windows.Forms.Padding(4);
             this.bntViewScript.Name = "bntViewScript";
             this.bntViewScript.Size = new System.Drawing.Size(125, 28);
             this.bntViewScript.TabIndex = 6;
@@ -158,7 +159,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.StringList.FormattingEnabled = true;
             this.StringList.Location = new System.Drawing.Point(8, 7);
-            this.StringList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.StringList.Margin = new System.Windows.Forms.Padding(4);
             this.StringList.Name = "StringList";
             this.StringList.Size = new System.Drawing.Size(1057, 514);
             this.StringList.TabIndex = 5;
@@ -169,7 +170,7 @@
             // 
             this.bntNewTask.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.bntNewTask.Location = new System.Drawing.Point(961, 540);
-            this.bntNewTask.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bntNewTask.Margin = new System.Windows.Forms.Padding(4);
             this.bntNewTask.Name = "bntNewTask";
             this.bntNewTask.Size = new System.Drawing.Size(105, 28);
             this.bntNewTask.TabIndex = 4;
@@ -203,13 +204,14 @@
             // 
             this.TaskProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.TaskProgress.Location = new System.Drawing.Point(11, 540);
-            this.TaskProgress.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TaskProgress.Margin = new System.Windows.Forms.Padding(4);
             this.TaskProgress.Name = "TaskProgress";
             this.TaskProgress.Size = new System.Drawing.Size(396, 28);
             this.TaskProgress.TabIndex = 1;
             // 
             // OptionsTab
             // 
+            this.OptionsTab.Controls.Add(this.ckDelEmpty);
             this.OptionsTab.Controls.Add(this.ckLstMode);
             this.OptionsTab.Controls.Add(this.bntTestClient);
             this.OptionsTab.Controls.Add(this.SensentiveGB);
@@ -229,9 +231,9 @@
             this.OptionsTab.Controls.Add(this.TLCLientMenu);
             this.OptionsTab.Controls.Add(this.lblClientPrefix);
             this.OptionsTab.Location = new System.Drawing.Point(4, 25);
-            this.OptionsTab.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OptionsTab.Margin = new System.Windows.Forms.Padding(4);
             this.OptionsTab.Name = "OptionsTab";
-            this.OptionsTab.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OptionsTab.Padding = new System.Windows.Forms.Padding(4);
             this.OptionsTab.Size = new System.Drawing.Size(1080, 581);
             this.OptionsTab.TabIndex = 1;
             this.OptionsTab.Text = "Opções";
@@ -241,7 +243,7 @@
             // 
             this.ckLstMode.AutoSize = true;
             this.ckLstMode.Location = new System.Drawing.Point(176, 158);
-            this.ckLstMode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckLstMode.Margin = new System.Windows.Forms.Padding(4);
             this.ckLstMode.Name = "ckLstMode";
             this.ckLstMode.Size = new System.Drawing.Size(56, 21);
             this.ckLstMode.TabIndex = 19;
@@ -253,7 +255,7 @@
             // 
             this.bntTestClient.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.bntTestClient.Location = new System.Drawing.Point(19, 154);
-            this.bntTestClient.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bntTestClient.Margin = new System.Windows.Forms.Padding(4);
             this.bntTestClient.Name = "bntTestClient";
             this.bntTestClient.Size = new System.Drawing.Size(56, 28);
             this.bntTestClient.TabIndex = 17;
@@ -270,9 +272,9 @@
             this.SensentiveGB.Controls.Add(this.lblLessSensentive);
             this.SensentiveGB.Controls.Add(this.SensetiveBar);
             this.SensentiveGB.Location = new System.Drawing.Point(247, 86);
-            this.SensentiveGB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SensentiveGB.Margin = new System.Windows.Forms.Padding(4);
             this.SensentiveGB.Name = "SensentiveGB";
-            this.SensentiveGB.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SensentiveGB.Padding = new System.Windows.Forms.Padding(4);
             this.SensentiveGB.Size = new System.Drawing.Size(303, 96);
             this.SensentiveGB.TabIndex = 16;
             this.SensentiveGB.TabStop = false;
@@ -285,7 +287,7 @@
             this.ckUsePos.Checked = true;
             this.ckUsePos.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.ckUsePos.Location = new System.Drawing.Point(188, 68);
-            this.ckUsePos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckUsePos.Margin = new System.Windows.Forms.Padding(4);
             this.ckUsePos.Name = "ckUsePos";
             this.ckUsePos.Size = new System.Drawing.Size(101, 21);
             this.ckUsePos.TabIndex = 21;
@@ -299,7 +301,7 @@
             this.ckUseDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ckUseDB.AutoSize = true;
             this.ckUseDB.Location = new System.Drawing.Point(8, 68);
-            this.ckUseDB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckUseDB.Margin = new System.Windows.Forms.Padding(4);
             this.ckUseDB.Name = "ckUseDB";
             this.ckUseDB.Size = new System.Drawing.Size(83, 21);
             this.ckUseDB.TabIndex = 20;
@@ -347,7 +349,7 @@
             this.SensetiveBar.BackColor = System.Drawing.Color.White;
             this.SensetiveBar.LargeChange = 1;
             this.SensetiveBar.Location = new System.Drawing.Point(37, 23);
-            this.SensetiveBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SensetiveBar.Margin = new System.Windows.Forms.Padding(4);
             this.SensetiveBar.Maximum = 6;
             this.SensetiveBar.Minimum = -6;
             this.SensetiveBar.Name = "SensetiveBar";
@@ -360,7 +362,7 @@
             // 
             this.ckTransTLBot.AutoSize = true;
             this.ckTransTLBot.Location = new System.Drawing.Point(88, 158);
-            this.ckTransTLBot.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckTransTLBot.Margin = new System.Windows.Forms.Padding(4);
             this.ckTransTLBot.Name = "ckTransTLBot";
             this.ckTransTLBot.Size = new System.Drawing.Size(75, 21);
             this.ckTransTLBot.TabIndex = 14;
@@ -371,9 +373,9 @@
             // LineBreaker
             // 
             this.LineBreaker.Location = new System.Drawing.Point(373, 54);
-            this.LineBreaker.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LineBreaker.Margin = new System.Windows.Forms.Padding(4);
             this.LineBreaker.Name = "LineBreaker";
-            this.LineBreaker.Size = new System.Drawing.Size(152, 22);
+            this.LineBreaker.Size = new System.Drawing.Size(82, 22);
             this.LineBreaker.TabIndex = 13;
             this.LineBreaker.Text = "\\n";
             this.LineBreaker.TextChanged += new System.EventHandler(this.LineBreakerChanged);
@@ -403,9 +405,9 @@
             this.lblMaxLines.Controls.Add(this.lblLineLimit);
             this.lblMaxLines.Controls.Add(this.ckFakeBreakLine);
             this.lblMaxLines.Location = new System.Drawing.Point(557, 17);
-            this.lblMaxLines.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lblMaxLines.Margin = new System.Windows.Forms.Padding(4);
             this.lblMaxLines.Name = "lblMaxLines";
-            this.lblMaxLines.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lblMaxLines.Padding = new System.Windows.Forms.Padding(4);
             this.lblMaxLines.Size = new System.Drawing.Size(509, 165);
             this.lblMaxLines.TabIndex = 11;
             this.lblMaxLines.TabStop = false;
@@ -414,7 +416,7 @@
             // MaxLines
             // 
             this.MaxLines.Location = new System.Drawing.Point(311, 57);
-            this.MaxLines.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaxLines.Margin = new System.Windows.Forms.Padding(4);
             this.MaxLines.Maximum = new decimal(new int[] {
             10,
             0,
@@ -449,7 +451,7 @@
             // 
             this.ckBold.AutoSize = true;
             this.ckBold.Location = new System.Drawing.Point(8, 80);
-            this.ckBold.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckBold.Margin = new System.Windows.Forms.Padding(4);
             this.ckBold.Name = "ckBold";
             this.ckBold.Size = new System.Drawing.Size(76, 21);
             this.ckBold.TabIndex = 9;
@@ -461,7 +463,7 @@
             // 
             this.FontSize.Enabled = false;
             this.FontSize.Location = new System.Drawing.Point(311, 91);
-            this.FontSize.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FontSize.Margin = new System.Windows.Forms.Padding(4);
             this.FontSize.Mask = "00.0";
             this.FontSize.Name = "FontSize";
             this.FontSize.Size = new System.Drawing.Size(169, 22);
@@ -482,7 +484,7 @@
             // FaceName
             // 
             this.FaceName.Location = new System.Drawing.Point(311, 123);
-            this.FaceName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FaceName.Margin = new System.Windows.Forms.Padding(4);
             this.FaceName.Name = "FaceName";
             this.FaceName.Size = new System.Drawing.Size(169, 22);
             this.FaceName.TabIndex = 6;
@@ -505,7 +507,7 @@
             this.ckMonospaced.Checked = true;
             this.ckMonospaced.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckMonospaced.Location = new System.Drawing.Point(8, 22);
-            this.ckMonospaced.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckMonospaced.Margin = new System.Windows.Forms.Padding(4);
             this.ckMonospaced.Name = "ckMonospaced";
             this.ckMonospaced.Size = new System.Drawing.Size(150, 21);
             this.ckMonospaced.TabIndex = 4;
@@ -516,7 +518,7 @@
             // LineLimit
             // 
             this.LineLimit.Location = new System.Drawing.Point(311, 21);
-            this.LineLimit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LineLimit.Margin = new System.Windows.Forms.Padding(4);
             this.LineLimit.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -546,7 +548,7 @@
             // 
             this.ckFakeBreakLine.AutoSize = true;
             this.ckFakeBreakLine.Location = new System.Drawing.Point(8, 52);
-            this.ckFakeBreakLine.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckFakeBreakLine.Margin = new System.Windows.Forms.Padding(4);
             this.ckFakeBreakLine.Name = "ckFakeBreakLine";
             this.ckFakeBreakLine.Size = new System.Drawing.Size(154, 21);
             this.ckFakeBreakLine.TabIndex = 1;
@@ -562,7 +564,7 @@
             "Single Step",
             "Double Step"});
             this.TargetStepMode.Location = new System.Drawing.Point(373, 21);
-            this.TargetStepMode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TargetStepMode.Margin = new System.Windows.Forms.Padding(4);
             this.TargetStepMode.Name = "TargetStepMode";
             this.TargetStepMode.Size = new System.Drawing.Size(152, 24);
             this.TargetStepMode.TabIndex = 10;
@@ -585,7 +587,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OptimizatorList.FormattingEnabled = true;
             this.OptimizatorList.Location = new System.Drawing.Point(15, 190);
-            this.OptimizatorList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OptimizatorList.Margin = new System.Windows.Forms.Padding(4);
             this.OptimizatorList.Name = "OptimizatorList";
             this.OptimizatorList.Size = new System.Drawing.Size(1051, 361);
             this.OptimizatorList.Sorted = true;
@@ -607,7 +609,7 @@
             "PL",
             "DE"});
             this.TargetLangSelector.Location = new System.Drawing.Point(149, 123);
-            this.TargetLangSelector.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TargetLangSelector.Margin = new System.Windows.Forms.Padding(4);
             this.TargetLangSelector.Name = "TargetLangSelector";
             this.TargetLangSelector.Size = new System.Drawing.Size(83, 24);
             this.TargetLangSelector.TabIndex = 7;
@@ -631,7 +633,7 @@
             "DE",
             "AUTO"});
             this.SourceLangSelector.Location = new System.Drawing.Point(149, 90);
-            this.SourceLangSelector.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SourceLangSelector.Margin = new System.Windows.Forms.Padding(4);
             this.SourceLangSelector.Name = "SourceLangSelector";
             this.SourceLangSelector.Size = new System.Drawing.Size(83, 24);
             this.SourceLangSelector.TabIndex = 6;
@@ -668,7 +670,7 @@
             "Multithread",
             "Normal"});
             this.TransModeMenu.Location = new System.Drawing.Point(95, 50);
-            this.TransModeMenu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TransModeMenu.Margin = new System.Windows.Forms.Padding(4);
             this.TransModeMenu.Name = "TransModeMenu";
             this.TransModeMenu.Size = new System.Drawing.Size(137, 24);
             this.TransModeMenu.TabIndex = 3;
@@ -692,7 +694,7 @@
             "Google",
             "Cache Only"});
             this.TLCLientMenu.Location = new System.Drawing.Point(95, 17);
-            this.TLCLientMenu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TLCLientMenu.Margin = new System.Windows.Forms.Padding(4);
             this.TLCLientMenu.Name = "TLCLientMenu";
             this.TLCLientMenu.Size = new System.Drawing.Size(137, 24);
             this.TLCLientMenu.TabIndex = 1;
@@ -720,9 +722,9 @@
             this.TranslationDB.Controls.Add(this.ShowDBBnt);
             this.TranslationDB.Controls.Add(this.DBStrList);
             this.TranslationDB.Location = new System.Drawing.Point(4, 25);
-            this.TranslationDB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TranslationDB.Margin = new System.Windows.Forms.Padding(4);
             this.TranslationDB.Name = "TranslationDB";
-            this.TranslationDB.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TranslationDB.Padding = new System.Windows.Forms.Padding(4);
             this.TranslationDB.Size = new System.Drawing.Size(1080, 581);
             this.TranslationDB.TabIndex = 2;
             this.TranslationDB.Text = "Banco de Dados";
@@ -732,7 +734,7 @@
             // 
             this.GenDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.GenDBBnt.Location = new System.Drawing.Point(348, 540);
-            this.GenDBBnt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GenDBBnt.Margin = new System.Windows.Forms.Padding(4);
             this.GenDBBnt.Name = "GenDBBnt";
             this.GenDBBnt.Size = new System.Drawing.Size(137, 28);
             this.GenDBBnt.TabIndex = 8;
@@ -744,7 +746,7 @@
             // 
             this.OptimizeDbBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OptimizeDbBnt.Location = new System.Drawing.Point(784, 540);
-            this.OptimizeDbBnt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OptimizeDbBnt.Margin = new System.Windows.Forms.Padding(4);
             this.OptimizeDbBnt.Name = "OptimizeDbBnt";
             this.OptimizeDbBnt.Size = new System.Drawing.Size(137, 28);
             this.OptimizeDbBnt.TabIndex = 7;
@@ -767,7 +769,7 @@
             // 
             this.DBPageSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.DBPageSelector.Location = new System.Drawing.Point(255, 544);
-            this.DBPageSelector.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DBPageSelector.Margin = new System.Windows.Forms.Padding(4);
             this.DBPageSelector.Name = "DBPageSelector";
             this.DBPageSelector.Size = new System.Drawing.Size(73, 22);
             this.DBPageSelector.TabIndex = 5;
@@ -776,7 +778,7 @@
             // 
             this.ImportLstBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ImportLstBnt.Location = new System.Drawing.Point(493, 540);
-            this.ImportLstBnt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ImportLstBnt.Margin = new System.Windows.Forms.Padding(4);
             this.ImportLstBnt.Name = "ImportLstBnt";
             this.ImportLstBnt.Size = new System.Drawing.Size(137, 28);
             this.ImportLstBnt.TabIndex = 4;
@@ -788,7 +790,7 @@
             // 
             this.ExportLstBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ExportLstBnt.Location = new System.Drawing.Point(639, 540);
-            this.ExportLstBnt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ExportLstBnt.Margin = new System.Windows.Forms.Padding(4);
             this.ExportLstBnt.Name = "ExportLstBnt";
             this.ExportLstBnt.Size = new System.Drawing.Size(137, 28);
             this.ExportLstBnt.TabIndex = 3;
@@ -800,7 +802,7 @@
             // 
             this.ClearDbBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ClearDbBnt.Location = new System.Drawing.Point(929, 540);
-            this.ClearDbBnt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ClearDbBnt.Margin = new System.Windows.Forms.Padding(4);
             this.ClearDbBnt.Name = "ClearDbBnt";
             this.ClearDbBnt.Size = new System.Drawing.Size(137, 28);
             this.ClearDbBnt.TabIndex = 2;
@@ -812,7 +814,7 @@
             // 
             this.ShowDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ShowDBBnt.Location = new System.Drawing.Point(11, 540);
-            this.ShowDBBnt.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ShowDBBnt.Margin = new System.Windows.Forms.Padding(4);
             this.ShowDBBnt.Name = "ShowDBBnt";
             this.ShowDBBnt.Size = new System.Drawing.Size(137, 28);
             this.ShowDBBnt.TabIndex = 1;
@@ -830,7 +832,7 @@
             this.TransCol});
             this.DBStrList.HideSelection = false;
             this.DBStrList.Location = new System.Drawing.Point(8, 4);
-            this.DBStrList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DBStrList.Margin = new System.Windows.Forms.Padding(4);
             this.DBStrList.Name = "DBStrList";
             this.DBStrList.Size = new System.Drawing.Size(1057, 525);
             this.DBStrList.TabIndex = 0;
@@ -859,6 +861,17 @@
             this.CacheLoadedVerify.Interval = 200;
             this.CacheLoadedVerify.Tick += new System.EventHandler(this.CacheLoadedVerifier);
             // 
+            // ckDelEmpty
+            // 
+            this.ckDelEmpty.AutoSize = true;
+            this.ckDelEmpty.Location = new System.Drawing.Point(463, 56);
+            this.ckDelEmpty.Margin = new System.Windows.Forms.Padding(4);
+            this.ckDelEmpty.Name = "ckDelEmpty";
+            this.ckDelEmpty.Size = new System.Drawing.Size(91, 21);
+            this.ckDelEmpty.TabIndex = 20;
+            this.ckDelEmpty.Text = "Del. Emp.";
+            this.ckDelEmpty.UseVisualStyleBackColor = true;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -866,7 +879,7 @@
             this.ClientSize = new System.Drawing.Size(1088, 610);
             this.Controls.Add(this.MainTabControl);
             this.Enabled = false;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(1103, 648);
             this.Name = "Main";
             this.Text = "TLBOT 2022";
@@ -950,5 +963,6 @@
         private System.Windows.Forms.Button bntSearch;
         private System.Windows.Forms.NumericUpDown MaxLines;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox ckDelEmpty;
     }
 }
