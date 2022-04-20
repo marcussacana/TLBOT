@@ -455,16 +455,27 @@ namespace TLBOT.DataManager {
                 } catch { }
 
                 if (!IsJap) {
+                    int NumberOnly = 0;
+                    int LetterOnly = 0;
                     foreach (string Word in Words) {
                         int WNumbers = Word.Where(c => char.IsNumber(c)).Count();
                         int WLetters = Word.Where(c => char.IsLetter(c)).Count();
                         if (WLetters > 0 && WNumbers > 0) {
                             Points += 2;
                         }
+                        
+                        if (WLetters == 0 && WNumbers > 0)
+                            NumberOnly++;
+                        if (WNumbers == 0 && WLetters > 0)
+                            LetterOnly++;
+
                         if (Word.Trim(PontuationList).Where(c => PontuationList.Contains(c)).Count() != 0) {
                             Points += 2;
                         }
                     }
+
+                    if (NumberOnly > LetterOnly)
+                        Points += NumberOnly > LetterOnly * 2 ? 2 : 1;
                 }
 
                 if (!BeginQuote && !char.IsLetter(Str.First()))
