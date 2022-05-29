@@ -10,7 +10,7 @@ using TLBOT.DataManager;
 using TLBOT.Optimizator;
 
 namespace TLBOT {
-    static class Program {
+    public static class Program {
 
         internal static Font WordwrapFont => new Font(WordwrapSettings.FontName, WordwrapSettings.FontSize, WordwrapSettings.Bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
         internal static string TaskPath => AppDomain.CurrentDomain.BaseDirectory + "Task.tbt";
@@ -234,7 +234,7 @@ namespace TLBOT {
 
 #pragma warning disable 649
     [FieldParmaters(Name = "TLBOT")]
-    internal struct Settings {
+    public struct Settings {
         [FieldParmaters(DefaultValue = "", Name = "LastPath")]
         public string LastSelectedPath;
         [FieldParmaters(DefaultValue = "", Name = "Client")]
@@ -258,7 +258,7 @@ namespace TLBOT {
     }
 
     [FieldParmaters(Name = "Optimizator")]
-    internal struct OptimizatorSelector {
+    public struct OptimizatorSelector {
         [FieldParmaters(DefaultValue = false, Name = "EnableWordWrap")]
         public bool EnableWordWrap;
         [FieldParmaters(DefaultValue = false, Name = "CaseFixer")]
@@ -273,7 +273,7 @@ namespace TLBOT {
         public bool MassiveFixer;
     }
     
-    internal struct TaskInfo {
+    public struct TaskInfo {
         [PArray(PrefixType = Const.UINT32), CString()]
         public string[] LastTask;
         public uint LastTaskPos;
@@ -281,7 +281,7 @@ namespace TLBOT {
 
 
     [FieldParmaters(Name = "Filter")]
-    internal struct FilterSettings {
+    public struct FilterSettings {
         [FieldParmaters(DefaultValue = "", Name = "DenyList")]
         public string DenyList;
         [FieldParmaters(DefaultValue = "", Name = "IgnoreList")]
@@ -299,7 +299,7 @@ namespace TLBOT {
     }
 
     [FieldParmaters(Name = "WordWrap")]
-    internal struct WordwrapSettings {
+    public struct WordwrapSettings {
         [FieldParmaters(DefaultValue = false, Name = "FakeBreakLine")]
         public bool FakeBreakLine;
         [FieldParmaters(DefaultValue = false, Name = "Monospaced")]
@@ -322,7 +322,7 @@ namespace TLBOT {
         public bool DynamicWidthPerScript;
     }
 
-    internal struct TLBCache {
+    public struct TLBCache {
         [FString(Length = 4)]
         public string Signature;
 
@@ -340,7 +340,7 @@ namespace TLBOT {
         public bool[] ManualChecked;
     }
 
-    internal struct Quote {
+    public struct Quote {
         public char? Start;
         public char? End;
     }

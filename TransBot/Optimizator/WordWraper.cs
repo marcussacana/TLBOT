@@ -96,6 +96,10 @@ namespace TLBOT.Optimizator {
                 return (from x in Widths orderby x select x).Last();
             }
         }
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
         public string GetName() {
             return "WordWraper";
         }

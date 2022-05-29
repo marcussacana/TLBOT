@@ -140,5 +140,9 @@ namespace TLBOT.Optimizator {
         public string GetName() {
             return "Case Fixer";
         }
+
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
     }
 }

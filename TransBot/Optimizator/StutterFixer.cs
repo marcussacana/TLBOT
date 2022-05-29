@@ -3,7 +3,12 @@ using System.Linq;
 using TLBOT.DataManager;
 
 namespace TLBOT.Optimizator {
-    public class StutterFixer : IOptimizator {
+    public class StutterFixer : IOptimizator
+    {
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
 
         static Quote[] Quotes = Program.FilterSettings.QuoteList.Unescape().Split('\n')
             .Where(x => x.Length == 2)

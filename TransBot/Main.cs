@@ -362,6 +362,16 @@ namespace TLBOT {
                             }
                     }
 
+                    foreach (IOptimizator Optimizator in EnabledOptimizators)
+                        try
+                        {
+                            if (Optimizator is DialogueFilter)
+                                continue;
+
+                            Optimizator.PostProcess(ref TaskCreator.Lines);
+                        }
+                        catch { }
+
                     bool Changed = false;
                     for (uint i = 0; i < Strings.Length; i++)
                         if (Strings[i] != TaskCreator.Lines[i])
@@ -405,6 +415,16 @@ namespace TLBOT {
             var Ori = Wrapper.Import(File);
             OriStrs = new string[Ori.LongLength];
             Ori.CopyTo(OriStrs, 0);
+
+            foreach (IOptimizator Optimizator in EnabledOptimizators)
+                try
+                {
+                    if (Optimizator is DialogueFilter)
+                        continue;
+
+                    Optimizator.PreProcess(ref Ori);
+                }
+                catch { }
 
             for (uint i = 0; i < Ori.LongLength; i++) {
                 if (i % (Ori.LongLength > 5000 ? 55 : 15 ) == 0) {

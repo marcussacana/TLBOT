@@ -1,7 +1,12 @@
 ﻿using TLBOT.DataManager;
 
 namespace TLBOT.Optimizator {
-    class Escape : IOptimizator {
+    class Escape : IOptimizator
+    {
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
         public void AfterOpen(ref string Line, uint ID) {
             Line = Line.Unescape();
         }

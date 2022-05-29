@@ -5,6 +5,10 @@ using TLBOT.DataManager;
 namespace TLBOT.Optimizator {
     class QuoteTrim : IOptimizator {
 
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
         public static Quote[] Quotes = Program.FilterSettings.QuoteList.Unescape().Split('\n')
                     .Where(x => x.Length == 2)
                     .Select(x => {

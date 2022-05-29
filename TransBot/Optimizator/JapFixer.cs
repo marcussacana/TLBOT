@@ -3,7 +3,12 @@ using System.Linq;
 using TLBOT.DataManager;
 
 namespace TLBOT.Optimizator {
-    class JapFixer : IOptimizator {
+    class JapFixer : IOptimizator
+    {
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
         Dictionary<uint, string> Minified = new Dictionary<uint, string>();
         public void AfterTranslate(ref string Line, uint ID) {
             if (!Minified.ContainsKey(ID))

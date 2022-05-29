@@ -6,6 +6,10 @@ namespace TLBOT.Optimizator
 {
     class MassiveFix : IOptimizator
     {
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
         static Dictionary<string, string> Cache = new Dictionary<string, string>();
         static Dictionary<uint, string> StrMap = new Dictionary<uint, string>();
         public void AfterOpen(ref string Line, uint ID) { }

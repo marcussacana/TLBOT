@@ -7,6 +7,11 @@ namespace TLBOT.Optimizator {
         string ListPath = AppDomain.CurrentDomain.BaseDirectory + "Replace.lst";
         string[] Source = null;
         string[] Target = null;
+
+        public void PreProcess(ref string[] Lines) { }
+
+        public void PostProcess(ref string[] Lines) { }
+
         public void AfterTranslate(ref string Line, uint ID) {
             if (string.IsNullOrWhiteSpace(Line))
                 return;

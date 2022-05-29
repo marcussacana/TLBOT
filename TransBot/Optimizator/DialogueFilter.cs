@@ -9,6 +9,8 @@
         public void BeforeTranslate(ref string Line, uint ID) { }
         public void AfterOpen(ref string Line, uint ID) { }
         public void BeforeSave(ref string Line, uint ID) { }
+        public void PreProcess(ref string[] Lines) { }
+        public void PostProcess(ref string[] Lines) { }
         public string GetName() {
             return "Dialogue Filter";
         }
