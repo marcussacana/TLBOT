@@ -94,14 +94,14 @@ namespace TLBOT {
         static void Main() {
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             TLIB.CEF.Initializer.Initialize();
 
             LoadSettings();
             LoadCache(new Action(() => { CacheReady = true; }));
             ExternalPlugins = SearchOptimizators("*-TBPlugin.cs");
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
         }
 
