@@ -3,7 +3,9 @@
 		<ExcludeAssemblies>
 			TLIB
 			SacanaWrapper
+			Nito.Disposables
 			Microsoft.CodeAnalysis
+			CEFSharp
 		</ExcludeAssemblies>
 	</Costura>
 </Weavers>
