@@ -66,8 +66,12 @@ namespace TLBOT {
             InitializeToolTips();
         }
 
+        IOptimizator[] _EnabledOptimizators;
         IOptimizator[] EnabledOptimizators {
             get {
+                if (_EnabledOptimizators != null)
+                    return _EnabledOptimizators;
+
                 var Optimizators = new IOptimizator[0];
                 if (Program.OptimizatorSettings.JapaneseFixer) {
                     Optimizators = Optimizators.AppendArray(new JapFixer());
@@ -99,7 +103,7 @@ namespace TLBOT {
                         Optimizators = Optimizators.AppendArray(Optimizator);
                 }
 
-                return Optimizators;
+                return _EnabledOptimizators = Optimizators;
             }
         }
 
@@ -753,7 +757,7 @@ namespace TLBOT {
                     Ini.SetConfig("Optimizator", Name, Enabled ? "True" : "False", Program.INIPath);
                 }
             }
-
+            _EnabledOptimizators = null;
         }
 
         private void DBPageCounter_Tick(object sender, EventArgs e) {

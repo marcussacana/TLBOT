@@ -83,7 +83,7 @@ namespace TLBOT.DataManager {
             string[] Result;
         
             bool Error = false;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
                 try {
                     if (NoCached?.Length == 0)
                         break;
@@ -384,6 +384,8 @@ namespace TLBOT.DataManager {
                 if (string.IsNullOrWhiteSpace(Str))
                     return false;
 
+                string[] ScriptPatterns = new string[] { "!=", "<=", ">=", "==", "+=", "-=", "->", "//", ");", "*-", "null" };
+
                 string[] Words = Str.Split(' ');
 
                 char[] PontuationJapList = new char[] { '。', '？', '！', '…', '、', '―' };
@@ -516,6 +518,19 @@ namespace TLBOT.DataManager {
 
                 if (Numbers >= Str.Length)
                     Points += 3;
+
+                foreach (var Pattern in ScriptPatterns) {
+                    if (Str.ToLowerInvariant().Replace(" ", "").Contains(Pattern))
+                        Points++;
+                }
+
+                //Detect dots followed of a non space character
+                if (!IsJap && Str.Trim().TrimEnd('.').Contains("."))
+                {
+                    var Count = Str.Trim().TrimEnd('.').Split('.').Skip(1).Count(x => !char.IsWhiteSpace(x.FirstOrDefault()));
+                    if (Count > 0)
+                        Points++;
+                }
 
                 if (!IsJap && WordCount == 1 && char.IsUpper(Str.First()) && !char.IsPunctuation(Str.TrimEnd().Last()))
                     Points++;
