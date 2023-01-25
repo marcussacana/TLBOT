@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AssemblyVersion>1.14.0.0</AssemblyVersion>
+    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -115,7 +116,7 @@
     <EmbeddedResource Include="Search.resx">
       <DependentUpon>Search.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="app.config" />
+    <None Include="App.config" />
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -147,7 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WindowsAPICodePack">
-      <Version>7.0.1</Version>
+      <Version>1.1.2</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
