@@ -40,7 +40,7 @@ namespace TLBOT.Optimizator {
                     End = LQuote.End
                 };
 
-                if (Line.StartsWith(Quote.Start.ToString()))
+                if (Line.StartsWith(Quote.Start.ToString()) && Line.EndsWith(Quote.End.ToString()))
                 {
                     Line = Line.Substring(1).Trim();
 
@@ -53,13 +53,6 @@ namespace TLBOT.Optimizator {
                     break;
                 }
                 else Quote.Start = null;
-
-                if (Line.EndsWith(Quote.End.ToString()))
-                {
-                    Line = Line.Substring(0, Line.Length - 1).Trim();
-                    QuoteMap[ID] = Quote;
-                    break;
-                }
             }
         }
 

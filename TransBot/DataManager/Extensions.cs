@@ -1,4 +1,5 @@
 ﻿#define SINGLE
+using DeepL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,9 @@ using TLIB;
 
 namespace TLBOT.DataManager {
     public static partial class Extensions {
-        public  static  Google API = new Google();
+        public static bool GPTInstancied = false;
+        public static ChatGPT GPTAPI = new ChatGPT();
+        public static Google API = new Google();
         internal static T[] AppendArray<T>(this T[] Array, T Item) =>
             Array.AppendArray(new T[] { Item });
 
@@ -25,6 +28,16 @@ namespace TLBOT.DataManager {
             if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
                 return String;
 
+            if (!GPTInstancied && Client == Translator.ChatGPT)
+            {
+                GPTAPI.EnsureInstances(Program.Settings.ChatGPTInstances);
+                GPTInstancied = true;
+            }
+
+            while (Client == Translator.ChatGPT && GPTAPI.MustWait())
+            {
+                Thread.Sleep(1000);
+            }
 
             if (Program.Cache.ContainsKey(String))
                 return Program.Cache[String];
@@ -33,25 +46,40 @@ namespace TLBOT.DataManager {
                 try {
                     string Result = string.Empty;
                     var Thread = new Thread(() => {
-                        try {
-                            switch (Client) {
+                        try
+                        {
+                            switch (Client)
+                            {
                                 case Translator.CacheOnly:
                                     if (Program.Cache.ContainsKey(String))
                                         Result = Program.Cache[String];
                                     else
                                         Result = String;
                                     break;
+                                case Translator.DeepL:
+                                    Result = DeepLClient.Translate(String, SourceLanguage, TargetLanguage);
+                                    break;
+                                case Translator.ChatGPT:
+                                    Result = GPTAPI.Translate(String, TargetLanguage);
+
+                                    if (string.IsNullOrWhiteSpace(Result) || Result == String)
+                                        goto default;
+
+                                    break;
                                 default:
                                     Result = API.Translate(String, SourceLanguage, TargetLanguage);
                                     break;
                             }
-                        } catch {
+                        }
+                        catch
+                        {
+                            GPTAPI.Reload();
                             Result = null;
                         }
                     });
 
                     if (Program.ProxyInitialized) {
-                        Thread.TimeoutStart(20000);
+                        Thread.TimeoutStart(120000);
                     } else {
                         Thread.Start();
                         Thread.WaitForExit();
@@ -65,6 +93,7 @@ namespace TLBOT.DataManager {
                     Program.Cache[String] = Result;
                     return Result;
                 } catch {
+                    GPTAPI.Reload();
                     Thread.Sleep(100);
                 }
             }
@@ -78,6 +107,17 @@ namespace TLBOT.DataManager {
         internal static string[] TranslateMassive(this string[] Strings, string SourceLanguage, string TargetLanguage, Translator Client) {
             if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
                 return Strings;
+
+            if (!GPTInstancied && Client == Translator.ChatGPT)
+            {
+                GPTAPI.EnsureInstances(Program.Settings.ChatGPTInstances);
+                GPTInstancied = true;
+            }
+
+            while (Client == Translator.ChatGPT && GPTAPI.MustWait())
+            {
+                Thread.Sleep(1000);
+            }
 
             string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).Distinct().ToArray();
             string[] Result;
@@ -96,6 +136,21 @@ namespace TLBOT.DataManager {
                                 if (Result == null)
                                     throw new Exception();
                             } catch (Exception ex) {
+                                if (!Error && i + 1 >= 4)
+                                    MessageBox.Show(ex.Message, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                Error = true;
+
+                            }
+                            break;
+                        case Translator.ChatGPT:
+                            try
+                            {
+                                Result = GPTAPI.Translate(NoCached, TargetLanguage);
+                                if (Result == null)
+                                    throw new Exception();
+                            }
+                            catch (Exception ex)
+                            {
                                 if (!Error && i + 1 >= 4)
                                     MessageBox.Show(ex.Message, "TLBOT 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 Error = true;
@@ -392,6 +447,8 @@ namespace TLBOT.DataManager {
                 char[] PontuationJapList = new char[] { '。', '？', '！', '…', '、', '―' };
                 char[] SpecialList = new char[] { '_', '=', '+', '#', ':', '$', '@' };
                 char[] PontuationList = new char[] { '.', '?', '!', '…', ',' };
+                char[] NonEnglishAccents = new char[] { 'á', 'é', 'í', 'ó', 'ú', 'à', 'è', 'ì', 'ò', 'ù', 'â', 'ê', 'î', 'ô', 'û', 'ã', 'õ', 'ç', 'é', 'è', 'ê', 'ë', 'à', 'â', 'ô', 'û', 'ç', 'î', 'ï', 'ù', 'œ', 'Æ', 'œ', 'æ', 'à', 'è', 'é', 'ì', 'í', 'ò', 'ó', 'ù', 'ú', 'á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡', 'ß' };
+                
                 int Spaces = Str.Where(x => x == ' ' || x == '\t').Count();
                 int Pontuations = Str.Where(x => PontuationList.Contains(x)).Count();
                 int WordCount = Words.Where(x => x.Length >= 2 && !string.IsNullOrWhiteSpace(x)).Count();
@@ -403,12 +460,15 @@ namespace TLBOT.DataManager {
                 int Latim = Str.Where(x => x >= 'A' && x <= 'z').Count();
                 int Numbers = Str.Where(x => x >= '0' && x <= '9').Count();
                 int NumbersJap = Str.Where(x => x >= '０' && x <= '９').Count();
+                int Accents = Str.Where(x => NonEnglishAccents.Contains(x)).Count();
                 int JapChars = Str.Where(x => (x >= '、' && x <= 'ヿ') || (x >= '｡' && x <= 'ﾝ')).Count();
+                int KorChars = Str.Where(x => x != ',' && Properties.Resources.KorCommon.Contains(x)).Count();
                 int Kanjis = Str.Where(x => x >= '一' && x <= '龯').Count();
 
 
                 bool IsCaps = Optimizator.CaseFixer.GetLineCase(Str) == Optimizator.CaseFixer.Case.Upper;
                 bool IsJap = JapChars + Kanjis > Latim / 2;
+                bool IsKor = KorChars > Latim / 2;
 
 
                 //More Points = Don't Looks a Dialogue
@@ -527,6 +587,13 @@ namespace TLBOT.DataManager {
                 if (Numbers >= Str.Length)
                     Points += 3;
 
+                //Usually our games are internally in japanese or english, so will be rare to find a korean command in the script
+                if (IsKor && Program.FromKorean)
+                    Points -= 3;
+
+                if (Accents > 0 && Program.FromEnglish)
+                    Points += 4;
+
                 foreach (var Pattern in ScriptPatterns) {
                     if (Str.ToLowerInvariant().Replace(" ", "").Contains(Pattern))
                         Points += 2;
@@ -581,6 +648,9 @@ namespace TLBOT.DataManager {
                     Points += 2;
 
                 if (IsJap != Program.FromAsian)
+                    return false;
+
+                if (IsKor != Program.FromKorean)
                     return false;
 
                 VerifingDialog = false;

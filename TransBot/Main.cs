@@ -257,6 +257,8 @@ namespace TLBOT {
 #endif
                     var Strings = Import(FileName);
 
+                    var OriginalStrings = Strings.ToArray();
+
                     if (Strings.Length == 0)
                     {
                         if (dr == null || dr == DialogResult.Retry)
@@ -377,8 +379,8 @@ namespace TLBOT {
                         catch { }
 
                     bool Changed = false;
-                    for (uint i = 0; i < Strings.Length; i++)
-                        if (Strings[i] != TaskCreator.Lines[i])
+                    for (uint i = 0; i < OriginalStrings.Length; i++)
+                        if (OriginalStrings[i] != TaskCreator.Lines[i])
                         {
                             Changed = true;
                             break;
@@ -916,7 +918,7 @@ namespace TLBOT {
         private void bntTestClient_Click(object sender, EventArgs e) {
             MessageBox.Show("Copy the text");
             string test = Clipboard.GetText();
-            MessageBox.Show(test.Translate("EN", "PT", Translator.Google) + " - google");
+            MessageBox.Show(test.Translate("EN", "PT", Program.TLClient) + " - " + Program.TLClient.ToString());
 
         }
 

@@ -120,7 +120,7 @@
             this.ViewTab.Controls.Add(this.TaskProgress);
             this.ViewTab.Location = new System.Drawing.Point(4, 22);
             this.ViewTab.Name = "ViewTab";
-            this.ViewTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.ViewTab.Padding = new System.Windows.Forms.Padding(3);
             this.ViewTab.Size = new System.Drawing.Size(808, 470);
             this.ViewTab.TabIndex = 0;
             this.ViewTab.Text = "Visualização";
@@ -223,7 +223,7 @@
             this.OptionsTab.Controls.Add(this.lblClientPrefix);
             this.OptionsTab.Location = new System.Drawing.Point(4, 22);
             this.OptionsTab.Name = "OptionsTab";
-            this.OptionsTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.OptionsTab.Padding = new System.Windows.Forms.Padding(3);
             this.OptionsTab.Size = new System.Drawing.Size(808, 470);
             this.OptionsTab.TabIndex = 1;
             this.OptionsTab.Text = "Opções";
@@ -343,7 +343,7 @@
             this.SensetiveBar.Maximum = 6;
             this.SensetiveBar.Minimum = -6;
             this.SensetiveBar.Name = "SensetiveBar";
-            this.SensetiveBar.Size = new System.Drawing.Size(170, 45);
+            this.SensetiveBar.Size = new System.Drawing.Size(170, 50);
             this.SensetiveBar.TabIndex = 15;
             this.SensetiveBar.TickFrequency = 2;
             this.SensetiveBar.ValueChanged += new System.EventHandler(this.SensetiveChanged);
@@ -573,12 +573,13 @@
             "EN",
             "CH",
             "RU",
-            "PT",
+            "PT-BR",
             "ES",
             "IT",
             "FR",
             "PL",
-            "DE"});
+            "DE",
+            "KO"});
             this.TargetLangSelector.Location = new System.Drawing.Point(112, 100);
             this.TargetLangSelector.Name = "TargetLangSelector";
             this.TargetLangSelector.Size = new System.Drawing.Size(63, 21);
@@ -601,6 +602,7 @@
             "FR",
             "PL",
             "DE",
+            "KO",
             "AUTO"});
             this.SourceLangSelector.Location = new System.Drawing.Point(112, 73);
             this.SourceLangSelector.Name = "SourceLangSelector";
@@ -657,6 +659,8 @@
             this.TLCLientMenu.FormattingEnabled = true;
             this.TLCLientMenu.Items.AddRange(new object[] {
             "Google",
+            "DeepL",
+            "ChatGPT",
             "Cache Only"});
             this.TLCLientMenu.Location = new System.Drawing.Point(71, 14);
             this.TLCLientMenu.Name = "TLCLientMenu";
@@ -686,7 +690,7 @@
             this.TranslationDB.Controls.Add(this.DBStrList);
             this.TranslationDB.Location = new System.Drawing.Point(4, 22);
             this.TranslationDB.Name = "TranslationDB";
-            this.TranslationDB.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.TranslationDB.Padding = new System.Windows.Forms.Padding(3);
             this.TranslationDB.Size = new System.Drawing.Size(808, 470);
             this.TranslationDB.TabIndex = 2;
             this.TranslationDB.Text = "Banco de Dados";
@@ -823,7 +827,7 @@
             this.Enabled = false;
             this.MinimumSize = new System.Drawing.Size(831, 534);
             this.Name = "Main";
-            this.Text = "TLBOT 2023";
+            this.Text = "TLBOT 2024";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TLBClosing);
             this.MainTabControl.ResumeLayout(false);
             this.ViewTab.ResumeLayout(false);

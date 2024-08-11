@@ -1,9 +1,11 @@
 ﻿using AdvancedBinary;
+using ImpromptuInterface.Dynamic;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using TLBOT.DataManager;
@@ -23,6 +25,12 @@ namespace TLBOT {
                 switch (Settings.TLClient.ToLower()) {
                     default:
                         return Translator.Google;
+
+                    case "chatgpt":
+                        return Translator.ChatGPT;
+
+                    case "deepl":
+                        return Translator.DeepL;
 
                     case "bing":
                         return Translator.Bing;
@@ -61,12 +69,46 @@ namespace TLBOT {
             }
         }
 
-        public static bool FromAsian { get {
+        public static bool FromAsian
+        {
+            get
+            {
                 string Lang = Settings.SourceLang.ToUpper().Trim().Replace("-", "");
-                switch (Lang) {
+                switch (Lang)
+                {
                     case "JA":
                     case "JP":
                     case "ZHCN":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+        public static bool FromKorean
+        {
+            get
+            {
+                string Lang = Settings.SourceLang.ToUpper().Trim().Replace("-", "");
+                switch (Lang)
+                {
+                    case "KO":
+                    case "KR":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+        public static bool FromEnglish
+        {
+            get
+            {
+                string Lang = Settings.SourceLang.ToUpper().Trim().Replace("-", "");
+                switch (Lang)
+                {
+                    case "EN":
+                    case "ENG":
                         return true;
                     default:
                         return false;
@@ -99,10 +141,34 @@ namespace TLBOT {
 
             TLIB.CEF.Initializer.Initialize();
 
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(LoadFromFolder);
+
             LoadSettings();
             LoadCache(new Action(() => { CacheReady = true; }));
             ExternalPlugins = SearchOptimizators("*-TBPlugin.cs");
             Application.Run(new Main());
+        }
+
+        static Assembly LoadFromFolder(object sender, ResolveEventArgs args)
+        {
+            string folderPath = Environment.CurrentDirectory;
+            
+            var AsmName = new AssemblyName(args.Name).Name;
+            if (AsmName.ToLowerInvariant().EndsWith(".dll"))
+                AsmName = Path.GetFileNameWithoutExtension(AsmName);
+
+            string assemblyPath = Path.Combine(folderPath, AsmName + ".dll");
+            string assemblyPathAlt = Path.Combine(folderPath, "Plugins", AsmName + ".dll");
+            Assembly assembly = null;
+            if (File.Exists(assemblyPath))
+            {
+                assembly = Assembly.LoadFrom(assemblyPath);
+            }
+            if (File.Exists(assemblyPathAlt))
+            {
+                assembly = Assembly.LoadFrom(assemblyPathAlt);
+            }
+            return assembly;
         }
 
 
@@ -251,6 +317,8 @@ namespace TLBOT {
         public bool TranslateWindow;
         [FieldParmaters(DefaultValue = 1000, Name = "DBViewPageLimit")]
         public int DBViewPageLimit;
+        [FieldParmaters(DefaultValue = 0, Name = "ChatGPTInstances")]
+        public int ChatGPTInstances;
         [FieldParmaters(DefaultValue = false, Name = "Multithread")]
         public bool Multithread;
         [FieldParmaters(DefaultValue = false, Name = "LSTMode")]

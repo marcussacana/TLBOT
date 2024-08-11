@@ -70,6 +70,15 @@ namespace TLBOT.Properties {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a ㄱ,ㄴ,ㄷ,ㄹ,ㅁ,ㅂ,ㅅ,ㅇ,ㅈ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ,ㄲ,ㄸ,ㅃ,ㅆ,ㅉ,ㅏ,ㅐ,ㅑ,ㅓ,ㅔ,ㅕ,ㅗ,ㅘ,ㅛ,ㅜ,ㅠ,ㅡ,ㅢ,ㅣ,가,각,갂,간,갇,갈,갉,감,갑,값,갓,갔,강,갖,갗,같,갚,갛,개,객,갠,갤,갬,갭,갯,갰,갱,갸,갹,걀,걔,거,걱,건,걷,걸,걹,검,겁,것,겄,겅,겆,겉,겊,겋,게,겐,겔,겜,겟,겠,겡,겨,격,겪,견,겯,결,겸,겹,겼,경,곁,계,곗,고,곡,곤,곧,골,곪,곬,곯,곰,곱,곳,공,곶,곺,과,곽,관,괄,괌,괍,괏,광,괘,괙,괜,괠,괨,괩,괭,괴,괸,괼,굄,굉,교,구,국,군,굳,굴,굵,굶,굼,굽,굿,궁,궂,궈,권,궐,궤,귀,귄,귈,귐,귑,귓,규,균,귤,귬,그,극,근,귿,글,긁,금,급,긋,긍,기,긱,긴,긷,길,김,깁,깃,깄,깅,깊,까,깍,깎,깐,깔,깜,깝,깠,깡,깢,깥,깨,깩,깬,깰,깸,깹,깻,깼,깽,꺄,꺅,꺼,꺽,꺾,껀,껄,껌,껍,껏,껐,껑,께,껜,껴,꼍,꼬,꼭,꼰,꼴,꼼,꼽,꼿,꽁,꽂,꽃,꽈,꽉,꽌,꽘,꽜,꽝,꽤,꽥,꽹,꾀,꾄,꾈,꾐,꾕,꾜,꾸,꾹,꾼,꿀,꿇,꿈,꿉,꿋,꿍,꿎,꿔,꿘,꿩,꿰, [o restante da cadeia de caracteres foi truncado]&quot;;.
+        /// </summary>
+        internal static string KorCommon {
+            get {
+                return ResourceManager.GetString("KorCommon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a а,б,в,г,д,е,ж,з,и,й,к,л,м,н,о,п,р,с,т,у,ф,х,ц,ч,ш,щ,ъ,ы,ь,э,ю.
         /// </summary>
         internal static string RusCommon {

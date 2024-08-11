@@ -4,13 +4,16 @@ using System.Threading.Tasks;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
 
-namespace TLBOT {
-    public class TranslationTask {
+namespace TLBOT
+{
+    public class TranslationTask
+    {
         string SourceLanguage;
         string TargetLanguage;
         public string[] Lines;
 
-        public enum Status {
+        public enum Status
+        {
             IDLE, PreProcessing, Translating, PostProcessing, Finished
         }
 
@@ -18,49 +21,64 @@ namespace TLBOT {
         public uint Progress { private set; get; }
 
         IOptimizator[] Optimizators;
-        public TranslationTask(string[] Lines, string SourceLanguage, string TargetLanguage, IOptimizator[] Optimizators) {
+        public TranslationTask(string[] Lines, string SourceLanguage, string TargetLanguage, IOptimizator[] Optimizators)
+        {
             this.Lines = Lines;
             this.SourceLanguage = SourceLanguage;
             this.TargetLanguage = TargetLanguage;
             this.Optimizators = Optimizators;
         }
 
-        public Task Build(Action OnFinish = null) {
-            return new Task(() => {
+        public Task Build(Action OnFinish = null)
+        {
+            return new Task(() =>
+            {
                 TaskStatus = Status.PreProcessing;
 
-                if (Program.Settings.Multithread) {
-                    Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
+                if (Program.Settings.Multithread)
+                {
+                    Parallel.For(0, Lines.LongLength, new Action<long>((a) =>
+                    {
                         uint i = (uint)a;
-                        foreach (IOptimizator Optimizator in Optimizators) {
-#if !DEBUG
-                            try {
+                        foreach (IOptimizator Optimizator in Optimizators)
+                        {
+#if !DEBUG || NODEBUG
+                            try
+                            {
 #endif
                                 Optimizator.BeforeTranslate(ref Lines[i], i);
-#if !DEBUG
-                            } catch { }
+#if !DEBUG || NODEBUG
+                            }
+                            catch { }
 #endif
                         }
-                        Progress++;
+                        Progress = i;
                     }));
-                } else {
-                    for (uint i = 0; i < Lines.LongLength; i++) {
-                        foreach (IOptimizator Optimizator in Optimizators) {
-#if !DEBUG
-                            try {
+                }
+                else
+                {
+                    for (uint i = 0; i < Lines.LongLength; i++)
+                    {
+                        foreach (IOptimizator Optimizator in Optimizators)
+                        {
+#if !DEBUG || NODEBUG
+                            try
+                            {
 #endif
                                 Optimizator.BeforeTranslate(ref Lines[i], i);
-#if !DEBUG
-                            } catch { }
+#if !DEBUG || NODEBUG
+                            }
+                            catch { }
 #endif
-                            Progress++;
                         }
+                        Progress = i;
 
                     }
                 }
 
                 TaskStatus = Status.Translating;
-                switch (Program.TLMode) {
+                switch (Program.TLMode)
+                {
                     case TransMode.Massive:
                         Lines = Lines.TranslateMassive(SourceLanguage, TargetLanguage, Program.TLClient);
                         break;
@@ -69,7 +87,8 @@ namespace TLBOT {
                         break;
 
                     case TransMode.Normal:
-                        for (uint i = 0; i < Lines.Length; i++) {
+                        for (uint i = 0; i < Lines.Length; i++)
+                        {
                             Lines[i] = Lines[i].Translate(SourceLanguage, TargetLanguage, Program.TLClient);
                             Progress = i;
                         }
@@ -79,31 +98,40 @@ namespace TLBOT {
                 TaskStatus = Status.PostProcessing;
                 Progress = 0;
 
-                if (Program.Settings.Multithread) {
-                    Parallel.For(0, Lines.LongLength, new Action<long>((a) => {
+                if (Program.Settings.Multithread)
+                {
+                    Parallel.For(0, Lines.LongLength, new Action<long>((a) =>
+                    {
                         Progress++;
                         uint i = (uint)a;
                         foreach (IOptimizator Optimizator in Optimizators)
-#if !DEBUG
-                            try {
+#if !DEBUG || NODEBUG
+                            try
+                            {
 #endif
                                 Optimizator.AfterTranslate(ref Lines[i], i);
-#if !DEBUG
-                            } catch { }
+#if !DEBUG || NODEBUG
+                            }
+                            catch { }
 #endif
-
+                        Progress = i;
                     }));
-                } else {
-                    for (uint i = 0; i < Lines.LongLength; i++) {
+                }
+                else
+                {
+                    for (uint i = 0; i < Lines.LongLength; i++)
+                    {
                         foreach (IOptimizator Optimizator in Optimizators)
-#if !DEBUG
-                            try {
+#if !DEBUG || NODEBUG
+                            try
+                            {
 #endif
                                 Optimizator.AfterTranslate(ref Lines[i], i);
-#if !DEBUG
-                            } catch { }
+#if !DEBUG || NODEBUG
+                            }
+                            catch { }
 #endif
-                        Progress++;
+                        Progress = i;
                     }
                 }
 
@@ -111,6 +139,6 @@ namespace TLBOT {
                 OnFinish?.Invoke();
             });
         }
-                
+
     }
 }
