@@ -10,6 +10,8 @@ namespace TLBOT {
         BingNeural,
         LEC,
         ChatGPT,
+        Ollama,
+        OllamaAlt,
         DeepL,
         CacheOnly
     }

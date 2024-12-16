@@ -3,6 +3,7 @@ using DeepL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +13,7 @@ namespace TLBOT.DataManager {
     public static partial class Extensions {
         public static bool GPTInstancied = false;
         public static ChatGPT GPTAPI = new ChatGPT();
+        public static Ollama LLM = new Ollama();
         public static Google API = new Google();
         internal static T[] AppendArray<T>(this T[] Array, T Item) =>
             Array.AppendArray(new T[] { Item });
@@ -32,6 +34,11 @@ namespace TLBOT.DataManager {
             {
                 GPTAPI.EnsureInstances(Program.Settings.ChatGPTInstances);
                 GPTInstancied = true;
+            }
+
+            if (Client == Translator.Ollama && string.IsNullOrWhiteSpace(SourceLanguage))
+            {
+                throw new Exception("No valid LLM Model Selected");
             }
 
             while (Client == Translator.ChatGPT && GPTAPI.MustWait())
@@ -64,7 +71,12 @@ namespace TLBOT.DataManager {
 
                                     if (string.IsNullOrWhiteSpace(Result) || Result == String)
                                         goto default;
-
+                                    break;
+                                case Translator.Ollama:
+                                    Result = LLM.Translate(String, SourceLanguage, TargetLanguage, false);
+                                    break;
+                                case Translator.OllamaAlt:
+                                    Result = LLM.Translate(String, SourceLanguage, TargetLanguage, true);
                                     break;
                                 default:
                                     Result = API.Translate(String, SourceLanguage, TargetLanguage);
@@ -393,6 +405,12 @@ namespace TLBOT.DataManager {
             return Result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int KanjiCount(this string String)
+        {
+            return String.Where(x => x >= '一' && x <= '龯').Count();
+        }
+
         private static bool VerifingDialog = false;
         public static bool IsDialogue(this string String, int? Caution = null) {
             try {
@@ -463,7 +481,7 @@ namespace TLBOT.DataManager {
                 int Accents = Str.Where(x => NonEnglishAccents.Contains(x)).Count();
                 int JapChars = Str.Where(x => (x >= '、' && x <= 'ヿ') || (x >= '｡' && x <= 'ﾝ')).Count();
                 int KorChars = Str.Where(x => x != ',' && Properties.Resources.KorCommon.Contains(x)).Count();
-                int Kanjis = Str.Where(x => x >= '一' && x <= '龯').Count();
+                int Kanjis = Str.KanjiCount();
 
 
                 bool IsCaps = Optimizator.CaseFixer.GetLineCase(Str) == Optimizator.CaseFixer.Case.Upper;

@@ -26,6 +26,9 @@ namespace TLBOT {
                     default:
                         return Translator.Google;
 
+                    case "ollama":
+                        return Translator.Ollama;
+
                     case "chatgpt":
                         return Translator.ChatGPT;
 

@@ -10,6 +10,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using SacanaWrapper;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
+using TLIB;
 
 namespace TLBOT {
     public partial class Main : Form {
@@ -236,6 +237,61 @@ namespace TLBOT {
             ProcessFiles(TaskCreator.SelectedFiles);
         }
 
+        private void UpdateSourceBox()
+        {
+            if (Program.TLClient == Translator.Ollama)
+            {
+                lblSource.Text = "Modelo de Origem:";
+
+
+                var Models = Extensions.LLM.ListModels();
+
+                if (Models == null)
+                {
+                    MessageBox.Show("No LLM Models installed or Service not working.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    TLCLientMenu.SelectedIndex = 0;
+                    return;
+                }
+
+                SourceLangSelector.Items.Clear();
+                SourceLangSelector.Items.AddRange(Models);
+                TargetLangSelector.Items.Clear();
+                TargetLangSelector.Items.AddRange(new[] { "Japanese", "English", "Simplified Chinese", "Russian", "Portuguese", "Portuguese Brazilian", "Spanish", "Italian", "French", "Polish", "German", "Korean" } );
+
+
+                TransModeMenu.SelectedIndex = 2;
+                TransModeMenu.Enabled = false;
+            }
+            else
+            {
+                lblSource.Text = "Língua de Origem:";
+                SourceLangSelector.Items.Clear();
+                SourceLangSelector.Items.AddRange(new[] { "JA", "EN", "CH", "RU", "PT", "ES", "IT", "FR", "PL", "DE", "KO", "AUTO" });
+                TargetLangSelector.Items.Clear();
+                TargetLangSelector.Items.AddRange(new[] { "JA", "EN", "CH", "RU", "PT-BR", "ES", "IT", "FR", "PL", "DE", "KO" });
+
+                SourceLangSelector.SelectedIndex = 0;
+                TargetLangSelector.SelectedIndex = 0;
+
+                TransModeMenu.SelectedIndex = 0;
+                TransModeMenu.Enabled = true;
+            }
+
+            if (!InvokeRequired)
+                Application.DoEvents();
+
+            if (SourceLangSelector.Items.Contains(Program.Settings.SourceLang))
+                SourceLangSelector.SelectedItem = Program.Settings.SourceLang;
+            else
+                SourceLangSelector.SelectedIndex = 0;
+
+
+            if (TargetLangSelector.Items.Contains(Program.Settings.TargetLang))
+                TargetLangSelector.SelectedItem = Program.Settings.TargetLang;
+            else
+                TargetLangSelector.SelectedIndex = 0;
+        }
+
         private void ProcessFiles(string[] Files, uint Begin = 0) {
             Program.TaskInfo = new TaskInfo() {
                 LastTask = Files,
@@ -294,18 +350,15 @@ namespace TLBOT {
                         {
                             if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread)
                             {
-                                lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)",
-                                    TaskCreator.Progress, Strings.LongLength, x, Files.LongLength,
-                                    GetStateName(TaskCreator.TaskStatus));
+                                lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)", TaskCreator.Progress, Strings.LongLength, x, Files.LongLength, GetStateName(TaskCreator.TaskStatus));
                                 TaskProgress.Maximum = Strings.Length;
                                 TaskProgress.Value = (int) TaskCreator.Progress;
                                 StringList.SelectedIndex = (int) TaskCreator.Progress;
 
-                                if (++DL == 20)
+                                if (++DL >= 20)
                                 {
                                     DL = 0;
-                                    int Progress =
-                                        (int) (Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
+                                    int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
                                     ShowStrings(TaskCreator.Lines, LP, Progress);
                                     LP = Progress;
                                 }
@@ -585,6 +638,9 @@ namespace TLBOT {
 
         private void ClientChanged(object sender, EventArgs e) {
             Program.Settings.TLClient = TLCLientMenu.Text;
+
+            if (Application.OpenForms.OfType<Main>().Count() == 1)
+                UpdateSourceBox();
         }
 
         private void TransModeChanged(object sender, EventArgs e) {
@@ -918,8 +974,16 @@ namespace TLBOT {
         private void bntTestClient_Click(object sender, EventArgs e) {
             MessageBox.Show("Copy the text");
             string test = Clipboard.GetText();
-            MessageBox.Show(test.Translate("EN", "PT", Program.TLClient) + " - " + Program.TLClient.ToString());
 
+            if (Program.TLClient == Translator.Ollama)
+            {
+                var Models = Extensions.LLM.ListModels();
+                MessageBox.Show(test.Translate(Models.First(), "english", Program.TLClient) + " - " + Program.TLClient.ToString());
+            }
+            else
+            {
+                MessageBox.Show(test.Translate("EN", "PT", Program.TLClient) + " - " + Program.TLClient.ToString());
+            }
         }
 
         private void bntSearch_Click(object sender, EventArgs e) {
@@ -987,6 +1051,11 @@ namespace TLBOT {
         private void UsePosCheckedChanged(object sender, EventArgs e) {
             Program.FilterSettings.UsePos = ckUsePos.CheckState == CheckState.Checked;
             Program.FilterSettings.UsePosCaution = ckUsePos.CheckState == CheckState.Indeterminate;
+        }
+
+        private void FormShowed(object sender, EventArgs e)
+        {
+            this.UpdateSourceBox();
         }
     }
 }

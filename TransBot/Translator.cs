@@ -76,6 +76,8 @@ namespace TLBOT
                     }
                 }
 
+                bool canRetry = true;
+
                 TaskStatus = Status.Translating;
                 switch (Program.TLMode)
                 {
@@ -89,7 +91,27 @@ namespace TLBOT
                     case TransMode.Normal:
                         for (uint i = 0; i < Lines.Length; i++)
                         {
-                            Lines[i] = Lines[i].Translate(SourceLanguage, TargetLanguage, Program.TLClient);
+                            var newLine = Lines[i].Translate(SourceLanguage, TargetLanguage, canRetry ? Program.TLClient : Translator.OllamaAlt);
+
+                            if (Program.TLClient == Translator.Ollama & !Attestation(newLine))
+                            {
+                                if (canRetry)
+                                {
+                                    canRetry = false;
+                                    if (Program.Cache.ContainsKey(Lines[i]))
+                                        Program.Cache.Remove(Lines[i]);
+
+                                    i--;
+                                    continue;
+                                } 
+                                else
+                                {
+                                    newLine = Lines[i].Translate("AUTO", TargetLanguage, Translator.Google);
+                                }
+                            }
+
+                            Lines[i] = newLine;                            
+                            canRetry = true;
                             Progress = i;
                         }
                         break;
@@ -138,6 +160,19 @@ namespace TLBOT
                 TaskStatus = Status.Finished;
                 OnFinish?.Invoke();
             });
+        }
+
+        private bool Attestation(string Result)
+        {
+            if (Result.KanjiCount() > 0)
+            {
+                var TargLang = TargetLanguage.ToLowerInvariant().Trim();
+                if (!TargLang.StartsWith("jap") && !TargLang.StartsWith("ch"))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
     }
