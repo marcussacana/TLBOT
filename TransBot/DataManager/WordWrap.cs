@@ -40,6 +40,7 @@ namespace TLBOT.DataManager {
             Rst = Rst.Replace(GameLineBreaker + " ", " ");
             Rst = Rst.Replace(" " + GameLineBreaker, " ");
             Rst = Rst.Replace(GameLineBreaker, " ");
+            Rst = Rst.Replace("\r", "");
             return Rst;
         }
 

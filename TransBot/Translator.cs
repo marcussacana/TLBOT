@@ -106,6 +106,9 @@ namespace TLBOT
                                 } 
                                 else
                                 {
+                                    if (Program.Cache.ContainsKey(Lines[i]))
+                                        Program.Cache.Remove(Lines[i]);
+
                                     newLine = Lines[i].Translate("AUTO", TargetLanguage, Translator.Google);
                                 }
                             }
