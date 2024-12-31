@@ -239,6 +239,9 @@ namespace TLBOT {
 
         private void UpdateSourceBox()
         {
+            var Source = Program.Settings.SourceLang;
+            var Target = Program.Settings.TargetLang;
+
             if (Program.TLClient == Translator.Ollama)
             {
                 lblSource.Text = "Modelo de Origem:";
@@ -280,14 +283,14 @@ namespace TLBOT {
             if (!InvokeRequired)
                 Application.DoEvents();
 
-            if (SourceLangSelector.Items.Contains(Program.Settings.SourceLang))
-                SourceLangSelector.SelectedItem = Program.Settings.SourceLang;
+            if (SourceLangSelector.Items.Contains(Source))
+                SourceLangSelector.SelectedItem = Program.Settings.SourceLang = Source;
             else
                 SourceLangSelector.SelectedIndex = 0;
 
 
-            if (TargetLangSelector.Items.Contains(Program.Settings.TargetLang))
-                TargetLangSelector.SelectedItem = Program.Settings.TargetLang;
+            if (TargetLangSelector.Items.Contains(Target))
+                TargetLangSelector.SelectedItem = Program.Settings.TargetLang = Target;
             else
                 TargetLangSelector.SelectedIndex = 0;
         }
