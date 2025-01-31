@@ -53,10 +53,10 @@ namespace TLBOT.DataManager {
             {
                 if (Program.GetLanguageCode(SourceLanguage) != SourceLanguage || Program.GetLanguageName(SourceLanguage) == SourceLanguage)
                 {
-                    SourceLanguage = "AUTO";
+                    SourceLanguage = "auto";
                 }
 
-                TargetLanguage = Program.GetLanguageCode(TargetLanguage);    
+                TargetLanguage = Program.GetLanguageCode(TargetLanguage).ToLower();
             }
 
             for (int i = 0; i < 3; i++) {
