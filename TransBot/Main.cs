@@ -259,7 +259,7 @@ namespace TLBOT {
                 SourceLangSelector.Items.Clear();
                 SourceLangSelector.Items.AddRange(Models);
                 TargetLangSelector.Items.Clear();
-                TargetLangSelector.Items.AddRange(new[] { "Japanese", "English", "Simplified Chinese", "Russian", "Portuguese", "Portuguese Brazilian", "Spanish", "Italian", "French", "Polish", "German", "Korean" } );
+                TargetLangSelector.Items.AddRange(Program.GetAllLanguageNames());
 
 
                 TransModeMenu.SelectedIndex = 2;
@@ -269,9 +269,9 @@ namespace TLBOT {
             {
                 lblSource.Text = "Língua de Origem:";
                 SourceLangSelector.Items.Clear();
-                SourceLangSelector.Items.AddRange(new[] { "JA", "EN", "CH", "RU", "PT", "ES", "IT", "FR", "PL", "DE", "KO", "AUTO" });
+                SourceLangSelector.Items.AddRange(Program.GetAllLanguageCodes().Concat(new[] { "AUTO" }).ToArray());
                 TargetLangSelector.Items.Clear();
-                TargetLangSelector.Items.AddRange(new[] { "JA", "EN", "CH", "RU", "PT-BR", "ES", "IT", "FR", "PL", "DE", "KO" });
+                TargetLangSelector.Items.AddRange(Program.GetAllLanguageCodes());
 
                 SourceLangSelector.SelectedIndex = 0;
                 TargetLangSelector.SelectedIndex = 0;

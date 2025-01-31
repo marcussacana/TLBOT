@@ -5,14 +5,32 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using TLBOT.DataManager;
 using TLBOT.Optimizator;
+using static DotNetVM;
 
 namespace TLBOT {
     public static class Program {
+
+        public static string[][] LanguageCodes = new[] {
+            new [] { "Japanese", "JA" },
+            new [] { "English",  "EN" },
+            new [] { "Simplified Chinese", "CH" },
+            new [] { "Russian", "RU" },
+            new [] { "Portuguese", "PT" },
+            new [] { "Portuguese Brazilian", "PT-BR" },
+            new [] { "Spanish", "ES" },
+            new [] { "Italian", "IT" },
+            new [] { "French", "FR" },
+            new [] { "Polish", "PL" },
+            new [] { "German", "DE" },
+            new [] { "Korean", "KO" },
+            new [] { "Thai", "TH" }
+        };
 
         internal static Font WordwrapFont => new Font(WordwrapSettings.FontName, WordwrapSettings.FontSize, WordwrapSettings.Bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
         internal static string TaskPath => AppDomain.CurrentDomain.BaseDirectory + "Task.tbt";
@@ -298,6 +316,31 @@ namespace TLBOT {
                 } catch { }
             }
             return Optimizators;
+        }
+
+        internal static string GetLanguageName(string LanguageCode)
+        {
+            foreach (string[] Lang in LanguageCodes)
+                if (Lang[1].ToLower() == LanguageCode.ToLower())
+                    return Lang[0];
+            return LanguageCode;
+        }
+
+        internal static string GetLanguageCode(string LanguageName)
+        {
+            foreach (string[] Lang in LanguageCodes)
+                if (Lang[0].ToLower() == LanguageName.ToLower())
+                    return Lang[1];
+            return LanguageName;
+        }
+
+        internal static string[] GetAllLanguageNames()
+        {
+            return LanguageCodes.Select(x => x.First()).ToArray();
+        }
+        internal static string[] GetAllLanguageCodes()
+        {
+            return LanguageCodes.Select(x => x.Last()).ToArray();
         }
     }
 

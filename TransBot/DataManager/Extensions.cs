@@ -49,6 +49,16 @@ namespace TLBOT.DataManager {
             if (Program.Cache.ContainsKey(String))
                 return Program.Cache[String];
 
+            if (Client != Translator.Ollama && Client != Translator.OllamaAlt)
+            {
+                if (Program.GetLanguageCode(SourceLanguage) != SourceLanguage || Program.GetLanguageName(SourceLanguage) == SourceLanguage)
+                {
+                    SourceLanguage = "AUTO";
+                }
+
+                TargetLanguage = Program.GetLanguageCode(TargetLanguage);    
+            }
+
             for (int i = 0; i < 3; i++) {
                 try {
                     string Result = string.Empty;
