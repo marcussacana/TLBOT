@@ -19,6 +19,8 @@ namespace TLBOT {
     public enum TransMode {
         Massive,
         Multithread,
-        Normal
+        Normal,
+        ContextAware,
+        StaticContext
     }
 }

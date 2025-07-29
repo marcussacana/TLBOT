@@ -6,9 +6,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BrightIdeasSoftware;
+using CefSharp.DevTools.Page;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SacanaWrapper;
 using TLBOT.DataManager;
+using TLBOT.Items;
 using TLBOT.Optimizator;
 using TLIB;
 
@@ -43,6 +46,7 @@ namespace TLBOT {
 
             ckUseDB.Checked = Program.FilterSettings.UseDB;
             ckLstMode.Checked = Program.Settings.LSTMode;
+            ckAsian.Checked = Program.FilterSettings.AsianMode;
             ckTransTLBot.Checked = Program.Settings.TranslateWindow;
 
             if (Program.FilterSettings.UsePos)
@@ -182,6 +186,34 @@ namespace TLBOT {
                 new ToolTipInfo() {
                     Control = ckUseDB,
                     Text = "Quando Ativo qualquer linha presente no banco de traduções será considerada como um diálogo."
+                },
+                new ToolTipInfo() {
+                    Control = ckLstMode,
+                    Text = "Quando Ativo, o script será salvo em um arquivo .lst ao invés de ser salvo diretamente no arquivo original."
+                },
+                new ToolTipInfo() {
+                    Control = ckUsePos,
+                    Text = "Quando Ativo, o filtro de diálogos irá considerar a posição de uma linha para determinar se ela é um diálogo ou não.\nQuando desativado, o filtro irá considerar apenas o conteúdo da linha."
+                },
+                new ToolTipInfo() {
+                    Control = ckTransTLBot,
+                    Text = "Traduz Automaticamente a Interface do TLBOT para a lingua alvo selecionada."
+                },
+                new ToolTipInfo() {
+                    Control = ckMonospaced,
+                    Text = "Quando Ativo, o texto será exibido em uma fonte monoespaçada.\nQuando desativado, o texto será exibido em uma fonte proporcional."
+                },
+                new ToolTipInfo() {
+                    Control = ckBold,
+                    Text = "Quando Ativo, o texto será renderizado em negrito.\nQuando desativado, o texto será renderizado em um estilo regular."
+                },
+                new ToolTipInfo() {
+                    Control = FaceName,
+                    Text = "Define a fonte a ser utilizada para renderização do texto."
+                },
+                new ToolTipInfo() {
+                    Control = FontSize,
+                    Text = "Define o tamanho da fonte a ser utilizada para renderização do texto ou numero de caracteres quando no modo monospaced."
                 }
             };
 
@@ -231,6 +263,8 @@ namespace TLBOT {
             #endregion
 
             FilesSelector TaskCreator = new FilesSelector();
+            TaskCreator.Filter = string.Join(";", Wrapper.EnumSupportedExtensions());
+
             if (TaskCreator.ShowDialog() != DialogResult.OK)
                 return;
 
@@ -241,6 +275,8 @@ namespace TLBOT {
         {
             var Source = Program.Settings.SourceLang;
             var Target = Program.Settings.TargetLang;
+
+            var TransMode = Program.Settings.TransMode;
 
             if (Program.TLClient == Translator.Ollama)
             {
@@ -256,14 +292,17 @@ namespace TLBOT {
                     return;
                 }
 
+                TransModeMenu.Items.Clear();
+                TransModeMenu.Items.AddRange(new[] { "Simple", "Context Aware", "Static Context" });
                 SourceLangSelector.Items.Clear();
                 SourceLangSelector.Items.AddRange(Models);
                 TargetLangSelector.Items.Clear();
                 TargetLangSelector.Items.AddRange(Program.GetAllLanguageNames());
 
+                SourceLangSelector.SelectedIndex = 0;
+                TargetLangSelector.SelectedIndex = 0;
 
-                TransModeMenu.SelectedIndex = 2;
-                TransModeMenu.Enabled = false;
+                TransModeMenu.SelectedIndex = 0;
             }
             else
             {
@@ -273,11 +312,13 @@ namespace TLBOT {
                 TargetLangSelector.Items.Clear();
                 TargetLangSelector.Items.AddRange(Program.GetAllLanguageCodes());
 
+                TransModeMenu.Items.Clear();
+                TransModeMenu.Items.AddRange(new[] { "Massive", "Normal", "Multithread" });
+
                 SourceLangSelector.SelectedIndex = 0;
                 TargetLangSelector.SelectedIndex = 0;
 
                 TransModeMenu.SelectedIndex = 0;
-                TransModeMenu.Enabled = true;
             }
 
             if (!InvokeRequired)
@@ -293,166 +334,209 @@ namespace TLBOT {
                 TargetLangSelector.SelectedItem = Program.Settings.TargetLang = Target;
             else
                 TargetLangSelector.SelectedIndex = 0;
+
+            if (TransModeMenu.Items.Contains(TransMode)) 
+                TransModeMenu.SelectedItem = TransMode;
+            else
+                TransModeMenu.SelectedIndex = Program.TLClient == Translator.Ollama ? 1 : 0;
         }
 
-        private void ProcessFiles(string[] Files, uint Begin = 0) {
-            Program.TaskInfo = new TaskInfo() {
+
+        ITask TaskCreator;
+
+        private void ProcessFiles(string[] Files, uint Begin = 0)
+        {
+            Program.TaskInfo = new TaskInfo()
+            {
                 LastTask = Files,
                 LastTaskPos = Begin
             };
 
+            var Characters = new List<OllamaTranslationTask.Character>();
+            var Affiliations = new List<OllamaTranslationTask.Affiliation>();
+
+            if (Program.TLMode != TransMode.ContextAware && Program.TLMode != TransMode.StaticContext)
+                TaskCreator = new TranslationTask(Program.Settings.SourceLang, Program.Settings.TargetLang, EnabledOptimizators);
+            else
+                TaskCreator = new OllamaTranslationTask(Program.Settings.SourceLang, Program.Settings.TargetLang, EnabledOptimizators);
+
             DialogResult? dr = null;
             long TotalCount = 0;
-            Wrapper Wrapper = new Wrapper();
             for (uint x = Begin; x < Files.LongLength; x++)
             {
                 Program.TaskInfo.LastTaskPos = x;
                 Program.SaveTask();
+
+                if (Characters.Count + Affiliations.Count > 0)
+                {
+                    if (TaskCreator is OllamaTranslationTask ollama)
+                    {
+                        ollama.SaveAnalyzerStatus();
+                    }
+                }
 
                 string FileName = Files[x];
 #if !DEBUG
                 try
                 {
 #endif
-                    var Strings = Import(FileName);
+                var Strings = Import(FileName);
 
-                    var OriginalStrings = Strings.ToArray();
+                var OriginalStrings = Strings.ToArray();
 
-                    if (Strings.Length == 0)
+                if (Strings.Length == 0)
+                {
+                    if (dr == null || dr == DialogResult.Retry)
+                        dr = MessageBox.Show($"Failed to Open the Script \"{Path.GetFileName(FileName)}\"",
+                            "TLBOT 2", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+                    if (dr == DialogResult.Retry)
+                        x--;
+                    if (ckDelEmpty.Checked)
                     {
-                        if (dr == null || dr == DialogResult.Retry)
-                            dr = MessageBox.Show($"Failed to Open the Script \"{Path.GetFileName(FileName)}\"",
-                                "TLBOT 2", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
-                        if (dr == DialogResult.Retry)
-                            x--;
-                        if (ckDelEmpty.Checked) {
-                            try { File.Delete(FileName); } catch { }
+                        try { File.Delete(FileName); } catch { }
+                    }
+                    if (dr == DialogResult.Ignore || dr == DialogResult.Retry)
+                        continue;
+                    if (dr == DialogResult.Abort)
+                        break;
+                }
+
+                TotalCount += (from z in Strings select (long)z.Length).Sum();
+
+                ShowStrings(Strings, NewFile: true);
+
+                {
+                    if (TaskCreator is OllamaTranslationTask ollama)
+                    {
+                        ollama.Characters = Characters;
+                        ollama.Affiliations = Affiliations;
+                    }
+                }
+
+                TaskCreator.UpdateLines(Strings);
+
+                Task Translate = TaskCreator.Build();
+
+                Translate.Start();
+
+                Text = $"TLBOT 2 - {Path.GetFileName(FileName)}";
+                int DL = 0;
+                int LP = 0;
+                while (!TaskCreator.Finished)
+                {
+                    try
+                    {
+                        if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread)
+                        {
+                            lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)", TaskCreator.Progress, Strings.LongLength, x, Files.LongLength, TaskCreator.CurrentStatus);
+                            TaskProgress.Maximum = Strings.Length;
+                            TaskProgress.Value = (int)TaskCreator.Progress;
+                            StringList.SelectedIndex = (int)TaskCreator.Progress;
+                            CurrentTaskProgress.Visible = false;
+
+                            if (++DL >= 20)
+                            {
+                                DL = 0;
+                                int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
+                                ShowStrings(TaskCreator.Lines, LP, Progress);
+                                LP = Progress;
+                            }
                         }
-                        if (dr == DialogResult.Ignore || dr == DialogResult.Retry)
-                            continue;
-                        if (dr == DialogResult.Abort)
-                            break;
+                        else
+                        {
+                            lblState.Text = string.Format("{4}...  ({2}/{3} Lines) ({0}/{1} Files)", x,
+                                Files.LongLength, TaskCreator.Progress, Strings.LongLength, TaskCreator.CurrentStatus);
+
+                            if (++DL == 20)
+                            {
+                                DL = 0;
+                                int Progress = (int)TaskCreator.Progress;
+                                ShowStrings(TaskCreator.Lines, LP, Progress);
+                                LP = Progress;
+                            }
+
+                            CurrentTaskProgress.Maximum = Strings.Length;
+                            CurrentTaskProgress.Value = (int)TaskCreator.Progress;
+                            CurrentTaskProgress.Visible = true;
+
+                            TaskProgress.Maximum = Files.Length;
+                            TaskProgress.Value = (int)x;
+                        }
+                    }
+                    catch
+                    {
                     }
 
-                    TotalCount += (from z in Strings select (long) z.Length).Sum();
+                    Application.DoEvents();
+                    Thread.Sleep(100);
+                }
 
-                    ShowStrings(Strings, NewFile: true);
-
-                    var TaskCreator = new TranslationTask(Strings, Program.Settings.SourceLang,
-                        Program.Settings.TargetLang, EnabledOptimizators);
-
-                    Task Translate = TaskCreator.Build();
-
-                    Translate.Start();
-                    Text = $"TLBOT 2 - {Path.GetFileName(FileName)}";
-                    int DL = 0;
-                    int LP = 0;
-                    while (TaskCreator.TaskStatus != TranslationTask.Status.Finished)
+                {
+                    if (TaskCreator is OllamaTranslationTask ollama)
                     {
-                        try
-                        {
-                            if (Program.TLMode == TransMode.Normal || Program.TLMode == TransMode.Multithread)
-                            {
-                                lblState.Text = string.Format("{4}... ({0}/{1} Lines) ({2}/{3} Files)", TaskCreator.Progress, Strings.LongLength, x, Files.LongLength, GetStateName(TaskCreator.TaskStatus));
-                                TaskProgress.Maximum = Strings.Length;
-                                TaskProgress.Value = (int) TaskCreator.Progress;
-                                StringList.SelectedIndex = (int) TaskCreator.Progress;
+                        Characters = ollama.Characters;
+                        Affiliations = ollama.Affiliations;
+                    }
+                }
 
-                                if (++DL >= 20)
-                                {
-                                    DL = 0;
-                                    int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
-                                    ShowStrings(TaskCreator.Lines, LP, Progress);
-                                    LP = Progress;
-                                }
-                            }
-                            else
-                            {
-                                if (TaskCreator.TaskStatus == TranslationTask.Status.Translating)
-                                    lblState.Text = string.Format("Translating... ({0}/{1} Files)", x,
-                                        Files.LongLength);
-                                else
-                                {
-                                    lblState.Text = string.Format("{4}...  ({2}/{3} Lines) ({0}/{1} Files)", x,
-                                        Files.LongLength, TaskCreator.Progress, Strings.LongLength,
-                                        GetStateName(TaskCreator.TaskStatus));
-                                    if (++DL == 20)
-                                    {
-                                        DL = 0;
-                                        int Progress = (int) TaskCreator.Progress;
-                                        ShowStrings(TaskCreator.Lines, LP, Progress);
-                                        LP = Progress;
-                                    }
-                                }
+                var Filtering = IsEnabled(new DialogueFilter());
 
-                                TaskProgress.Maximum = Files.Length;
-                                TaskProgress.Value = (int) x;
-                            }
-                        }
-                        catch
-                        {
-                        }
-
+                for (uint i = 0, z = 0; i < TaskCreator.Lines.LongLength; i++)
+                {
+                    if (i % (Strings.LongLength > 5000 ? 55 : 15) == 0)
+                    {
+                        lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Strings.LongLength);
                         Application.DoEvents();
-                        Thread.Sleep(100);
                     }
 
-                    var Filtering = IsEnabled(new DialogueFilter());
+                    while (ValidList != null && !ValidList[i + z] && Filtering)
+                        z++;
 
-                    for (uint i = 0, z = 0; i < TaskCreator.Lines.LongLength; i++)
-                    {
-                        if (i % (Strings.LongLength > 5000 ? 55 : 15) == 0)
-                        {
-                            lblState.Text = string.Format("Finishing... ({0}/{1} Lines)", i, Strings.LongLength);
-                            Application.DoEvents();
-                        }
-
-                        while (ValidList != null && !ValidList[i + z] && Filtering)
-                            z++;
-
-                        uint RealIndex = i + z;
-                        foreach (IOptimizator Optimizator in EnabledOptimizators)
-                            try
-                            {
-                                if (Optimizator is DialogueFilter)
-                                    continue;
-
-                                Optimizator.BeforeSave(ref TaskCreator.Lines[i], RealIndex);
-                            }
-                            catch
-                            {
-                            }
-                    }
-
+                    uint RealIndex = i + z;
                     foreach (IOptimizator Optimizator in EnabledOptimizators)
                         try
                         {
                             if (Optimizator is DialogueFilter)
                                 continue;
 
-                            Optimizator.PostProcess(ref TaskCreator.Lines);
+                            Optimizator.BeforeSave(ref TaskCreator.Lines[i], RealIndex);
                         }
-                        catch { }
-
-                    bool Changed = false;
-                    for (uint i = 0; i < OriginalStrings.Length; i++)
-                        if (OriginalStrings[i] != TaskCreator.Lines[i])
+                        catch
                         {
-                            Changed = true;
-                            break;
                         }
+                }
 
-                    if (Changed)
+                foreach (IOptimizator Optimizator in EnabledOptimizators)
+                    try
                     {
-                        if (Program.Settings.LSTMode)
-                        {
-                            string LstPath = Path.GetDirectoryName(FileName) + "\\Strings-" +
-                                             Path.GetFileNameWithoutExtension(FileName) + ".lst";
-                            Dump(TaskCreator.Lines, LstPath);
-                        }
-                        else
-                            Export(TaskCreator.Lines, FileName);
+                        if (Optimizator is DialogueFilter)
+                            continue;
+
+                        var Lines = TaskCreator.Lines;
+                        Optimizator.PostProcess(ref Lines);
+                        TaskCreator.Lines = Lines;
                     }
+                    catch { }
+
+                bool Changed = false;
+                for (uint i = 0; i < OriginalStrings.Length; i++)
+                    if (OriginalStrings[i] != TaskCreator.Lines[i])
+                    {
+                        Changed = true;
+                        break;
+                    }
+
+                if (Changed)
+                {
+                    if (Program.Settings.LSTMode)
+                    {
+                        string LstPath = Path.GetDirectoryName(FileName) + "\\Strings-" +
+                                         Path.GetFileNameWithoutExtension(FileName) + ".lst";
+                        Dump(TaskCreator.Lines, LstPath);
+                    }
+                    else
+                        Export(TaskCreator.Lines, FileName);
+                }
 #if !DEBUG
                 }
                 catch
@@ -697,6 +781,12 @@ namespace TLBOT {
         private void TLBClosing(object sender, FormClosingEventArgs e) {
             Program.SaveCache();
             Program.SaveSettings();
+
+            if (TaskCreator is OllamaTranslationTask ollama && !ollama.Finished)
+            {
+                ollama.SaveAnalyzerStatus();
+            }
+
             try {
                 Environment.Exit(0);
             } catch { System.Diagnostics.Process.GetCurrentProcess().Kill(); }
@@ -874,6 +964,9 @@ namespace TLBOT {
 
             if (DialogResult.OK != Selector.ShowDialog())
                 return;
+
+            bool Overwrite = MessageBox.Show("Do you want to overwrite the existing entries?", "TLBOT", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
             foreach (string FN in Selector.SelectedFiles) {
                 using (StreamReader Reader = new StreamReader(FN)) {
                     try {
@@ -884,9 +977,14 @@ namespace TLBOT {
                                 continue;
                             if (string.IsNullOrEmpty(L2))
                                 continue;
-                            if (Program.Cache.ContainsKey(L1))
-                                continue;
-                            Program.Cache.Add(L1, L2);
+
+                            if (Overwrite) {
+                                Program.Cache[L1] = L2;
+                            } else { 
+                                if (Program.Cache.ContainsKey(L1))
+                                    continue;
+                                Program.Cache.Add(L1, L2);
+                            }
                         }
                     } catch { }
                     Reader.Close();
@@ -1059,6 +1157,110 @@ namespace TLBOT {
         private void FormShowed(object sender, EventArgs e)
         {
             this.UpdateSourceBox();
+        }
+
+        private void btnContext_Click(object sender, EventArgs e)
+        {
+            if (TaskCreator is OllamaTranslationTask ollama)
+            {
+                ShowContext(ollama.Characters, ollama.Affiliations);
+                numProgress.Value = ollama.Progress;
+                return;
+            }
+
+            MessageBox.Show("No Active Ollama LLM Context Loaded.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ShowContext(List<OllamaTranslationTask.Character> characters, List<OllamaTranslationTask.Affiliation> affiliations)
+        {
+
+            List<CharacterDisplay> Chars = new List<CharacterDisplay>();
+            List<AffiliationDisplay> Affs = new List<AffiliationDisplay>();
+
+            foreach (var character in characters) {
+                Chars.Add(new CharacterDisplay(ref characters, character));
+            }
+
+            foreach (var affiliation in affiliations)
+            {
+                Affs.Add(new AffiliationDisplay(ref affiliations, affiliation));
+            }
+
+            var List = new List<(Control ctrl, int index)>();
+            List.AddRange(Chars.Select(x => ((Control)x, x.FieldCount)).ToList());
+            List.AddRange(Affs.Select(x => ((Control)x, x.FieldCount)).ToList());
+
+            ctxView.Controls.Clear();
+            ctxView.Controls.AddRange(List.OrderByDescending(x=>x.index).Select(x=>x.ctrl).ToArray());
+        }
+        private void btnImportContext_Click(object sender, EventArgs e)
+        {
+            var fd = new OpenFileDialog();
+            fd.Filter = "All LLM Analyze State Files|*.las";
+
+            if (fd.ShowDialog() != DialogResult.OK)
+                return;
+
+            var State = OllamaTranslationTask.LoadState(fd.FileName);
+
+            if (State == null)
+            {
+                MessageBox.Show("Failed to load the state file.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ShowContext(State.Value.Characters.ToList(), State.Value.Affiliations.ToList());
+
+            numProgress.Value = State.Value.AnalyzeProgress;
+        }
+
+        private void btnExportContext_Click(object sender, EventArgs e)
+        {
+            var fd = new SaveFileDialog();
+            fd.Filter = "All LLM Analyze State Files|*.las";
+
+            if (fd.ShowDialog() != DialogResult.OK)
+                return;
+
+            var State = GetStateFromDesigner();
+
+            var data = OllamaTranslationTask.SaveState(State);
+            File.WriteAllBytes(fd.FileName, data);
+
+            MessageBox.Show("LLM Context Saved.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private OllamaTranslationTask.LLMSaveState GetStateFromDesigner()
+        {
+            var Chars = ctxView.Controls.OfType<CharacterDisplay>().ToList();
+            var Affs = ctxView.Controls.OfType<AffiliationDisplay>().ToList();
+
+            var State = new OllamaTranslationTask.LLMSaveState()
+            {
+                Characters = Chars.FirstOrDefault().GetList().ToArray(),
+                Affiliations = Affs.FirstOrDefault().GetList().ToArray(),
+                AnalyzeProgress = (uint)numProgress.Value
+            };
+
+            return State;
+        }
+
+        private void btnUpdateContext_Click(object sender, EventArgs e)
+        {
+            if (TaskCreator is OllamaTranslationTask ollama)
+            {
+                var State = GetStateFromDesigner();
+                ollama.UpdateState(State);
+                return;
+            }
+
+            MessageBox.Show("No Active Ollama LLM Context Loaded.", "TLBOT", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        private void AsianModeChanged(object sender, EventArgs e)
+        {
+            Program.FilterSettings.AsianMode = ckAsian.Checked;
         }
     }
 }

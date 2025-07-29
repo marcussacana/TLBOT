@@ -89,6 +89,11 @@ namespace AdvancedBinary {
     }
 
     /// <summary>
+    /// Single Byte Prefix for Nullable Objects
+    /// </summary>
+    public class FNullable : Attribute { }
+
+    /// <summary>
     /// Struct Field Type (required only to sub structs)
     /// </summary>
     public class StructField : Attribute { }
@@ -119,6 +124,7 @@ namespace AdvancedBinary {
         public const string FARRAY = "FArray";
         public const string PARRAY = "PArray";
         public const string RARRAY = "RArray";
+        public const string NULLABLE = "FNullable";
     }
 
     static class Tools {
@@ -315,13 +321,24 @@ namespace AdvancedBinary {
             foreach (FieldInfo field in fields) {
                 if (HasAttribute(field, Const.IGNORE))
                     continue;
+
                 dynamic Value = field.GetValue(Instance);
+
+                if (HasAttribute(field, Const.NULLABLE))
+                {
+                    if (Value == null)
+                    {
+                        base.Write((byte)0);
+                        continue;
+                    }
+                    base.Write((byte)1);
+                }
+
                 string Type = field.FieldType.ToString();
                 if (!Type.EndsWith("[]")) {
                     WriteField(Value, Type, field, ref Instance);
                     continue;
                 }
-                
                 if (HasAttribute(field, Const.FARRAY)) {
                     long Length = Tools.GetAttributePropertyValue(field, Const.FARRAY, "Length");
 
@@ -409,6 +426,12 @@ namespace AdvancedBinary {
                             field.SetValue(Instance, Invoker);
                         } else if (BigEndian)
                             Write(Tools.Reverse(Value));
+                        else if (field.FieldType.IsEnum)
+                        {
+                            var CastType = field.FieldType.GetEnumUnderlyingType();
+                            var FinalValue = Convert.ChangeType(Value, CastType);
+                            Write(FinalValue);
+                        }
                         else
                             Write(Value);
                     }
@@ -544,6 +567,15 @@ namespace AdvancedBinary {
                 FieldInfo field = fields[i];
                 if (Tools.HasAttribute(field, Const.IGNORE))
                     continue;
+
+                if (Tools.HasAttribute(field, Const.NULLABLE))
+                {
+                    if (base.ReadByte() == 0)
+                    {
+                        field.SetValue(Instance, null);
+                        continue;
+                    }
+                }
 
                 string FType = field.FieldType.ToString();
                 dynamic Value = null;
@@ -694,6 +726,13 @@ namespace AdvancedBinary {
                             if (Invoker == null)
                                 break;
                             Instance = Invoker.Invoke(BaseStream, true, Instance);
+                            break;
+                        }
+                        if (field.FieldType.IsEnum)
+                        {
+                            Type FieldType = System.Type.GetType(Type);
+                            var uncastedValue = ReadField(field.FieldType.GetEnumUnderlyingType().FullName, field, ref Instance);
+                            Value = Enum.Parse(FieldType, uncastedValue.ToString());
                             break;
                         }
                         throw new Exception("Unk Struct Field: " + field.FieldType.ToString());

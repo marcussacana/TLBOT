@@ -30,6 +30,12 @@ namespace TLBOT {
             };
             FileDialog.Multiselect = true;
 
+
+            if (!string.IsNullOrWhiteSpace(Filter) && Filter != "*.*")
+                FileDialog.Filters.Add(new CommonFileDialogFilter("Supported Files", Filter));
+
+            FileDialog.Filters.Add(new CommonFileDialogFilter("All Files", "*.*"));
+
             if (FileDialog.ShowDialog(Handle) != CommonFileDialogResult.Ok)
                 return;
 

@@ -84,8 +84,14 @@ namespace TLBOT {
                     case "multi threaded":
                         return TransMode.Multithread;
 
+                    case "simple":
                     case "normal":
                         return TransMode.Normal;
+
+                    case "context aware":
+                        return TransMode.ContextAware;
+                    case "static context":
+                        return TransMode.StaticContext;
                 }
             }
         }
@@ -94,6 +100,9 @@ namespace TLBOT {
         {
             get
             {
+                if (FilterSettings.AsianMode)
+                    return true;
+
                 string Lang = Settings.SourceLang.ToUpper().Trim().Replace("-", "");
                 switch (Lang)
                 {
@@ -261,8 +270,11 @@ namespace TLBOT {
                     ManualChecked = ForceDialogues.Values.OfType<bool>().ToArray()
                 };
 
+                if (File.Exists(CachePath + ".bak"))
+                    File.Delete(CachePath + ".bak");
+
                 if (File.Exists(CachePath))
-                    File.Delete(CachePath);
+                    File.Move(CachePath, CachePath + ".bak");
 
                 using (StructWriter Writer = new StructWriter(CachePath)) {
                     Writer.WriteStruct(ref Cache);
@@ -410,6 +422,8 @@ namespace TLBOT {
         public bool UsePos;
         [FieldParmaters(DefaultValue = false, Name = "UsePosCaution")]
         public bool UsePosCaution;
+        [FieldParmaters(DefaultValue = false, Name = "AsianMode")]
+        public bool AsianMode;
     }
 
     [FieldParmaters(Name = "WordWrap")]

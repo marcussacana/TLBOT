@@ -24,20 +24,26 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            this.MainTabControl = new System.Windows.Forms.TabControl();
-            this.ViewTab = new System.Windows.Forms.TabPage();
-            this.bntSearch = new System.Windows.Forms.Button();
-            this.bntViewScript = new System.Windows.Forms.Button();
-            this.StringList = new System.Windows.Forms.CheckedListBox();
-            this.bntNewTask = new System.Windows.Forms.Button();
-            this.lblState = new System.Windows.Forms.Label();
-            this.lblInfoPrefix = new System.Windows.Forms.Label();
-            this.TaskProgress = new System.Windows.Forms.ProgressBar();
+            this.DBPageCounter = new System.Windows.Forms.Timer(this.components);
+            this.CacheLoadedVerify = new System.Windows.Forms.Timer(this.components);
+            this.TranslationDB = new System.Windows.Forms.TabPage();
+            this.GenDBBnt = new System.Windows.Forms.Button();
+            this.OptimizeDbBnt = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.DBPageSelector = new System.Windows.Forms.NumericUpDown();
+            this.ImportLstBnt = new System.Windows.Forms.Button();
+            this.ExportLstBnt = new System.Windows.Forms.Button();
+            this.ClearDbBnt = new System.Windows.Forms.Button();
+            this.ShowDBBnt = new System.Windows.Forms.Button();
+            this.DBStrList = new System.Windows.Forms.ListView();
+            this.OriCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.TransCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.OptionsTab = new System.Windows.Forms.TabPage();
             this.ckDelEmpty = new System.Windows.Forms.CheckBox();
             this.ckLstMode = new System.Windows.Forms.CheckBox();
             this.bntTestClient = new System.Windows.Forms.Button();
             this.SensentiveGB = new System.Windows.Forms.GroupBox();
+            this.ckAsian = new System.Windows.Forms.CheckBox();
             this.ckUsePos = new System.Windows.Forms.CheckBox();
             this.ckUseDB = new System.Windows.Forms.CheckBox();
             this.lblBarVal = new System.Windows.Forms.Label();
@@ -70,144 +76,178 @@
             this.label1 = new System.Windows.Forms.Label();
             this.TLCLientMenu = new System.Windows.Forms.ComboBox();
             this.lblClientPrefix = new System.Windows.Forms.Label();
-            this.TranslationDB = new System.Windows.Forms.TabPage();
-            this.GenDBBnt = new System.Windows.Forms.Button();
-            this.OptimizeDbBnt = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.DBPageSelector = new System.Windows.Forms.NumericUpDown();
-            this.ImportLstBnt = new System.Windows.Forms.Button();
-            this.ExportLstBnt = new System.Windows.Forms.Button();
-            this.ClearDbBnt = new System.Windows.Forms.Button();
-            this.ShowDBBnt = new System.Windows.Forms.Button();
-            this.DBStrList = new System.Windows.Forms.ListView();
-            this.OriCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.TransCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.DBPageCounter = new System.Windows.Forms.Timer(this.components);
-            this.CacheLoadedVerify = new System.Windows.Forms.Timer(this.components);
-            this.MainTabControl.SuspendLayout();
-            this.ViewTab.SuspendLayout();
+            this.ViewTab = new System.Windows.Forms.TabPage();
+            this.CurrentTaskProgress = new System.Windows.Forms.ProgressBar();
+            this.bntSearch = new System.Windows.Forms.Button();
+            this.bntViewScript = new System.Windows.Forms.Button();
+            this.StringList = new System.Windows.Forms.CheckedListBox();
+            this.bntNewTask = new System.Windows.Forms.Button();
+            this.lblState = new System.Windows.Forms.Label();
+            this.lblInfoPrefix = new System.Windows.Forms.Label();
+            this.TaskProgress = new System.Windows.Forms.ProgressBar();
+            this.MainTabControl = new System.Windows.Forms.TabControl();
+            this.contextEditor = new System.Windows.Forms.TabPage();
+            this.lblAnalyze = new System.Windows.Forms.Label();
+            this.numProgress = new System.Windows.Forms.NumericUpDown();
+            this.ctxView = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnUpdateContext = new System.Windows.Forms.Button();
+            this.btnContext = new System.Windows.Forms.Button();
+            this.btnExportContext = new System.Windows.Forms.Button();
+            this.btnImportContext = new System.Windows.Forms.Button();
+            this.TranslationDB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DBPageSelector)).BeginInit();
             this.OptionsTab.SuspendLayout();
             this.SensentiveGB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SensetiveBar)).BeginInit();
             this.lblMaxLines.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MaxLines)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LineLimit)).BeginInit();
-            this.TranslationDB.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DBPageSelector)).BeginInit();
+            this.ViewTab.SuspendLayout();
+            this.MainTabControl.SuspendLayout();
+            this.contextEditor.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numProgress)).BeginInit();
             this.SuspendLayout();
             // 
-            // MainTabControl
+            // DBPageCounter
             // 
-            this.MainTabControl.Controls.Add(this.ViewTab);
-            this.MainTabControl.Controls.Add(this.OptionsTab);
-            this.MainTabControl.Controls.Add(this.TranslationDB);
-            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.MainTabControl.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.MainTabControl.MinimumSize = new System.Drawing.Size(1222, 762);
-            this.MainTabControl.Name = "MainTabControl";
-            this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(1224, 763);
-            this.MainTabControl.TabIndex = 0;
+            this.DBPageCounter.Enabled = true;
+            this.DBPageCounter.Interval = 1000;
+            this.DBPageCounter.Tick += new System.EventHandler(this.DBPageCounter_Tick);
             // 
-            // ViewTab
+            // CacheLoadedVerify
             // 
-            this.ViewTab.Controls.Add(this.bntSearch);
-            this.ViewTab.Controls.Add(this.bntViewScript);
-            this.ViewTab.Controls.Add(this.StringList);
-            this.ViewTab.Controls.Add(this.bntNewTask);
-            this.ViewTab.Controls.Add(this.lblState);
-            this.ViewTab.Controls.Add(this.lblInfoPrefix);
-            this.ViewTab.Controls.Add(this.TaskProgress);
-            this.ViewTab.Location = new System.Drawing.Point(4, 29);
-            this.ViewTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ViewTab.Name = "ViewTab";
-            this.ViewTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ViewTab.Size = new System.Drawing.Size(1216, 730);
-            this.ViewTab.TabIndex = 0;
-            this.ViewTab.Text = "Visualização";
-            this.ViewTab.UseVisualStyleBackColor = true;
+            this.CacheLoadedVerify.Enabled = true;
+            this.CacheLoadedVerify.Interval = 200;
+            this.CacheLoadedVerify.Tick += new System.EventHandler(this.CacheLoadedVerifier);
             // 
-            // bntSearch
+            // TranslationDB
             // 
-            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntSearch.Location = new System.Drawing.Point(810, 675);
-            this.bntSearch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.bntSearch.Name = "bntSearch";
-            this.bntSearch.Size = new System.Drawing.Size(112, 35);
-            this.bntSearch.TabIndex = 19;
-            this.bntSearch.Text = "Pesquisar";
-            this.bntSearch.UseVisualStyleBackColor = true;
-            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
+            this.TranslationDB.Controls.Add(this.GenDBBnt);
+            this.TranslationDB.Controls.Add(this.OptimizeDbBnt);
+            this.TranslationDB.Controls.Add(this.label5);
+            this.TranslationDB.Controls.Add(this.DBPageSelector);
+            this.TranslationDB.Controls.Add(this.ImportLstBnt);
+            this.TranslationDB.Controls.Add(this.ExportLstBnt);
+            this.TranslationDB.Controls.Add(this.ClearDbBnt);
+            this.TranslationDB.Controls.Add(this.ShowDBBnt);
+            this.TranslationDB.Controls.Add(this.DBStrList);
+            this.TranslationDB.Location = new System.Drawing.Point(4, 22);
+            this.TranslationDB.Name = "TranslationDB";
+            this.TranslationDB.Padding = new System.Windows.Forms.Padding(3);
+            this.TranslationDB.Size = new System.Drawing.Size(808, 470);
+            this.TranslationDB.TabIndex = 2;
+            this.TranslationDB.Text = "Banco de Dados";
+            this.TranslationDB.UseVisualStyleBackColor = true;
             // 
-            // bntViewScript
+            // GenDBBnt
             // 
-            this.bntViewScript.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntViewScript.Location = new System.Drawing.Point(932, 675);
-            this.bntViewScript.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.bntViewScript.Name = "bntViewScript";
-            this.bntViewScript.Size = new System.Drawing.Size(141, 35);
-            this.bntViewScript.TabIndex = 6;
-            this.bntViewScript.Text = "Visualizar Script";
-            this.bntViewScript.UseVisualStyleBackColor = true;
-            this.bntViewScript.Click += new System.EventHandler(this.PreviewDialoguesClick);
+            this.GenDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.GenDBBnt.Location = new System.Drawing.Point(261, 439);
+            this.GenDBBnt.Name = "GenDBBnt";
+            this.GenDBBnt.Size = new System.Drawing.Size(103, 23);
+            this.GenDBBnt.TabIndex = 8;
+            this.GenDBBnt.Text = "Gerar Database";
+            this.GenDBBnt.UseVisualStyleBackColor = true;
+            this.GenDBBnt.Click += new System.EventHandler(this.GenDBBnt_Click);
             // 
-            // StringList
+            // OptimizeDbBnt
             // 
-            this.StringList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OptimizeDbBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OptimizeDbBnt.Location = new System.Drawing.Point(588, 439);
+            this.OptimizeDbBnt.Name = "OptimizeDbBnt";
+            this.OptimizeDbBnt.Size = new System.Drawing.Size(103, 23);
+            this.OptimizeDbBnt.TabIndex = 7;
+            this.OptimizeDbBnt.Text = "Otimizar Database";
+            this.OptimizeDbBnt.UseVisualStyleBackColor = true;
+            this.OptimizeDbBnt.Click += new System.EventHandler(this.OptimizeDbBnt_Click);
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label5.Location = new System.Drawing.Point(117, 439);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(68, 23);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Página:";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // DBPageSelector
+            // 
+            this.DBPageSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.DBPageSelector.Location = new System.Drawing.Point(191, 442);
+            this.DBPageSelector.Name = "DBPageSelector";
+            this.DBPageSelector.Size = new System.Drawing.Size(55, 20);
+            this.DBPageSelector.TabIndex = 5;
+            // 
+            // ImportLstBnt
+            // 
+            this.ImportLstBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ImportLstBnt.Location = new System.Drawing.Point(370, 439);
+            this.ImportLstBnt.Name = "ImportLstBnt";
+            this.ImportLstBnt.Size = new System.Drawing.Size(103, 23);
+            this.ImportLstBnt.TabIndex = 4;
+            this.ImportLstBnt.Text = "Importar Database";
+            this.ImportLstBnt.UseVisualStyleBackColor = true;
+            this.ImportLstBnt.Click += new System.EventHandler(this.ImportLstBnt_Click);
+            // 
+            // ExportLstBnt
+            // 
+            this.ExportLstBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ExportLstBnt.Location = new System.Drawing.Point(479, 439);
+            this.ExportLstBnt.Name = "ExportLstBnt";
+            this.ExportLstBnt.Size = new System.Drawing.Size(103, 23);
+            this.ExportLstBnt.TabIndex = 3;
+            this.ExportLstBnt.Text = "Exportar Database";
+            this.ExportLstBnt.UseVisualStyleBackColor = true;
+            this.ExportLstBnt.Click += new System.EventHandler(this.ExportLstBnt_Click);
+            // 
+            // ClearDbBnt
+            // 
+            this.ClearDbBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ClearDbBnt.Location = new System.Drawing.Point(697, 439);
+            this.ClearDbBnt.Name = "ClearDbBnt";
+            this.ClearDbBnt.Size = new System.Drawing.Size(103, 23);
+            this.ClearDbBnt.TabIndex = 2;
+            this.ClearDbBnt.Text = "Limpar Database";
+            this.ClearDbBnt.UseVisualStyleBackColor = true;
+            this.ClearDbBnt.Click += new System.EventHandler(this.ClearDbBnt_Click);
+            // 
+            // ShowDBBnt
+            // 
+            this.ShowDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ShowDBBnt.Location = new System.Drawing.Point(8, 439);
+            this.ShowDBBnt.Name = "ShowDBBnt";
+            this.ShowDBBnt.Size = new System.Drawing.Size(103, 23);
+            this.ShowDBBnt.TabIndex = 1;
+            this.ShowDBBnt.Text = "Exibir Database";
+            this.ShowDBBnt.UseVisualStyleBackColor = true;
+            this.ShowDBBnt.Click += new System.EventHandler(this.ShowDBBnt_Click);
+            // 
+            // DBStrList
+            // 
+            this.DBStrList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.StringList.FormattingEnabled = true;
-            this.StringList.Location = new System.Drawing.Point(9, 9);
-            this.StringList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.StringList.Name = "StringList";
-            this.StringList.Size = new System.Drawing.Size(1189, 625);
-            this.StringList.TabIndex = 5;
-            this.StringList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.StringListManualChecked);
-            this.StringList.Click += new System.EventHandler(this.StringListClicked);
+            this.DBStrList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.OriCol,
+            this.TransCol});
+            this.DBStrList.HideSelection = false;
+            this.DBStrList.Location = new System.Drawing.Point(6, 3);
+            this.DBStrList.Name = "DBStrList";
+            this.DBStrList.Size = new System.Drawing.Size(794, 427);
+            this.DBStrList.TabIndex = 0;
+            this.DBStrList.UseCompatibleStateImageBehavior = false;
+            this.DBStrList.View = System.Windows.Forms.View.Details;
             // 
-            // bntNewTask
+            // OriCol
             // 
-            this.bntNewTask.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bntNewTask.Location = new System.Drawing.Point(1082, 675);
-            this.bntNewTask.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.bntNewTask.Name = "bntNewTask";
-            this.bntNewTask.Size = new System.Drawing.Size(118, 35);
-            this.bntNewTask.TabIndex = 4;
-            this.bntNewTask.Text = "Nova Tarefa";
-            this.bntNewTask.UseVisualStyleBackColor = true;
-            this.bntNewTask.Click += new System.EventHandler(this.NewTask_Click);
+            this.OriCol.Text = "Original";
+            this.OriCol.Width = 343;
             // 
-            // lblState
+            // TransCol
             // 
-            this.lblState.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblState.Location = new System.Drawing.Point(540, 683);
-            this.lblState.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblState.Name = "lblState";
-            this.lblState.Size = new System.Drawing.Size(261, 20);
-            this.lblState.TabIndex = 3;
-            this.lblState.Text = "Loading Cache...";
-            // 
-            // lblInfoPrefix
-            // 
-            this.lblInfoPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblInfoPrefix.AutoSize = true;
-            this.lblInfoPrefix.Location = new System.Drawing.Point(466, 683);
-            this.lblInfoPrefix.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblInfoPrefix.Name = "lblInfoPrefix";
-            this.lblInfoPrefix.Size = new System.Drawing.Size(64, 20);
-            this.lblInfoPrefix.TabIndex = 2;
-            this.lblInfoPrefix.Text = "Estado:";
-            // 
-            // TaskProgress
-            // 
-            this.TaskProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.TaskProgress.Location = new System.Drawing.Point(12, 675);
-            this.TaskProgress.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.TaskProgress.Name = "TaskProgress";
-            this.TaskProgress.Size = new System.Drawing.Size(446, 35);
-            this.TaskProgress.TabIndex = 1;
+            this.TransCol.Text = "Tradução";
+            this.TransCol.Width = 446;
             // 
             // OptionsTab
             // 
@@ -230,11 +270,10 @@
             this.OptionsTab.Controls.Add(this.label1);
             this.OptionsTab.Controls.Add(this.TLCLientMenu);
             this.OptionsTab.Controls.Add(this.lblClientPrefix);
-            this.OptionsTab.Location = new System.Drawing.Point(4, 29);
-            this.OptionsTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.OptionsTab.Location = new System.Drawing.Point(4, 22);
             this.OptionsTab.Name = "OptionsTab";
-            this.OptionsTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.OptionsTab.Size = new System.Drawing.Size(1216, 730);
+            this.OptionsTab.Padding = new System.Windows.Forms.Padding(3);
+            this.OptionsTab.Size = new System.Drawing.Size(808, 470);
             this.OptionsTab.TabIndex = 1;
             this.OptionsTab.Text = "Opções";
             this.OptionsTab.UseVisualStyleBackColor = true;
@@ -242,10 +281,9 @@
             // ckDelEmpty
             // 
             this.ckDelEmpty.AutoSize = true;
-            this.ckDelEmpty.Location = new System.Drawing.Point(520, 71);
-            this.ckDelEmpty.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckDelEmpty.Location = new System.Drawing.Point(347, 46);
             this.ckDelEmpty.Name = "ckDelEmpty";
-            this.ckDelEmpty.Size = new System.Drawing.Size(104, 24);
+            this.ckDelEmpty.Size = new System.Drawing.Size(72, 17);
             this.ckDelEmpty.TabIndex = 20;
             this.ckDelEmpty.Text = "Del. Emp.";
             this.ckDelEmpty.UseVisualStyleBackColor = true;
@@ -253,10 +291,9 @@
             // ckLstMode
             // 
             this.ckLstMode.AutoSize = true;
-            this.ckLstMode.Location = new System.Drawing.Point(198, 197);
-            this.ckLstMode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckLstMode.Location = new System.Drawing.Point(126, 132);
             this.ckLstMode.Name = "ckLstMode";
-            this.ckLstMode.Size = new System.Drawing.Size(64, 24);
+            this.ckLstMode.Size = new System.Drawing.Size(46, 17);
             this.ckLstMode.TabIndex = 19;
             this.ckLstMode.Text = "LST";
             this.ckLstMode.UseVisualStyleBackColor = true;
@@ -265,10 +302,9 @@
             // bntTestClient
             // 
             this.bntTestClient.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.bntTestClient.Location = new System.Drawing.Point(21, 192);
-            this.bntTestClient.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.bntTestClient.Location = new System.Drawing.Point(12, 129);
             this.bntTestClient.Name = "bntTestClient";
-            this.bntTestClient.Size = new System.Drawing.Size(63, 35);
+            this.bntTestClient.Size = new System.Drawing.Size(42, 23);
             this.bntTestClient.TabIndex = 17;
             this.bntTestClient.Text = "Test Client";
             this.bntTestClient.UseVisualStyleBackColor = true;
@@ -276,20 +312,31 @@
             // 
             // SensentiveGB
             // 
+            this.SensentiveGB.Controls.Add(this.ckAsian);
             this.SensentiveGB.Controls.Add(this.ckUsePos);
             this.SensentiveGB.Controls.Add(this.ckUseDB);
             this.SensentiveGB.Controls.Add(this.lblBarVal);
             this.SensentiveGB.Controls.Add(this.lblMoreSensetive);
             this.SensentiveGB.Controls.Add(this.lblLessSensentive);
             this.SensentiveGB.Controls.Add(this.SensetiveBar);
-            this.SensentiveGB.Location = new System.Drawing.Point(318, 105);
-            this.SensentiveGB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.SensentiveGB.Location = new System.Drawing.Point(213, 73);
             this.SensentiveGB.Name = "SensentiveGB";
-            this.SensentiveGB.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.SensentiveGB.Size = new System.Drawing.Size(348, 120);
+            this.SensentiveGB.Size = new System.Drawing.Size(232, 105);
             this.SensentiveGB.TabIndex = 16;
             this.SensentiveGB.TabStop = false;
             this.SensentiveGB.Text = "Sensibilidade do Filtro";
+            // 
+            // ckAsian
+            // 
+            this.ckAsian.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ckAsian.AutoSize = true;
+            this.ckAsian.Location = new System.Drawing.Point(77, 82);
+            this.ckAsian.Name = "ckAsian";
+            this.ckAsian.Size = new System.Drawing.Size(63, 17);
+            this.ckAsian.TabIndex = 22;
+            this.ckAsian.Text = "Asiático";
+            this.ckAsian.UseVisualStyleBackColor = true;
+            this.ckAsian.CheckedChanged += new System.EventHandler(this.AsianModeChanged);
             // 
             // ckUsePos
             // 
@@ -297,10 +344,9 @@
             this.ckUsePos.AutoSize = true;
             this.ckUsePos.Checked = true;
             this.ckUsePos.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.ckUsePos.Location = new System.Drawing.Point(226, 86);
-            this.ckUsePos.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckUsePos.Location = new System.Drawing.Point(151, 81);
             this.ckUsePos.Name = "ckUsePos";
-            this.ckUsePos.Size = new System.Drawing.Size(116, 24);
+            this.ckUsePos.Size = new System.Drawing.Size(80, 17);
             this.ckUsePos.TabIndex = 21;
             this.ckUsePos.Text = "Usar Índice";
             this.ckUsePos.ThreeState = true;
@@ -311,10 +357,9 @@
             // 
             this.ckUseDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ckUseDB.AutoSize = true;
-            this.ckUseDB.Location = new System.Drawing.Point(9, 87);
-            this.ckUseDB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckUseDB.Location = new System.Drawing.Point(6, 82);
             this.ckUseDB.Name = "ckUseDB";
-            this.ckUseDB.Size = new System.Drawing.Size(96, 24);
+            this.ckUseDB.Size = new System.Drawing.Size(66, 17);
             this.ckUseDB.TabIndex = 20;
             this.ckUseDB.Text = "Usar DB";
             this.ckUseDB.UseVisualStyleBackColor = true;
@@ -324,10 +369,10 @@
             // 
             this.lblBarVal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblBarVal.Location = new System.Drawing.Point(94, 86);
-            this.lblBarVal.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblBarVal.BackColor = System.Drawing.SystemColors.Control;
+            this.lblBarVal.Location = new System.Drawing.Point(27, 56);
             this.lblBarVal.Name = "lblBarVal";
-            this.lblBarVal.Size = new System.Drawing.Size(149, 29);
+            this.lblBarVal.Size = new System.Drawing.Size(171, 19);
             this.lblBarVal.TabIndex = 19;
             this.lblBarVal.Text = "2";
             this.lblBarVal.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -335,20 +380,18 @@
             // lblMoreSensetive
             // 
             this.lblMoreSensetive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblMoreSensetive.Location = new System.Drawing.Point(305, 29);
-            this.lblMoreSensetive.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblMoreSensetive.Location = new System.Drawing.Point(203, 19);
             this.lblMoreSensetive.Name = "lblMoreSensetive";
-            this.lblMoreSensetive.Size = new System.Drawing.Size(26, 28);
+            this.lblMoreSensetive.Size = new System.Drawing.Size(17, 18);
             this.lblMoreSensetive.TabIndex = 18;
             this.lblMoreSensetive.Text = "+";
             this.lblMoreSensetive.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblLessSensentive
             // 
-            this.lblLessSensentive.Location = new System.Drawing.Point(9, 29);
-            this.lblLessSensentive.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblLessSensentive.Location = new System.Drawing.Point(6, 19);
             this.lblLessSensentive.Name = "lblLessSensentive";
-            this.lblLessSensentive.Size = new System.Drawing.Size(24, 28);
+            this.lblLessSensentive.Size = new System.Drawing.Size(16, 18);
             this.lblLessSensentive.TabIndex = 17;
             this.lblLessSensentive.Text = "-";
             this.lblLessSensentive.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -357,14 +400,13 @@
             // 
             this.SensetiveBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SensetiveBar.BackColor = System.Drawing.Color.White;
+            this.SensetiveBar.BackColor = System.Drawing.SystemColors.Control;
             this.SensetiveBar.LargeChange = 1;
-            this.SensetiveBar.Location = new System.Drawing.Point(41, 29);
-            this.SensetiveBar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.SensetiveBar.Location = new System.Drawing.Point(27, 19);
             this.SensetiveBar.Maximum = 6;
             this.SensetiveBar.Minimum = -6;
             this.SensetiveBar.Name = "SensetiveBar";
-            this.SensetiveBar.Size = new System.Drawing.Size(256, 69);
+            this.SensetiveBar.Size = new System.Drawing.Size(171, 45);
             this.SensetiveBar.TabIndex = 15;
             this.SensetiveBar.TickFrequency = 2;
             this.SensetiveBar.ValueChanged += new System.EventHandler(this.SensetiveChanged);
@@ -372,10 +414,9 @@
             // ckTransTLBot
             // 
             this.ckTransTLBot.AutoSize = true;
-            this.ckTransTLBot.Location = new System.Drawing.Point(99, 197);
-            this.ckTransTLBot.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckTransTLBot.Location = new System.Drawing.Point(64, 132);
             this.ckTransTLBot.Name = "ckTransTLBot";
-            this.ckTransTLBot.Size = new System.Drawing.Size(85, 24);
+            this.ckTransTLBot.Size = new System.Drawing.Size(60, 17);
             this.ckTransTLBot.TabIndex = 14;
             this.ckTransTLBot.Text = "Self TL";
             this.ckTransTLBot.UseVisualStyleBackColor = true;
@@ -383,20 +424,18 @@
             // 
             // LineBreaker
             // 
-            this.LineBreaker.Location = new System.Drawing.Point(420, 68);
-            this.LineBreaker.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.LineBreaker.Location = new System.Drawing.Point(280, 44);
             this.LineBreaker.Name = "LineBreaker";
-            this.LineBreaker.Size = new System.Drawing.Size(91, 26);
+            this.LineBreaker.Size = new System.Drawing.Size(62, 20);
             this.LineBreaker.TabIndex = 13;
             this.LineBreaker.Text = "\\n";
             this.LineBreaker.TextChanged += new System.EventHandler(this.LineBreakerChanged);
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(273, 72);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(182, 47);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(138, 20);
+            this.label4.Size = new System.Drawing.Size(92, 13);
             this.label4.TabIndex = 12;
             this.label4.Text = "Quebra de linha:";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -415,19 +454,16 @@
             this.lblMaxLines.Controls.Add(this.LineLimit);
             this.lblMaxLines.Controls.Add(this.lblLineLimit);
             this.lblMaxLines.Controls.Add(this.ckFakeBreakLine);
-            this.lblMaxLines.Location = new System.Drawing.Point(682, 22);
-            this.lblMaxLines.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.lblMaxLines.Location = new System.Drawing.Point(455, 14);
             this.lblMaxLines.Name = "lblMaxLines";
-            this.lblMaxLines.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.lblMaxLines.Size = new System.Drawing.Size(516, 206);
+            this.lblMaxLines.Size = new System.Drawing.Size(344, 164);
             this.lblMaxLines.TabIndex = 11;
             this.lblMaxLines.TabStop = false;
             this.lblMaxLines.Text = "Word Wrap";
             // 
             // MaxLines
             // 
-            this.MaxLines.Location = new System.Drawing.Point(346, 72);
-            this.MaxLines.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.MaxLines.Location = new System.Drawing.Point(231, 47);
             this.MaxLines.Maximum = new decimal(new int[] {
             10,
             0,
@@ -439,7 +475,7 @@
             0,
             -2147483648});
             this.MaxLines.Name = "MaxLines";
-            this.MaxLines.Size = new System.Drawing.Size(161, 26);
+            this.MaxLines.Size = new System.Drawing.Size(107, 20);
             this.MaxLines.TabIndex = 11;
             this.MaxLines.Value = new decimal(new int[] {
             4,
@@ -450,10 +486,9 @@
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(188, 69);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(125, 45);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(150, 25);
+            this.label6.Size = new System.Drawing.Size(100, 16);
             this.label6.TabIndex = 10;
             this.label6.Text = "Max. de Linhas";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -461,10 +496,9 @@
             // ckBold
             // 
             this.ckBold.AutoSize = true;
-            this.ckBold.Location = new System.Drawing.Point(9, 100);
-            this.ckBold.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckBold.Location = new System.Drawing.Point(6, 65);
             this.ckBold.Name = "ckBold";
-            this.ckBold.Size = new System.Drawing.Size(86, 24);
+            this.ckBold.Size = new System.Drawing.Size(60, 17);
             this.ckBold.TabIndex = 9;
             this.ckBold.Text = "Negrito";
             this.ckBold.UseVisualStyleBackColor = true;
@@ -473,41 +507,37 @@
             // FontSize
             // 
             this.FontSize.Enabled = false;
-            this.FontSize.Location = new System.Drawing.Point(346, 115);
-            this.FontSize.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.FontSize.Location = new System.Drawing.Point(231, 75);
             this.FontSize.Mask = "00.0";
             this.FontSize.Name = "FontSize";
-            this.FontSize.Size = new System.Drawing.Size(159, 26);
+            this.FontSize.Size = new System.Drawing.Size(107, 20);
             this.FontSize.TabIndex = 8;
             this.FontSize.Text = "120";
             this.FontSize.TextChanged += new System.EventHandler(this.FontSizeChanged);
             // 
             // lblFontSize
             // 
-            this.lblFontSize.Location = new System.Drawing.Point(188, 116);
-            this.lblFontSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblFontSize.Location = new System.Drawing.Point(125, 75);
             this.lblFontSize.Name = "lblFontSize";
-            this.lblFontSize.Size = new System.Drawing.Size(150, 25);
+            this.lblFontSize.Size = new System.Drawing.Size(100, 16);
             this.lblFontSize.TabIndex = 7;
             this.lblFontSize.Text = "Tamanho da Fonte:";
             this.lblFontSize.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // FaceName
             // 
-            this.FaceName.Location = new System.Drawing.Point(346, 155);
-            this.FaceName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.FaceName.Location = new System.Drawing.Point(231, 101);
             this.FaceName.Name = "FaceName";
-            this.FaceName.Size = new System.Drawing.Size(159, 26);
+            this.FaceName.Size = new System.Drawing.Size(107, 20);
             this.FaceName.TabIndex = 6;
             this.FaceName.Text = "Consolas";
             this.FaceName.TextChanged += new System.EventHandler(this.FontNameChanged);
             // 
             // lblFaceName
             // 
-            this.lblFaceName.Location = new System.Drawing.Point(188, 153);
-            this.lblFaceName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblFaceName.Location = new System.Drawing.Point(125, 99);
             this.lblFaceName.Name = "lblFaceName";
-            this.lblFaceName.Size = new System.Drawing.Size(150, 25);
+            this.lblFaceName.Size = new System.Drawing.Size(100, 16);
             this.lblFaceName.TabIndex = 5;
             this.lblFaceName.Text = "Nome da Fonte:";
             this.lblFaceName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -517,10 +547,9 @@
             this.ckMonospaced.AutoSize = true;
             this.ckMonospaced.Checked = true;
             this.ckMonospaced.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckMonospaced.Location = new System.Drawing.Point(9, 28);
-            this.ckMonospaced.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckMonospaced.Location = new System.Drawing.Point(6, 18);
             this.ckMonospaced.Name = "ckMonospaced";
-            this.ckMonospaced.Size = new System.Drawing.Size(171, 24);
+            this.ckMonospaced.Size = new System.Drawing.Size(118, 17);
             this.ckMonospaced.TabIndex = 4;
             this.ckMonospaced.Text = "Modo Monospaced";
             this.ckMonospaced.UseVisualStyleBackColor = true;
@@ -528,8 +557,7 @@
             // 
             // LineLimit
             // 
-            this.LineLimit.Location = new System.Drawing.Point(346, 27);
-            this.LineLimit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.LineLimit.Location = new System.Drawing.Point(231, 18);
             this.LineLimit.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -541,16 +569,15 @@
             0,
             -2147483648});
             this.LineLimit.Name = "LineLimit";
-            this.LineLimit.Size = new System.Drawing.Size(161, 26);
+            this.LineLimit.Size = new System.Drawing.Size(107, 20);
             this.LineLimit.TabIndex = 3;
             this.LineLimit.ValueChanged += new System.EventHandler(this.MaxWidthChanged);
             // 
             // lblLineLimit
             // 
-            this.lblLineLimit.Location = new System.Drawing.Point(188, 24);
-            this.lblLineLimit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblLineLimit.Location = new System.Drawing.Point(125, 16);
             this.lblLineLimit.Name = "lblLineLimit";
-            this.lblLineLimit.Size = new System.Drawing.Size(150, 25);
+            this.lblLineLimit.Size = new System.Drawing.Size(100, 16);
             this.lblLineLimit.TabIndex = 2;
             this.lblLineLimit.Text = "Limite por Linha:";
             this.lblLineLimit.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -558,10 +585,9 @@
             // ckFakeBreakLine
             // 
             this.ckFakeBreakLine.AutoSize = true;
-            this.ckFakeBreakLine.Location = new System.Drawing.Point(9, 65);
-            this.ckFakeBreakLine.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ckFakeBreakLine.Location = new System.Drawing.Point(6, 42);
             this.ckFakeBreakLine.Name = "ckFakeBreakLine";
-            this.ckFakeBreakLine.Size = new System.Drawing.Size(174, 24);
+            this.ckFakeBreakLine.Size = new System.Drawing.Size(119, 17);
             this.ckFakeBreakLine.TabIndex = 1;
             this.ckFakeBreakLine.Text = "Wordwrap simulado";
             this.ckFakeBreakLine.UseVisualStyleBackColor = true;
@@ -574,19 +600,17 @@
             this.TargetStepMode.Items.AddRange(new object[] {
             "Single Step",
             "Double Step"});
-            this.TargetStepMode.Location = new System.Drawing.Point(420, 26);
-            this.TargetStepMode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.TargetStepMode.Location = new System.Drawing.Point(280, 17);
             this.TargetStepMode.Name = "TargetStepMode";
-            this.TargetStepMode.Size = new System.Drawing.Size(246, 28);
+            this.TargetStepMode.Size = new System.Drawing.Size(165, 21);
             this.TargetStepMode.TabIndex = 10;
             this.TargetStepMode.SelectedValueChanged += new System.EventHandler(this.StepModeChanged);
             // 
             // lblTargetSteps
             // 
-            this.lblTargetSteps.Location = new System.Drawing.Point(273, 26);
-            this.lblTargetSteps.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblTargetSteps.Location = new System.Drawing.Point(182, 17);
             this.lblTargetSteps.Name = "lblTargetSteps";
-            this.lblTargetSteps.Size = new System.Drawing.Size(138, 28);
+            this.lblTargetSteps.Size = new System.Drawing.Size(92, 18);
             this.lblTargetSteps.TabIndex = 9;
             this.lblTargetSteps.Text = "Transição:";
             this.lblTargetSteps.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -597,10 +621,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OptimizatorList.FormattingEnabled = true;
-            this.OptimizatorList.Location = new System.Drawing.Point(16, 237);
-            this.OptimizatorList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.OptimizatorList.Location = new System.Drawing.Point(11, 184);
             this.OptimizatorList.Name = "OptimizatorList";
-            this.OptimizatorList.Size = new System.Drawing.Size(1182, 441);
+            this.OptimizatorList.Size = new System.Drawing.Size(789, 259);
             this.OptimizatorList.Sorted = true;
             this.OptimizatorList.TabIndex = 8;
             this.OptimizatorList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ItemChecked);
@@ -620,10 +643,9 @@
             "PL",
             "DE",
             "KO"});
-            this.TargetLangSelector.Location = new System.Drawing.Point(168, 154);
-            this.TargetLangSelector.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.TargetLangSelector.Location = new System.Drawing.Point(112, 100);
             this.TargetLangSelector.Name = "TargetLangSelector";
-            this.TargetLangSelector.Size = new System.Drawing.Size(142, 28);
+            this.TargetLangSelector.Size = new System.Drawing.Size(96, 21);
             this.TargetLangSelector.TabIndex = 7;
             this.TargetLangSelector.Text = "EN";
             this.TargetLangSelector.SelectedValueChanged += new System.EventHandler(this.TargetLangChanged);
@@ -645,10 +667,9 @@
             "DE",
             "KO",
             "AUTO"});
-            this.SourceLangSelector.Location = new System.Drawing.Point(168, 112);
-            this.SourceLangSelector.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.SourceLangSelector.Location = new System.Drawing.Point(112, 73);
             this.SourceLangSelector.Name = "SourceLangSelector";
-            this.SourceLangSelector.Size = new System.Drawing.Size(142, 28);
+            this.SourceLangSelector.Size = new System.Drawing.Size(96, 21);
             this.SourceLangSelector.TabIndex = 6;
             this.SourceLangSelector.Text = "JA";
             this.SourceLangSelector.SelectedValueChanged += new System.EventHandler(this.SourceLangChanged);
@@ -656,20 +677,18 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(4, 154);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(3, 100);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(154, 28);
+            this.label3.Size = new System.Drawing.Size(103, 18);
             this.label3.TabIndex = 5;
             this.label3.Text = "Língua Alvo:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblSource
             // 
-            this.lblSource.Location = new System.Drawing.Point(0, 112);
-            this.lblSource.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblSource.Location = new System.Drawing.Point(0, 73);
             this.lblSource.Name = "lblSource";
-            this.lblSource.Size = new System.Drawing.Size(158, 28);
+            this.lblSource.Size = new System.Drawing.Size(105, 18);
             this.lblSource.TabIndex = 4;
             this.lblSource.Text = "Língua de Origem:";
             this.lblSource.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -682,19 +701,17 @@
             "Massive",
             "Multithread",
             "Normal"});
-            this.TransModeMenu.Location = new System.Drawing.Point(106, 63);
-            this.TransModeMenu.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.TransModeMenu.Location = new System.Drawing.Point(71, 41);
             this.TransModeMenu.Name = "TransModeMenu";
-            this.TransModeMenu.Size = new System.Drawing.Size(154, 28);
+            this.TransModeMenu.Size = new System.Drawing.Size(104, 21);
             this.TransModeMenu.TabIndex = 3;
             this.TransModeMenu.SelectedValueChanged += new System.EventHandler(this.TransModeChanged);
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(12, 68);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(8, 44);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 28);
+            this.label1.Size = new System.Drawing.Size(57, 18);
             this.label1.TabIndex = 2;
             this.label1.Text = "Modo:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -709,190 +726,251 @@
             "ChatGPT",
             "Ollama",
             "Cache Only"});
-            this.TLCLientMenu.Location = new System.Drawing.Point(106, 22);
-            this.TLCLientMenu.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.TLCLientMenu.Location = new System.Drawing.Point(71, 14);
             this.TLCLientMenu.Name = "TLCLientMenu";
-            this.TLCLientMenu.Size = new System.Drawing.Size(154, 28);
+            this.TLCLientMenu.Size = new System.Drawing.Size(104, 21);
             this.TLCLientMenu.TabIndex = 1;
             this.TLCLientMenu.SelectedValueChanged += new System.EventHandler(this.ClientChanged);
             // 
             // lblClientPrefix
             // 
-            this.lblClientPrefix.Location = new System.Drawing.Point(12, 26);
-            this.lblClientPrefix.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblClientPrefix.Location = new System.Drawing.Point(8, 17);
             this.lblClientPrefix.Name = "lblClientPrefix";
-            this.lblClientPrefix.Size = new System.Drawing.Size(86, 28);
+            this.lblClientPrefix.Size = new System.Drawing.Size(57, 18);
             this.lblClientPrefix.TabIndex = 0;
             this.lblClientPrefix.Text = "Cliente:";
             this.lblClientPrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // TranslationDB
+            // ViewTab
             // 
-            this.TranslationDB.Controls.Add(this.GenDBBnt);
-            this.TranslationDB.Controls.Add(this.OptimizeDbBnt);
-            this.TranslationDB.Controls.Add(this.label5);
-            this.TranslationDB.Controls.Add(this.DBPageSelector);
-            this.TranslationDB.Controls.Add(this.ImportLstBnt);
-            this.TranslationDB.Controls.Add(this.ExportLstBnt);
-            this.TranslationDB.Controls.Add(this.ClearDbBnt);
-            this.TranslationDB.Controls.Add(this.ShowDBBnt);
-            this.TranslationDB.Controls.Add(this.DBStrList);
-            this.TranslationDB.Location = new System.Drawing.Point(4, 29);
-            this.TranslationDB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.TranslationDB.Name = "TranslationDB";
-            this.TranslationDB.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.TranslationDB.Size = new System.Drawing.Size(1216, 730);
-            this.TranslationDB.TabIndex = 2;
-            this.TranslationDB.Text = "Banco de Dados";
-            this.TranslationDB.UseVisualStyleBackColor = true;
+            this.ViewTab.Controls.Add(this.CurrentTaskProgress);
+            this.ViewTab.Controls.Add(this.bntSearch);
+            this.ViewTab.Controls.Add(this.bntViewScript);
+            this.ViewTab.Controls.Add(this.StringList);
+            this.ViewTab.Controls.Add(this.bntNewTask);
+            this.ViewTab.Controls.Add(this.lblState);
+            this.ViewTab.Controls.Add(this.lblInfoPrefix);
+            this.ViewTab.Controls.Add(this.TaskProgress);
+            this.ViewTab.Location = new System.Drawing.Point(4, 22);
+            this.ViewTab.Name = "ViewTab";
+            this.ViewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.ViewTab.Size = new System.Drawing.Size(808, 470);
+            this.ViewTab.TabIndex = 0;
+            this.ViewTab.Text = "Visualização";
+            this.ViewTab.UseVisualStyleBackColor = true;
             // 
-            // GenDBBnt
+            // CurrentTaskProgress
             // 
-            this.GenDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.GenDBBnt.Location = new System.Drawing.Point(392, 675);
-            this.GenDBBnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.GenDBBnt.Name = "GenDBBnt";
-            this.GenDBBnt.Size = new System.Drawing.Size(154, 35);
-            this.GenDBBnt.TabIndex = 8;
-            this.GenDBBnt.Text = "Gerar Database";
-            this.GenDBBnt.UseVisualStyleBackColor = true;
-            this.GenDBBnt.Click += new System.EventHandler(this.GenDBBnt_Click);
+            this.CurrentTaskProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CurrentTaskProgress.Location = new System.Drawing.Point(8, 410);
+            this.CurrentTaskProgress.Name = "CurrentTaskProgress";
+            this.CurrentTaskProgress.Size = new System.Drawing.Size(791, 23);
+            this.CurrentTaskProgress.TabIndex = 20;
+            this.CurrentTaskProgress.Visible = false;
             // 
-            // OptimizeDbBnt
+            // bntSearch
             // 
-            this.OptimizeDbBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OptimizeDbBnt.Location = new System.Drawing.Point(882, 675);
-            this.OptimizeDbBnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.OptimizeDbBnt.Name = "OptimizeDbBnt";
-            this.OptimizeDbBnt.Size = new System.Drawing.Size(154, 35);
-            this.OptimizeDbBnt.TabIndex = 7;
-            this.OptimizeDbBnt.Text = "Otimizar Database";
-            this.OptimizeDbBnt.UseVisualStyleBackColor = true;
-            this.OptimizeDbBnt.Click += new System.EventHandler(this.OptimizeDbBnt_Click);
+            this.bntSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntSearch.Location = new System.Drawing.Point(540, 439);
+            this.bntSearch.Name = "bntSearch";
+            this.bntSearch.Size = new System.Drawing.Size(75, 23);
+            this.bntSearch.TabIndex = 19;
+            this.bntSearch.Text = "Pesquisar";
+            this.bntSearch.UseVisualStyleBackColor = true;
+            this.bntSearch.Click += new System.EventHandler(this.bntSearch_Click);
             // 
-            // label5
+            // bntViewScript
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label5.Location = new System.Drawing.Point(176, 675);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(102, 35);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Página:";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.bntViewScript.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntViewScript.Location = new System.Drawing.Point(621, 439);
+            this.bntViewScript.Name = "bntViewScript";
+            this.bntViewScript.Size = new System.Drawing.Size(94, 23);
+            this.bntViewScript.TabIndex = 6;
+            this.bntViewScript.Text = "Visualizar Script";
+            this.bntViewScript.UseVisualStyleBackColor = true;
+            this.bntViewScript.Click += new System.EventHandler(this.PreviewDialoguesClick);
             // 
-            // DBPageSelector
+            // StringList
             // 
-            this.DBPageSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.DBPageSelector.Location = new System.Drawing.Point(286, 680);
-            this.DBPageSelector.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.DBPageSelector.Name = "DBPageSelector";
-            this.DBPageSelector.Size = new System.Drawing.Size(82, 26);
-            this.DBPageSelector.TabIndex = 5;
-            // 
-            // ImportLstBnt
-            // 
-            this.ImportLstBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ImportLstBnt.Location = new System.Drawing.Point(555, 675);
-            this.ImportLstBnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ImportLstBnt.Name = "ImportLstBnt";
-            this.ImportLstBnt.Size = new System.Drawing.Size(154, 35);
-            this.ImportLstBnt.TabIndex = 4;
-            this.ImportLstBnt.Text = "Importar Database";
-            this.ImportLstBnt.UseVisualStyleBackColor = true;
-            this.ImportLstBnt.Click += new System.EventHandler(this.ImportLstBnt_Click);
-            // 
-            // ExportLstBnt
-            // 
-            this.ExportLstBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ExportLstBnt.Location = new System.Drawing.Point(718, 675);
-            this.ExportLstBnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ExportLstBnt.Name = "ExportLstBnt";
-            this.ExportLstBnt.Size = new System.Drawing.Size(154, 35);
-            this.ExportLstBnt.TabIndex = 3;
-            this.ExportLstBnt.Text = "Exportar Database";
-            this.ExportLstBnt.UseVisualStyleBackColor = true;
-            this.ExportLstBnt.Click += new System.EventHandler(this.ExportLstBnt_Click);
-            // 
-            // ClearDbBnt
-            // 
-            this.ClearDbBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ClearDbBnt.Location = new System.Drawing.Point(1046, 675);
-            this.ClearDbBnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ClearDbBnt.Name = "ClearDbBnt";
-            this.ClearDbBnt.Size = new System.Drawing.Size(154, 35);
-            this.ClearDbBnt.TabIndex = 2;
-            this.ClearDbBnt.Text = "Limpar Database";
-            this.ClearDbBnt.UseVisualStyleBackColor = true;
-            this.ClearDbBnt.Click += new System.EventHandler(this.ClearDbBnt_Click);
-            // 
-            // ShowDBBnt
-            // 
-            this.ShowDBBnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ShowDBBnt.Location = new System.Drawing.Point(12, 675);
-            this.ShowDBBnt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.ShowDBBnt.Name = "ShowDBBnt";
-            this.ShowDBBnt.Size = new System.Drawing.Size(154, 35);
-            this.ShowDBBnt.TabIndex = 1;
-            this.ShowDBBnt.Text = "Exibir Database";
-            this.ShowDBBnt.UseVisualStyleBackColor = true;
-            this.ShowDBBnt.Click += new System.EventHandler(this.ShowDBBnt_Click);
-            // 
-            // DBStrList
-            // 
-            this.DBStrList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.StringList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DBStrList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.OriCol,
-            this.TransCol});
-            this.DBStrList.HideSelection = false;
-            this.DBStrList.Location = new System.Drawing.Point(9, 5);
-            this.DBStrList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.DBStrList.Name = "DBStrList";
-            this.DBStrList.Size = new System.Drawing.Size(1189, 655);
-            this.DBStrList.TabIndex = 0;
-            this.DBStrList.UseCompatibleStateImageBehavior = false;
-            this.DBStrList.View = System.Windows.Forms.View.Details;
+            this.StringList.FormattingEnabled = true;
+            this.StringList.Location = new System.Drawing.Point(6, 6);
+            this.StringList.Name = "StringList";
+            this.StringList.Size = new System.Drawing.Size(794, 394);
+            this.StringList.TabIndex = 5;
+            this.StringList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.StringListManualChecked);
+            this.StringList.Click += new System.EventHandler(this.StringListClicked);
             // 
-            // OriCol
+            // bntNewTask
             // 
-            this.OriCol.Text = "Original";
-            this.OriCol.Width = 343;
+            this.bntNewTask.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bntNewTask.Location = new System.Drawing.Point(721, 439);
+            this.bntNewTask.Name = "bntNewTask";
+            this.bntNewTask.Size = new System.Drawing.Size(79, 23);
+            this.bntNewTask.TabIndex = 4;
+            this.bntNewTask.Text = "Nova Tarefa";
+            this.bntNewTask.UseVisualStyleBackColor = true;
+            this.bntNewTask.Click += new System.EventHandler(this.NewTask_Click);
             // 
-            // TransCol
+            // lblState
             // 
-            this.TransCol.Text = "Tradução";
-            this.TransCol.Width = 446;
+            this.lblState.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblState.Location = new System.Drawing.Point(333, 443);
+            this.lblState.Name = "lblState";
+            this.lblState.Size = new System.Drawing.Size(206, 13);
+            this.lblState.TabIndex = 3;
+            this.lblState.Text = "Loading Cache...";
             // 
-            // DBPageCounter
+            // lblInfoPrefix
             // 
-            this.DBPageCounter.Enabled = true;
-            this.DBPageCounter.Interval = 1000;
-            this.DBPageCounter.Tick += new System.EventHandler(this.DBPageCounter_Tick);
+            this.lblInfoPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblInfoPrefix.AutoSize = true;
+            this.lblInfoPrefix.Location = new System.Drawing.Point(283, 443);
+            this.lblInfoPrefix.Name = "lblInfoPrefix";
+            this.lblInfoPrefix.Size = new System.Drawing.Size(43, 13);
+            this.lblInfoPrefix.TabIndex = 2;
+            this.lblInfoPrefix.Text = "Estado:";
             // 
-            // CacheLoadedVerify
+            // TaskProgress
             // 
-            this.CacheLoadedVerify.Enabled = true;
-            this.CacheLoadedVerify.Interval = 200;
-            this.CacheLoadedVerify.Tick += new System.EventHandler(this.CacheLoadedVerifier);
+            this.TaskProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.TaskProgress.Location = new System.Drawing.Point(8, 439);
+            this.TaskProgress.Name = "TaskProgress";
+            this.TaskProgress.Size = new System.Drawing.Size(270, 23);
+            this.TaskProgress.TabIndex = 1;
+            // 
+            // MainTabControl
+            // 
+            this.MainTabControl.Controls.Add(this.ViewTab);
+            this.MainTabControl.Controls.Add(this.OptionsTab);
+            this.MainTabControl.Controls.Add(this.TranslationDB);
+            this.MainTabControl.Controls.Add(this.contextEditor);
+            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
+            this.MainTabControl.MinimumSize = new System.Drawing.Size(815, 495);
+            this.MainTabControl.Name = "MainTabControl";
+            this.MainTabControl.SelectedIndex = 0;
+            this.MainTabControl.Size = new System.Drawing.Size(816, 496);
+            this.MainTabControl.TabIndex = 0;
+            // 
+            // contextEditor
+            // 
+            this.contextEditor.Controls.Add(this.lblAnalyze);
+            this.contextEditor.Controls.Add(this.numProgress);
+            this.contextEditor.Controls.Add(this.ctxView);
+            this.contextEditor.Controls.Add(this.btnUpdateContext);
+            this.contextEditor.Controls.Add(this.btnContext);
+            this.contextEditor.Controls.Add(this.btnExportContext);
+            this.contextEditor.Controls.Add(this.btnImportContext);
+            this.contextEditor.Location = new System.Drawing.Point(4, 22);
+            this.contextEditor.Margin = new System.Windows.Forms.Padding(2);
+            this.contextEditor.Name = "contextEditor";
+            this.contextEditor.Padding = new System.Windows.Forms.Padding(2);
+            this.contextEditor.Size = new System.Drawing.Size(808, 470);
+            this.contextEditor.TabIndex = 3;
+            this.contextEditor.Text = "Gerenciador de Contexto";
+            // 
+            // lblAnalyze
+            // 
+            this.lblAnalyze.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAnalyze.AutoSize = true;
+            this.lblAnalyze.Location = new System.Drawing.Point(434, 450);
+            this.lblAnalyze.Name = "lblAnalyze";
+            this.lblAnalyze.Size = new System.Drawing.Size(91, 13);
+            this.lblAnalyze.TabIndex = 7;
+            this.lblAnalyze.Text = "Analyze Progress:";
+            // 
+            // numProgress
+            // 
+            this.numProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.numProgress.Location = new System.Drawing.Point(526, 446);
+            this.numProgress.Maximum = new decimal(new int[] {
+            -1530494976,
+            232830,
+            0,
+            0});
+            this.numProgress.Name = "numProgress";
+            this.numProgress.Size = new System.Drawing.Size(135, 20);
+            this.numProgress.TabIndex = 6;
+            // 
+            // ctxView
+            // 
+            this.ctxView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ctxView.AutoScroll = true;
+            this.ctxView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ctxView.Location = new System.Drawing.Point(2, 5);
+            this.ctxView.Name = "ctxView";
+            this.ctxView.Size = new System.Drawing.Size(805, 438);
+            this.ctxView.TabIndex = 5;
+            // 
+            // btnUpdateContext
+            // 
+            this.btnUpdateContext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnUpdateContext.Location = new System.Drawing.Point(111, 448);
+            this.btnUpdateContext.Margin = new System.Windows.Forms.Padding(2);
+            this.btnUpdateContext.Name = "btnUpdateContext";
+            this.btnUpdateContext.Size = new System.Drawing.Size(102, 21);
+            this.btnUpdateContext.TabIndex = 4;
+            this.btnUpdateContext.Text = "Atualizar Contexto";
+            this.btnUpdateContext.UseVisualStyleBackColor = true;
+            this.btnUpdateContext.Click += new System.EventHandler(this.btnUpdateContext_Click);
+            // 
+            // btnContext
+            // 
+            this.btnContext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnContext.Location = new System.Drawing.Point(5, 448);
+            this.btnContext.Margin = new System.Windows.Forms.Padding(2);
+            this.btnContext.Name = "btnContext";
+            this.btnContext.Size = new System.Drawing.Size(102, 21);
+            this.btnContext.TabIndex = 3;
+            this.btnContext.Text = "Carregar Contexto";
+            this.btnContext.UseVisualStyleBackColor = true;
+            this.btnContext.Click += new System.EventHandler(this.btnContext_Click);
+            // 
+            // btnExportContext
+            // 
+            this.btnExportContext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExportContext.Location = new System.Drawing.Point(665, 448);
+            this.btnExportContext.Margin = new System.Windows.Forms.Padding(2);
+            this.btnExportContext.Name = "btnExportContext";
+            this.btnExportContext.Size = new System.Drawing.Size(69, 21);
+            this.btnExportContext.TabIndex = 2;
+            this.btnExportContext.Text = "Exportar";
+            this.btnExportContext.UseVisualStyleBackColor = true;
+            this.btnExportContext.Click += new System.EventHandler(this.btnExportContext_Click);
+            // 
+            // btnImportContext
+            // 
+            this.btnImportContext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnImportContext.Location = new System.Drawing.Point(738, 448);
+            this.btnImportContext.Margin = new System.Windows.Forms.Padding(2);
+            this.btnImportContext.Name = "btnImportContext";
+            this.btnImportContext.Size = new System.Drawing.Size(67, 21);
+            this.btnImportContext.TabIndex = 1;
+            this.btnImportContext.Text = "Importar";
+            this.btnImportContext.UseVisualStyleBackColor = true;
+            this.btnImportContext.Click += new System.EventHandler(this.btnImportContext_Click);
             // 
             // Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1224, 763);
+            this.ClientSize = new System.Drawing.Size(816, 496);
             this.Controls.Add(this.MainTabControl);
             this.Enabled = false;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.MinimumSize = new System.Drawing.Size(1236, 791);
+            this.MinimumSize = new System.Drawing.Size(827, 522);
             this.Name = "Main";
             this.Text = "TLBOT 2025";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TLBClosing);
             this.Shown += new System.EventHandler(this.FormShowed);
-            this.MainTabControl.ResumeLayout(false);
-            this.ViewTab.ResumeLayout(false);
-            this.ViewTab.PerformLayout();
+            this.TranslationDB.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DBPageSelector)).EndInit();
             this.OptionsTab.ResumeLayout(false);
             this.OptionsTab.PerformLayout();
             this.SensentiveGB.ResumeLayout(false);
@@ -902,48 +980,22 @@
             this.lblMaxLines.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MaxLines)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LineLimit)).EndInit();
-            this.TranslationDB.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DBPageSelector)).EndInit();
+            this.ViewTab.ResumeLayout(false);
+            this.ViewTab.PerformLayout();
+            this.MainTabControl.ResumeLayout(false);
+            this.contextEditor.ResumeLayout(false);
+            this.contextEditor.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numProgress)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TabControl MainTabControl;
-        private System.Windows.Forms.TabPage ViewTab;
-        private System.Windows.Forms.Label lblState;
-        private System.Windows.Forms.Label lblInfoPrefix;
-        private System.Windows.Forms.ProgressBar TaskProgress;
-        private System.Windows.Forms.TabPage OptionsTab;
-        private System.Windows.Forms.Button bntNewTask;
-        private System.Windows.Forms.ComboBox TLCLientMenu;
-        private System.Windows.Forms.Label lblClientPrefix;
-        private System.Windows.Forms.ComboBox TransModeMenu;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox TargetLangSelector;
-        private System.Windows.Forms.ComboBox SourceLangSelector;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lblSource;
-        private System.Windows.Forms.ComboBox TargetStepMode;
-        private System.Windows.Forms.Label lblTargetSteps;
-        private System.Windows.Forms.CheckedListBox OptimizatorList;
-        private System.Windows.Forms.GroupBox lblMaxLines;
-        private System.Windows.Forms.CheckBox ckMonospaced;
-        private System.Windows.Forms.NumericUpDown LineLimit;
-        private System.Windows.Forms.Label lblLineLimit;
-        private System.Windows.Forms.CheckBox ckFakeBreakLine;
-        private System.Windows.Forms.TextBox LineBreaker;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lblFaceName;
-        private System.Windows.Forms.TextBox FaceName;
-        private System.Windows.Forms.MaskedTextBox FontSize;
-        private System.Windows.Forms.Label lblFontSize;
-        private System.Windows.Forms.CheckBox ckBold;
-        private System.Windows.Forms.CheckBox ckTransTLBot;
-        private System.Windows.Forms.CheckedListBox StringList;
-        private System.Windows.Forms.Button bntViewScript;
+        private System.Windows.Forms.Timer DBPageCounter;
+        private System.Windows.Forms.Timer CacheLoadedVerify;
         private System.Windows.Forms.TabPage TranslationDB;
+        private System.Windows.Forms.Button GenDBBnt;
+        private System.Windows.Forms.Button OptimizeDbBnt;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown DBPageSelector;
         private System.Windows.Forms.Button ImportLstBnt;
@@ -953,22 +1005,61 @@
         private System.Windows.Forms.ListView DBStrList;
         private System.Windows.Forms.ColumnHeader OriCol;
         private System.Windows.Forms.ColumnHeader TransCol;
-        private System.Windows.Forms.Timer DBPageCounter;
-        private System.Windows.Forms.Button OptimizeDbBnt;
+        private System.Windows.Forms.TabPage OptionsTab;
+        private System.Windows.Forms.CheckBox ckDelEmpty;
+        private System.Windows.Forms.CheckBox ckLstMode;
+        private System.Windows.Forms.Button bntTestClient;
         private System.Windows.Forms.GroupBox SensentiveGB;
+        private System.Windows.Forms.CheckBox ckUsePos;
+        private System.Windows.Forms.CheckBox ckUseDB;
+        private System.Windows.Forms.Label lblBarVal;
         private System.Windows.Forms.Label lblMoreSensetive;
         private System.Windows.Forms.Label lblLessSensentive;
         private System.Windows.Forms.TrackBar SensetiveBar;
-        private System.Windows.Forms.Label lblBarVal;
-        private System.Windows.Forms.Timer CacheLoadedVerify;
-        private System.Windows.Forms.CheckBox ckUseDB;
-        private System.Windows.Forms.Button bntTestClient;
-        private System.Windows.Forms.Button GenDBBnt;
-        private System.Windows.Forms.CheckBox ckLstMode;
-        private System.Windows.Forms.CheckBox ckUsePos;
-        private System.Windows.Forms.Button bntSearch;
+        private System.Windows.Forms.CheckBox ckTransTLBot;
+        private System.Windows.Forms.TextBox LineBreaker;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox lblMaxLines;
         private System.Windows.Forms.NumericUpDown MaxLines;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.CheckBox ckDelEmpty;
+        private System.Windows.Forms.CheckBox ckBold;
+        private System.Windows.Forms.MaskedTextBox FontSize;
+        private System.Windows.Forms.Label lblFontSize;
+        private System.Windows.Forms.TextBox FaceName;
+        private System.Windows.Forms.Label lblFaceName;
+        private System.Windows.Forms.CheckBox ckMonospaced;
+        private System.Windows.Forms.NumericUpDown LineLimit;
+        private System.Windows.Forms.Label lblLineLimit;
+        private System.Windows.Forms.CheckBox ckFakeBreakLine;
+        private System.Windows.Forms.ComboBox TargetStepMode;
+        private System.Windows.Forms.Label lblTargetSteps;
+        private System.Windows.Forms.CheckedListBox OptimizatorList;
+        private System.Windows.Forms.ComboBox TargetLangSelector;
+        private System.Windows.Forms.ComboBox SourceLangSelector;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblSource;
+        private System.Windows.Forms.ComboBox TransModeMenu;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox TLCLientMenu;
+        private System.Windows.Forms.Label lblClientPrefix;
+        private System.Windows.Forms.TabPage ViewTab;
+        private System.Windows.Forms.Button bntSearch;
+        private System.Windows.Forms.Button bntViewScript;
+        private System.Windows.Forms.CheckedListBox StringList;
+        private System.Windows.Forms.Button bntNewTask;
+        private System.Windows.Forms.Label lblState;
+        private System.Windows.Forms.Label lblInfoPrefix;
+        private System.Windows.Forms.ProgressBar TaskProgress;
+        private System.Windows.Forms.TabControl MainTabControl;
+        private System.Windows.Forms.ProgressBar CurrentTaskProgress;
+        private System.Windows.Forms.TabPage contextEditor;
+        private System.Windows.Forms.Button btnContext;
+        private System.Windows.Forms.Button btnExportContext;
+        private System.Windows.Forms.Button btnImportContext;
+        private System.Windows.Forms.Button btnUpdateContext;
+        private System.Windows.Forms.FlowLayoutPanel ctxView;
+        private System.Windows.Forms.Label lblAnalyze;
+        private System.Windows.Forms.NumericUpDown numProgress;
+        private System.Windows.Forms.CheckBox ckAsian;
     }
 }

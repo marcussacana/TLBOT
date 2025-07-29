@@ -6,11 +6,11 @@ using TLBOT.Optimizator;
 
 namespace TLBOT
 {
-    public class TranslationTask
+    public class TranslationTask : ITask
     {
         string SourceLanguage;
         string TargetLanguage;
-        public string[] Lines;
+        public string[] Lines { get; set; }
 
         public enum Status
         {
@@ -18,15 +18,22 @@ namespace TLBOT
         }
 
         public Status TaskStatus = Status.IDLE;
+        public string CurrentStatus => TaskStatus.ToString();
         public uint Progress { private set; get; }
 
+        public bool Finished => TaskStatus == Status.Finished;
+
         IOptimizator[] Optimizators;
-        public TranslationTask(string[] Lines, string SourceLanguage, string TargetLanguage, IOptimizator[] Optimizators)
+        public TranslationTask(string SourceLanguage, string TargetLanguage, IOptimizator[] Optimizators)
         {
-            this.Lines = Lines;
             this.SourceLanguage = SourceLanguage;
             this.TargetLanguage = TargetLanguage;
             this.Optimizators = Optimizators;
+        }
+
+        public void UpdateLines(string[] Lines)
+        {
+            this.Lines = Lines;
         }
 
         public Task Build(Action OnFinish = null)
