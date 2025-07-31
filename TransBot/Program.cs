@@ -157,6 +157,8 @@ namespace TLBOT {
         public static OptimizatorSelector OptimizatorSettings;
         public static TaskInfo TaskInfo = new TaskInfo();
 
+        private static object _locker = new object();
+
         public static IOptimizator[] ExternalPlugins = new IOptimizator[0];
 
         /// <summary>
@@ -220,32 +222,33 @@ namespace TLBOT {
 
         public static void LoadCache(Action OnFinish) {
             new Thread(() => {
-                try {
-                    TLBCache Cache = new TLBCache();
-                    using (StructReader Reader = new StructReader(CachePath)) {
-                        Reader.ReadStruct(ref Cache);
-                        Reader.Close();
-                    }
-
-                    Program.Cache = new Dictionary<string, string>();
-                    for (uint i = 0; i < Cache.Entries; i++)
-                        Program.Cache[Cache.Original[i]] = Cache.Translations[i];
-
-                    ForceDialogues = new Dictionary<string, bool>();
-                    for (uint i = 0; i < Cache.SEntries; i++)
-                        ForceDialogues[Cache.ManualString[i]] = Cache.ManualChecked[i];
-                } catch { }
-
-                try {
-                    if (File.Exists(TaskPath)) {
-                        TaskInfo = new TaskInfo();
-                        using (StructReader Reader = new StructReader(TaskPath)) {
-                            Reader.ReadStruct(ref TaskInfo);
+                lock (_locker) {
+                    try {
+                        TLBCache Cache = new TLBCache();
+                        using (StructReader Reader = new StructReader(CachePath)) {
+                            Reader.ReadStruct(ref Cache);
                             Reader.Close();
                         }
-                    }
-                } catch { }
 
+                        Program.Cache = new Dictionary<string, string>();
+                        for (uint i = 0; i < Cache.Entries; i++)
+                            Program.Cache[Cache.Original[i]] = Cache.Translations[i];
+
+                        ForceDialogues = new Dictionary<string, bool>();
+                        for (uint i = 0; i < Cache.SEntries; i++)
+                            ForceDialogues[Cache.ManualString[i]] = Cache.ManualChecked[i];
+                    } catch { }
+
+                    try {
+                        if (File.Exists(TaskPath)) {
+                            TaskInfo = new TaskInfo();
+                            using (StructReader Reader = new StructReader(TaskPath)) {
+                                Reader.ReadStruct(ref TaskInfo);
+                                Reader.Close();
+                            }
+                        }
+                    } catch { }
+                }
                 OnFinish?.Invoke();
             }).Start();
         }
@@ -287,13 +290,18 @@ namespace TLBOT {
 
         internal static void SaveTask() {
             try {
-                if (File.Exists(TaskPath))
-                    File.Delete(TaskPath);
+                lock (_locker)
+                {
+                    if (File.Exists(TaskPath))
+                        File.Delete(TaskPath);
 
-                if (TaskInfo.LastTaskPos > 0) {
-                    using (StructWriter Writer = new StructWriter(TaskPath)) {
-                        Writer.WriteStruct(ref TaskInfo);
-                        Writer.Close();
+                    if (TaskInfo.LastTaskPos > 0)
+                    {
+                        using (StructWriter Writer = new StructWriter(TaskPath))
+                        {
+                            Writer.WriteStruct(ref TaskInfo);
+                            Writer.Close();
+                        }
                     }
                 }
             } catch { }
