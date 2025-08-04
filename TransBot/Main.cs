@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using CefSharp.DevTools.Page;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SacanaWrapper;
 using TLBOT.DataManager;
