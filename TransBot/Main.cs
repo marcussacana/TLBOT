@@ -437,6 +437,7 @@ namespace TLBOT {
                             {
                                 DL = 0;
                                 int Progress = (int)(Program.TLMode == TransMode.Normal ? TaskCreator.Progress : 0);
+                                if (LP > Progress) LP = Progress;
                                 ShowStrings(TaskCreator.Lines, LP, Progress);
                                 LP = Progress;
                             }
@@ -450,6 +451,7 @@ namespace TLBOT {
                             {
                                 DL = 0;
                                 int Progress = (int)TaskCreator.Progress;
+                                if (LP > Progress) LP = Progress;
                                 ShowStrings(TaskCreator.Lines, LP, Progress);
                                 LP = Progress;
                             }
@@ -704,7 +706,7 @@ namespace TLBOT {
             if (NewFile)
                 StringList.Items.Clear();
 
-            int LEnd = (End > 0 ? End : Strings.Length);
+            int LEnd = (End >= 0 ? End : Strings.Length);
             if (Strings.Length == StringList.Items.Count) {
                 for (int i = Begin; i < LEnd; i++) {
                     StringList.Items[i] = Strings[i];

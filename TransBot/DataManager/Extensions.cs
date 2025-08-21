@@ -126,7 +126,7 @@ namespace TLBOT.DataManager {
         internal static string Translate(this string String, string SourceLang, string TargetLang, Translator Client) => TranslateMassive(new string[] { String }, SourceLang, TargetLang, Client).First();
 #endif
         internal static bool Local = false;
-        internal static string[] TranslateMassive(this string[] Strings, string SourceLanguage, string TargetLanguage, Translator Client) {
+        internal static string[] TranslateMassive(this string[] Strings, string SourceLanguage, string TargetLanguage, Translator Client, Action<long> OnProgressChanged = null) {
             if (SourceLanguage.Trim().ToLower() == TargetLanguage.Trim().ToLower())
                 return Strings;
 
@@ -143,7 +143,12 @@ namespace TLBOT.DataManager {
 
             string[] NoCached = (from x in Strings where !Program.Cache.ContainsKey(x) select x).Distinct().ToArray();
             string[] Result;
-        
+
+            var onProgress = new Action<long>((long x) => {
+                var missing = NoCached.LongLength - x;
+                OnProgressChanged?.Invoke(Strings.LongLength - missing);
+            });
+
             bool Error = false;
             for (int i = 0; i < 3; i++) {
                 try {
@@ -154,7 +159,7 @@ namespace TLBOT.DataManager {
                     switch (Client) {
                         default:
                             try {
-                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage);
+                                Result = API.Translate(NoCached, SourceLanguage, TargetLanguage, onProgress);
                                 if (Result == null)
                                     throw new Exception();
                             } catch (Exception ex) {

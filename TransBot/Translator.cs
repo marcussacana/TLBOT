@@ -85,11 +85,13 @@ namespace TLBOT
 
                 bool canRetry = true;
 
+                Progress = 0;
+
                 TaskStatus = Status.Translating;
                 switch (Program.TLMode)
                 {
                     case TransMode.Massive:
-                        Lines = Lines.TranslateMassive(SourceLanguage, TargetLanguage, Program.TLClient);
+                        Lines = Lines.TranslateMassive(SourceLanguage, TargetLanguage, Program.TLClient, x => Progress = (uint)Math.Min(x, uint.MaxValue));
                         break;
                     case TransMode.Multithread:
                         Lines = Lines.TranslateMultithread(SourceLanguage, TargetLanguage, Program.TLClient, x => Progress = x);
